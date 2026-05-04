@@ -11,14 +11,23 @@
         href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @yield('head')
 </head>
 
 <body>
+    @hasSection('header')
+        @yield('header')
+    @else
+        @include('partials.header')
+    @endif
 
+    @yield('content')
 
-    @include('partials.header')
-    @yield('produk')
-    @include('partials.footer')
+    @hasSection('footer')
+        @yield('footer')
+    @else
+        @include('partials.footer')
+    @endif
 
     @stack('scripts')
 </body>

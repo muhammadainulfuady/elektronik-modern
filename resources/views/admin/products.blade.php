@@ -1,0 +1,175 @@
+@extends('layouts.app')
+
+@section('title', 'Kelola Produk – Admin Elektronik Modern')
+
+@section('head')
+    <link rel="stylesheet" href="{{ asset('shared.css') }}">
+@endsection
+
+@section('header')
+@endsection
+
+@section('content')
+    <div class="admin-layout">
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-name">⚡ Elektronik Modern</div>
+                <div class="sidebar-brand-role">Panel Administrator</div>
+            </div>
+            <div class="s-group">Menu Utama</div>
+            <a href="admin-dashboard.html" class="s-item"><span class="si">📊</span> Dashboard</a>
+            <a href="admin-products.html" class="s-item active"><span class="si">📦</span> Kelola Produk</a>
+            <a href="admin-orders.html" class="s-item"><span class="si">🧾</span> Kelola Pesanan</a>
+            <a href="admin-users.html" class="s-item"><span class="si">👥</span> Kelola Pengguna</a>
+            <div class="s-group">Akun</div>
+            <a href="login.html" class="s-item"><span class="si">🚪</span> Keluar</a>
+        </div>
+        <div class="admin-main">
+            <div class="admin-topbar">
+                <div class="page-title">Kelola Produk</div>
+                <button class="btn btn-primary">+ Tambah Produk</button>
+            </div>
+            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+                <div class="stat-card">
+                    <div class="stat-ico blue">📦</div>
+                    <div>
+                        <div class="stat-label">Total Produk</div>
+                        <div class="stat-val">247</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-ico green">✅</div>
+                    <div>
+                        <div class="stat-label">Aktif</div>
+                        <div class="stat-val">231</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-ico warn">⚠️</div>
+                    <div>
+                        <div class="stat-label">Stok Habis</div>
+                        <div class="stat-val">16</div>
+                    </div>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-head">
+                    <h3>Daftar Produk</h3>
+                    <div style="display:flex;gap:8px">
+                        <input placeholder="Cari produk..." style="width:200px;padding:8px 14px;font-size:13px">
+                        <select style="width:auto;padding:8px 12px;font-size:13px">
+                            <option>Semua Kategori</option>
+                            <option>Smart TV</option>
+                            <option>Kulkas</option>
+                            <option>AC</option>
+                            <option>Mesin Cuci</option>
+                        </select>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Produk</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color:var(--g400);font-size:12px">#P001</td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px"><img
+                                        src="https://images.unsplash.com/photo-1593784991095-a205069470b6?w=60&q=70"
+                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
+                                        style="font-weight:700;font-size:13px">Samsung Smart TV 43" 4K</span></div>
+                            </td>
+                            <td><span class="badge badge-info">Smart TV</span></td>
+                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 6.499.000</td>
+                            <td><span class="badge badge-success">12 unit</span></td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
+                                        class="btn-del">Hapus</button></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--g400);font-size:12px">#P002</td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px"><img
+                                        src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=60&q=70"
+                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
+                                        style="font-weight:700;font-size:13px">LG Kulkas 2 Pintu 380L</span></div>
+                            </td>
+                            <td><span class="badge badge-info">Kulkas</span></td>
+                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 5.199.000</td>
+                            <td><span class="badge badge-warn">8 unit</span></td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
+                                        class="btn-del">Hapus</button></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--g400);font-size:12px">#P003</td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px"><img
+                                        src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=60&q=70"
+                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
+                                        style="font-weight:700;font-size:13px">Panasonic Mesin Cuci 7KG</span></div>
+                            </td>
+                            <td><span class="badge badge-info">Mesin Cuci</span></td>
+                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 4.299.000</td>
+                            <td><span class="badge badge-warn">5 unit</span></td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
+                                        class="btn-del">Hapus</button></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--g400);font-size:12px">#P004</td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px"><img
+                                        src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=60&q=70"
+                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
+                                        style="font-weight:700;font-size:13px">Daikin AC Split 1PK Inverter</span></div>
+                            </td>
+                            <td><span class="badge badge-info">AC</span></td>
+                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 3.850.000</td>
+                            <td><span class="badge badge-success">20 unit</span></td>
+                            <td><span class="badge badge-success">Aktif</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
+                                        class="btn-del">Hapus</button></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--g400);font-size:12px">#P005</td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px"><img
+                                        src="https://images.unsplash.com/photo-1509281373149-e957c6296406?w=60&q=70"
+                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
+                                        style="font-weight:700;font-size:13px">Sony BRAVIA 55" OLED</span></div>
+                            </td>
+                            <td><span class="badge badge-info">Smart TV</span></td>
+                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 14.999.000</td>
+                            <td><span class="badge badge-danger">0 unit</span></td>
+                            <td><span class="badge badge-danger">Habis</span></td>
+                            <td>
+                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
+                                        class="btn-del">Hapus</button></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('footer')
+@endsection

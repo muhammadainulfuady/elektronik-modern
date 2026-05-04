@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Models\User;
+use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
@@ -13,8 +15,12 @@ class ProdukController extends Controller
     public function index()
     {
         $produks = Produk::with('kategori')->get();
-        return view('index', compact('produks'));
+        $jumlahProduk = $produks->count();
+        $jumlahUser = User::count();
+        $rating = Ulasan::sum('rating') / count(Ulasan::all());
+        return view('index', compact('produks', 'jumlahProduk', 'jumlahUser', 'rating'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -37,7 +43,7 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk)
     {
-      
+
     }
 
     /**
