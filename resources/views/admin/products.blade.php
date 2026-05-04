@@ -11,60 +11,107 @@
 
 @section('content')
     <div class="admin-layout">
-        <div class="sidebar">
-            <div class="sidebar-brand">
-                <div class="sidebar-brand-name">⚡ Elektronik Modern</div>
-                <div class="sidebar-brand-role">Panel Administrator</div>
-            </div>
-            <div class="s-group">Menu Utama</div>
-            <a href="admin-dashboard.html" class="s-item"><span class="si">📊</span> Dashboard</a>
-            <a href="admin-products.html" class="s-item active"><span class="si">📦</span> Kelola Produk</a>
-            <a href="admin-orders.html" class="s-item"><span class="si">🧾</span> Kelola Pesanan</a>
-            <a href="admin-users.html" class="s-item"><span class="si">👥</span> Kelola Pengguna</a>
-            <div class="s-group">Akun</div>
-            <a href="login.html" class="s-item"><span class="si">🚪</span> Keluar</a>
-        </div>
+        @include('partials.admin-sidebar')
+
         <div class="admin-main">
             <div class="admin-topbar">
                 <div class="page-title">Kelola Produk</div>
-                <button class="btn btn-primary">+ Tambah Produk</button>
             </div>
-            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
-                <div class="stat-card">
-                    <div class="stat-ico blue">📦</div>
-                    <div>
-                        <div class="stat-label">Total Produk</div>
-                        <div class="stat-val">247</div>
-                    </div>
+
+            @if (session('status'))
+                <div class="data-card" style="padding:12px 16px;margin-bottom:16px">
+                    <strong>{{ session('status') }}</strong>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-ico green">✅</div>
-                    <div>
-                        <div class="stat-label">Aktif</div>
-                        <div class="stat-val">231</div>
-                    </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="data-card" style="padding:12px 16px;margin-bottom:16px">
+                    <strong>Gagal menyimpan produk.</strong>
+                    <div style="font-size:12px;color:var(--g500)">Cek kembali input yang wajib diisi.</div>
+                    <ul style="margin:8px 0 0 16px;font-size:12px;color:var(--g500)">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-ico warn">⚠️</div>
-                    <div>
-                        <div class="stat-label">Stok Habis</div>
-                        <div class="stat-val">16</div>
-                    </div>
+            @endif
+
+            <div class="data-card" style="margin-bottom:16px">
+                <div class="data-card-head">
+                    <h3>Tambah Produk</h3>
                 </div>
+                <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data"
+                    style="padding:16px;display:grid;gap:12px">
+                    @csrf
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+                        <div>
+                            <label style="font-size:12px;color:var(--g500)">Nama Produk</label>
+                            <input name="nama_produk" value="{{ old('nama_produk') }}" required
+                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('nama_produk') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                            @error('nama_produk')
+                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:var(--g500)">Kategori</label>
+                            <select name="id_kategori" required
+                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('id_kategori') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                                <option value="">Pilih kategori</option>
+                                @foreach ($kategoris as $kategori)
+                                    <option value="{{ $kategori->id_kategori }}"
+                                        @selected(old('id_kategori') == $kategori->id_kategori)>
+                                        {{ $kategori->nama_kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_kategori')
+                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                        <div>
+                            <label style="font-size:12px;color:var(--g500)">Harga</label>
+                            <input type="number" name="harga" min="0" value="{{ old('harga') }}" required
+                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('harga') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                            @error('harga')
+                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:var(--g500)">Stok</label>
+                            <input type="number" name="stok" min="0" value="{{ old('stok') }}" required
+                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('stok') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                            @error('stok')
+                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:var(--g500)">Gambar Produk</label>
+                            <input type="file" name="gambar" accept="image/*" required
+                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('gambar') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                            @error('gambar')
+                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:var(--g500)">Deskripsi</label>
+                        <textarea name="deskripsi" rows="3" required
+                            style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('deskripsi') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">{{ old('deskripsi') }}</textarea>
+                        @error('deskripsi')
+                            <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" type="submit">Simpan Produk</button>
+                    </div>
+                </form>
             </div>
+
             <div class="data-card">
                 <div class="data-card-head">
                     <h3>Daftar Produk</h3>
-                    <div style="display:flex;gap:8px">
-                        <input placeholder="Cari produk..." style="width:200px;padding:8px 14px;font-size:13px">
-                        <select style="width:auto;padding:8px 12px;font-size:13px">
-                            <option>Semua Kategori</option>
-                            <option>Smart TV</option>
-                            <option>Kulkas</option>
-                            <option>AC</option>
-                            <option>Mesin Cuci</option>
-                        </select>
-                    </div>
                 </div>
                 <table>
                     <thead>
@@ -79,91 +126,50 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="color:var(--g400);font-size:12px">#P001</td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:10px"><img
-                                        src="https://images.unsplash.com/photo-1593784991095-a205069470b6?w=60&q=70"
-                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
-                                        style="font-weight:700;font-size:13px">Samsung Smart TV 43" 4K</span></div>
-                            </td>
-                            <td><span class="badge badge-info">Smart TV</span></td>
-                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 6.499.000</td>
-                            <td><span class="badge badge-success">12 unit</span></td>
-                            <td><span class="badge badge-success">Aktif</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
-                                        class="btn-del">Hapus</button></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--g400);font-size:12px">#P002</td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:10px"><img
-                                        src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=60&q=70"
-                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
-                                        style="font-weight:700;font-size:13px">LG Kulkas 2 Pintu 380L</span></div>
-                            </td>
-                            <td><span class="badge badge-info">Kulkas</span></td>
-                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 5.199.000</td>
-                            <td><span class="badge badge-warn">8 unit</span></td>
-                            <td><span class="badge badge-success">Aktif</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
-                                        class="btn-del">Hapus</button></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--g400);font-size:12px">#P003</td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:10px"><img
-                                        src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=60&q=70"
-                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
-                                        style="font-weight:700;font-size:13px">Panasonic Mesin Cuci 7KG</span></div>
-                            </td>
-                            <td><span class="badge badge-info">Mesin Cuci</span></td>
-                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 4.299.000</td>
-                            <td><span class="badge badge-warn">5 unit</span></td>
-                            <td><span class="badge badge-success">Aktif</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
-                                        class="btn-del">Hapus</button></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--g400);font-size:12px">#P004</td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:10px"><img
-                                        src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=60&q=70"
-                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
-                                        style="font-weight:700;font-size:13px">Daikin AC Split 1PK Inverter</span></div>
-                            </td>
-                            <td><span class="badge badge-info">AC</span></td>
-                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 3.850.000</td>
-                            <td><span class="badge badge-success">20 unit</span></td>
-                            <td><span class="badge badge-success">Aktif</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
-                                        class="btn-del">Hapus</button></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color:var(--g400);font-size:12px">#P005</td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:10px"><img
-                                        src="https://images.unsplash.com/photo-1509281373149-e957c6296406?w=60&q=70"
-                                        style="width:44px;height:44px;border-radius:8px;object-fit:cover"><span
-                                        style="font-weight:700;font-size:13px">Sony BRAVIA 55" OLED</span></div>
-                            </td>
-                            <td><span class="badge badge-info">Smart TV</span></td>
-                            <td style="font-weight:800;font-family:'Syne',sans-serif">Rp 14.999.000</td>
-                            <td><span class="badge badge-danger">0 unit</span></td>
-                            <td><span class="badge badge-danger">Habis</span></td>
-                            <td>
-                                <div style="display:flex;gap:6px"><button class="btn-edit">Edit</button><button
-                                        class="btn-del">Hapus</button></div>
-                            </td>
-                        </tr>
+                        @forelse ($produks as $produk)
+                            <tr>
+                                <td style="color:var(--g400);font-size:12px">
+                                    #P{{ str_pad((string) $produk->id_produk, 3, '0', STR_PAD_LEFT) }}</td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:10px">
+                                        <img src="{{ asset('storage/products/' . $produk->gambar) }}"
+                                            style="width:44px;height:44px;border-radius:8px;object-fit:cover"
+                                            alt="{{ $produk->nama_produk }}">
+                                        <span style="font-weight:700;font-size:13px">{{ $produk->nama_produk }}</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-info">{{ $produk->kategori->nama_kategori ?? '-' }}</span></td>
+                                <td style="font-weight:800;font-family:'Syne',sans-serif">Rp
+                                    {{ number_format($produk->harga, 0, ',', '.') }}
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge {{ $produk->stok > 10 ? 'badge-success' : ($produk->stok > 0 ? 'badge-warn' : 'badge-danger') }}">
+                                        {{ $produk->stok }} unit
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $produk->stok > 0 ? 'badge-success' : 'badge-danger' }}">
+                                        {{ $produk->stok > 0 ? 'Aktif' : 'Habis' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <a class="btn-edit" href="{{ route('admin.products.edit', $produk) }}">Edit</a>
+                                        <form method="POST" action="{{ route('admin.products.destroy', $produk) }}"
+                                            onsubmit="return confirm('Hapus produk ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn-del" type="submit">Hapus</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" style="text-align:center;color:var(--g400);padding:18px">Belum ada produk.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

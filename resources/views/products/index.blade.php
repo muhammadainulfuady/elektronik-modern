@@ -1,383 +1,181 @@
 @extends('layouts.app')
 
-@section('title', 'Produk – Elektronik Modern')
+@section('title', 'Katalog Produk – Elektronik Modern')
 
 @section('head')
     <link rel="stylesheet" href="{{ asset('shared.css') }}" />
     <style>
-        .listing-wrap {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 24px;
-            padding: 32px 0 64px;
-        }
+        .catalog-section { padding: 32px 0 72px }
+        .catalog-header { margin-bottom: 32px }
+        .catalog-header h1 { font-family: "Syne", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px }
+        .catalog-header p { color: var(--g500); font-size: 15px }
 
-        .filter-panel {
-            background: #fff;
-            border-radius: var(--rlg);
-            padding: 22px;
-            box-shadow: var(--sh);
-            height: fit-content;
-            position: sticky;
-            top: 84px;
-        }
+        .catalog-layout { display: grid; grid-template-columns: 240px 1fr; gap: 28px }
 
-        .fp-title {
-            font-weight: 800;
-            font-size: 15px;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--g100);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Filter sidebar */
+        .filter-panel { background: #fff; border-radius: var(--rlg); box-shadow: var(--sh); padding: 24px; height: fit-content; position: sticky; top: 84px }
+        .filter-title { font-family: "Syne",sans-serif; font-size: 15px; font-weight: 800; margin-bottom: 16px; color: var(--g800) }
+        .filter-group { margin-bottom: 20px }
+        .filter-group h4 { font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px }
+        .filter-cat { display: flex; flex-direction: column; gap: 4px }
+        .filter-cat a {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            color: var(--g600); text-decoration: none; transition: .15s
         }
+        .filter-cat a:hover, .filter-cat a.active { background: var(--blue-l); color: var(--blue) }
+        .filter-cat a .count { font-size: 11px; color: var(--g400); font-weight: 500 }
+        .filter-cat a.active .count { color: var(--blue) }
 
-        .fp-section {
-            margin-bottom: 22px;
-            padding-bottom: 22px;
-            border-bottom: 1px solid var(--g100);
+        /* Sort bar */
+        .sort-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px }
+        .sort-bar .result-count { font-size: 14px; color: var(--g500) }
+        .sort-bar .result-count strong { color: var(--g800) }
+        .sort-options { display: flex; gap: 6px }
+        .sort-options a {
+            padding: 7px 14px; border-radius: 50px; font-size: 12px; font-weight: 700;
+            text-decoration: none; color: var(--g500); background: var(--g100); transition: .15s
         }
+        .sort-options a:hover, .sort-options a.active { background: var(--blue); color: #fff }
 
-        .fp-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
+        .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px }
+        .pagination-wrap { margin-top: 32px; display: flex; justify-content: center }
+        .pagination-wrap nav { display: flex; gap: 4px }
+        .pagination-wrap .page-link {
+            padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
+            text-decoration: none; color: var(--g600); background: #fff; border: 1px solid var(--g200); transition: .15s
         }
+        .pagination-wrap .page-link:hover { border-color: var(--blue); color: var(--blue) }
+        .pagination-wrap .page-item.active .page-link { background: var(--blue); color: #fff; border-color: var(--blue) }
+        .pagination-wrap .page-item.disabled .page-link { color: var(--g300); cursor: default }
 
-        .fp-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--g500);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
+        .empty-state { text-align: center; padding: 60px 20px }
+        .empty-state .empty-icon { font-size: 60px; margin-bottom: 16px }
 
-        .fp-opt {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            margin-bottom: 9px;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--g700);
-        }
-
-        .fp-opt input {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--blue);
-            flex-shrink: 0;
-        }
-
-        .fp-opt:hover {
-            color: var(--blue);
-        }
-
-        .price-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .price-inputs input {
-            padding: 9px 12px;
-            font-size: 13px;
-        }
-
-        .toolbar {
-            background: #fff;
-            border-radius: var(--rlg);
-            padding: 14px 18px;
-            box-shadow: var(--sh);
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .toolbar-count {
-            margin-left: auto;
-            font-size: 13px;
-            color: var(--g500);
-            white-space: nowrap;
-        }
-
-        .prod-grid-4 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 28px;
-        }
-
-        .page-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            border: 1.5px solid var(--g200);
-            background: #fff;
-            color: var(--g600);
-            transition: 0.15s;
-            font-family: "Plus Jakarta Sans", sans-serif;
-        }
-
-        .page-btn:hover {
-            border-color: var(--blue);
-            color: var(--blue);
-        }
-
-        .page-btn.active {
-            background: var(--blue);
-            color: #fff;
-            border-color: var(--blue);
+        @media(max-width:768px) {
+            .catalog-layout { grid-template-columns: 1fr }
+            .filter-panel { position: static }
         }
     </style>
 @endsection
 
 @section('header')
-    <nav class="navbar">
-        <a href="index.html" class="nav-logo">⚡ Elektronik<span>Modern</span></a>
-        <div class="nav-search">
-            <span class="search-icon">🔍</span><input type="text" placeholder="Cari produk..." />
-        </div>
-        <div class="nav-right">
-            <button class="nav-icon-btn" onclick="toggleNotif()">
-                🔔<span class="notif-badge">2</span>
-            </button>
-            <button class="nav-icon-btn" onclick="openCart()">
-                🛒<span class="cart-badge">0</span>
-            </button>
-            <a href="profile.html" class="nav-icon-btn" title="Profil" style="text-decoration: none; font-size: 16px">👤</a>
-            <a href="login.html" class="btn btn-outline btn-sm">Masuk</a>
-            <a href="register.html" class="btn btn-primary btn-sm">Daftar</a>
-        </div>
-    </nav>
-
-    <div class="notif-overlay" id="notifOverlay" onclick="closeNotif()"></div>
-    <div class="notif-panel" id="notifPanel">
-        <div class="notif-pheader">
-            <h3>🔔 Notifikasi</h3>
-            <button class="notif-mark" onclick="markAllRead()">
-                Tandai dibaca
-            </button>
-        </div>
-        <div class="notif-list" id="notifList"></div>
-    </div>
-    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h2>🛒 Keranjang</h2>
-            <button class="cart-close" onclick="closeCart()">✕</button>
-        </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-footer" id="cartFooter"></div>
-    </div>
+    @include('partials.header')
 @endsection
 
 @section('content')
-    <div class="container">
-        <div class="breadcrumb"><a href="index.html">Home</a> › Semua Produk</div>
-        <div style="margin-bottom: 20px">
-            <div class="section-title" style="font-size: 26px">Semua Produk</div>
-            <p style="color: var(--g500); font-size: 14px">
-                Menampilkan 87 produk elektronik terbaik
-            </p>
-        </div>
-        <div class="listing-wrap">
-            <div class="filter-panel">
-                <div class="fp-title">🔧 Filter Produk</div>
-                <div class="fp-section">
-                    <div class="fp-label">Kategori</div>
-                    <label class="fp-opt"><input type="checkbox" checked />Smart TV
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(48)</span></label>
-                    <label class="fp-opt"><input type="checkbox" />Kulkas
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(32)</span></label>
-                    <label class="fp-opt"><input type="checkbox" />Mesin Cuci
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(24)</span></label>
-                    <label class="fp-opt"><input type="checkbox" />AC / Pendingin
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(38)</span></label>
-                    <label class="fp-opt"><input type="checkbox" />Kompor & Dapur
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(56)</span></label>
-                    <label class="fp-opt"><input type="checkbox" />Penerangan
-                        <span style="margin-left: auto; font-size: 11px; color: var(--g400)">(41)</span></label>
+    <section class="catalog-section">
+        <div class="container">
+            <div class="catalog-header">
+                <div class="breadcrumb">
+                    <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Katalog Produk</span>
                 </div>
-                <div class="fp-section">
-                    <div class="fp-label">Harga</div>
-                    <div class="price-inputs">
-                        <input type="number" placeholder="Min" value="200000" />
-                        <input type="number" placeholder="Max" value="20000000" />
+                <h1>Katalog Produk</h1>
+                <p>Temukan produk elektronik berkualitas dengan harga terbaik</p>
+            </div>
+
+            <div class="catalog-layout">
+                <!-- FILTER SIDEBAR -->
+                <aside class="filter-panel">
+                    <div class="filter-title">🔍 Filter</div>
+
+                    <!-- Search -->
+                    <div class="filter-group">
+                        <h4>Pencarian</h4>
+                        <form method="GET" action="{{ route('products.index') }}">
+                            @if(request('kategori'))
+                                <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+                            @endif
+                            @if(request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari produk..."
+                                style="padding:10px 14px;font-size:13px">
+                        </form>
                     </div>
-                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px; justify-content: center">
-                        Terapkan Filter
-                    </button>
-                </div>
-                <div class="fp-section">
-                    <div class="fp-label">Merek</div>
-                    <label class="fp-opt"><input type="checkbox" checked />Samsung</label>
-                    <label class="fp-opt"><input type="checkbox" checked />LG</label>
-                    <label class="fp-opt"><input type="checkbox" />Sony</label>
-                    <label class="fp-opt"><input type="checkbox" />Panasonic</label>
-                    <label class="fp-opt"><input type="checkbox" />Daikin</label>
-                    <label class="fp-opt"><input type="checkbox" />Sharp</label>
-                    <label class="fp-opt"><input type="checkbox" />Philips</label>
-                </div>
-                <div class="fp-section">
-                    <div class="fp-label">Ketersediaan</div>
-                    <label class="fp-opt"><input type="checkbox" checked />Tersedia</label>
-                    <label class="fp-opt"><input type="checkbox" />Hampir Habis</label>
-                </div>
+
+                    <!-- Categories -->
+                    <div class="filter-group">
+                        <h4>Kategori</h4>
+                        <div class="filter-cat">
+                            <a href="{{ route('products.index', array_merge(request()->except('kategori','page'), [])) }}"
+                                class="{{ !request('kategori') ? 'active' : '' }}">
+                                Semua Kategori
+                                <span class="count">{{ $kategoris->sum('produks_count') }}</span>
+                            </a>
+                            @foreach ($kategoris as $kategori)
+                                <a href="{{ route('products.index', array_merge(request()->except('page'), ['kategori' => $kategori->id_kategori])) }}"
+                                    class="{{ request('kategori') == $kategori->id_kategori ? 'active' : '' }}">
+                                    {{ $kategori->nama_kategori }}
+                                    <span class="count">{{ $kategori->produks_count }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- PRODUCT GRID -->
                 <div>
-                    <div class="fp-label">Rating</div>
-                    <label class="fp-opt"><input type="radio" name="rating" /> ⭐⭐⭐⭐⭐ (5)</label>
-                    <label class="fp-opt"><input type="radio" name="rating" /> ⭐⭐⭐⭐+ (4+)</label>
-                    <label class="fp-opt"><input type="radio" name="rating" /> ⭐⭐⭐+ (3+)</label>
-                </div>
-            </div>
-            <div>
-                <div class="toolbar">
-                    <div class="nav-search" style="max-width: 260px; flex: 1">
-                        <span class="search-icon">🔍</span><input type="text" placeholder="Cari dalam hasil..." />
+                    <div class="sort-bar">
+                        <div class="result-count">
+                            Menampilkan <strong>{{ $produks->total() }}</strong> produk
+                            @if(request('q'))
+                                untuk "<strong>{{ request('q') }}</strong>"
+                            @endif
+                        </div>
+                        <div class="sort-options">
+                            @php $currentSort = request('sort', 'terbaru'); @endphp
+                            @foreach (['terbaru' => 'Terbaru', 'termurah' => 'Termurah', 'termahal' => 'Termahal', 'nama' => 'A-Z'] as $key => $label)
+                                <a href="{{ route('products.index', array_merge(request()->except('page'), ['sort' => $key])) }}"
+                                    class="{{ $currentSort === $key ? 'active' : '' }}">{{ $label }}</a>
+                            @endforeach
+                        </div>
                     </div>
-                    <select style="width: auto; padding: 10px 14px; font-size: 13px">
-                        <option>Terbaru</option>
-                        <option>Harga: Rendah–Tinggi</option>
-                        <option>Harga: Tinggi–Rendah</option>
-                        <option>Rating Tertinggi</option>
-                        <option>Terlaris</option>
-                    </select>
-                    <div class="toolbar-count">
-                        Menampilkan <strong>24</strong> dari 87
-                    </div>
-                </div>
-                <div class="prod-grid-4" id="prodGrid"></div>
-                <div class="pagination">
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">4</button>
-                    <button class="page-btn">→</button>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
 
-@section('footer')
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <div class="footer-brand">⚡ Elektronik Modern</div>
-                <p class="footer-desc">
-                    Platform belanja elektronik rumah tangga terpercaya.
-                </p>
-            </div>
-            <div>
-                <h4>Belanja</h4>
-                <a href="products.html">Smart TV</a><a href="products.html">Kulkas</a><a href="products.html">AC</a>
-            </div>
-            <div>
-                <h4>Bantuan</h4>
-                <a href="#">Cara Pemesanan</a><a href="orders.html">Lacak Pesanan</a>
-            </div>
-            <div>
-                <h4>Perusahaan</h4>
-                <a href="#">Tentang Kami</a><a href="#">Kontak</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>© 2024 Elektronik Modern – Kelompok 2 IF4E UTM</span>
-        </div>
-    </footer>
-    <div class="cart-toast" id="cart-toast"></div>
-@endsection
+                    @if ($produks->count())
+                        <div class="prod-grid">
+                            @foreach ($produks as $produk)
+                                <a href="{{ route('products.show', $produk) }}" class="prod-card" style="text-decoration:none;color:inherit">
+                                    <div class="prod-img-wrap">
+                                        <img src="{{ asset('storage/products/' . $produk->gambar) }}"
+                                            alt="{{ $produk->nama_produk }}" loading="lazy">
+                                        @if ($produk->stok <= 0)
+                                            <div class="prod-card-badge badge badge-danger">HABIS</div>
+                                        @elseif ($produk->stok <= 10)
+                                            <div class="prod-card-badge badge badge-warn">TERBATAS</div>
+                                        @endif
+                                    </div>
+                                    <div class="prod-body">
+                                        <div class="prod-cat">{{ $produk->kategori->nama_kategori ?? '-' }}</div>
+                                        <div class="prod-name">{{ $produk->nama_produk }}</div>
+                                        <div class="prod-price-row">
+                                            <span class="prod-price">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="prod-footer">
+                                            <span class="prod-stock">Stok: {{ $produk->stok }} unit</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
 
-@push('scripts')
-    <script src="{{ asset('shared.js') }}"></script>
-    <script>
-        function prodCard(p) {
-            const disc = p.badge
-                ? `<div class="prod-card-badge badge ${p.badge.startsWith("−") || p.badge === "HOT" ? "badge-danger" : "badge-new"}">${p.badge}</div>`
-                : "";
-            const old = p.oldPrice
-                ? `<span class="prod-old">${fmt(p.oldPrice)}</span>`
-                : "";
-            return `<div class="prod-card" onclick="window.location='product-detail.html'">
-        <div class="prod-img-wrap"><img src="${p.img}" alt="${p.name}" loading="lazy">${disc}<button class="prod-wishlist" onclick="event.stopPropagation()">♡</button></div>
-        <div class="prod-body">
-          <div class="prod-cat">${p.cat}</div>
-          <div class="prod-name">${p.name}</div>
-          <div class="prod-price-row"><span class="prod-price">${fmt(p.price)}</span>${old}</div>
-          <div class="prod-footer"><span class="prod-stock">Stok: ${p.stock}</span><button class="add-cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">+</button></div>
-        </div></div>`;
-        }
-        document.getElementById("prodGrid").innerHTML = PRODUCTS.map((p) =>
-            prodCard(p),
-        ).join("");
-        function renderCart() {
-            updateCartBadge();
-            const el = document.getElementById("cartItems"),
-                foot = document.getElementById("cartFooter");
-            if (!CART.length) {
-                el.innerHTML = `<div class="cart-empty"><div class="empty-icon">🛒</div><div style="font-weight:700">Keranjang Kosong</div><a href="products.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Belanja</a></div>`;
-                foot.innerHTML = "";
-                return;
-            }
-            el.innerHTML = CART.map(
-                (i) =>
-                    `<div class="cart-item"><img src="${i.img}" class="cart-item-img"><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">${fmt(i.price)}</div><div class="cart-qty"><button class="qty-btn" onclick="updateQty(${i.id},-1)">−</button><input class="qty-num" value="${i.qty}" readonly><button class="qty-btn" onclick="updateQty(${i.id},1)">+</button></div></div><button class="cart-remove" onclick="removeFromCart(${i.id})">🗑</button></div>`,
-            ).join("");
-            const t = cartTotal(),
-                disc = t > 5000000 ? 500000 : 0;
-            foot.innerHTML = `<div class="cart-subtotal"><span>Subtotal</span><span>${fmt(t)}</span></div><div class="cart-total"><span>Total</span><span>${fmt(t - disc)}</span></div><a href="cart.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:10px">Lihat Keranjang</a><a href="checkout.html" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px">💳 Checkout</a>`;
-        }
-        function openCart() {
-            document.getElementById("cartSidebar").classList.add("open");
-            document.getElementById("cartOverlay").classList.add("open");
-            document.body.style.overflow = "hidden";
-            renderCart();
-        }
-        function closeCart() {
-            document.getElementById("cartSidebar").classList.remove("open");
-            document.getElementById("cartOverlay").classList.remove("open");
-            document.body.style.overflow = "";
-        }
-        function renderNotifs() {
-            document.getElementById("notifList").innerHTML = NOTIFICATIONS.map(
-                (n) =>
-                    `<div class="notif-item ${n.read ? "" : "unread"}"><div class="notif-icon">${n.icon}</div><div><div class="notif-title">${n.title}</div><div class="notif-msg">${n.msg}</div><div class="notif-time">${n.time}</div></div></div>`,
-            ).join("");
-            updateNotifBadge();
-        }
-        function toggleNotif() {
-            const p = document.getElementById("notifPanel"),
-                o = document.getElementById("notifOverlay");
-            const open = p.classList.toggle("open");
-            o.style.display = open ? "block" : "none";
-            if (open) renderNotifs();
-        }
-        function closeNotif() {
-            document.getElementById("notifPanel").classList.remove("open");
-            document.getElementById("notifOverlay").style.display = "none";
-        }
-        function markAllRead() {
-            NOTIFICATIONS.forEach((n) => (n.read = true));
-            renderNotifs();
-        }
-        updateCartBadge();
-        updateNotifBadge();
-    </script>
-@endpush
+                        <div class="pagination-wrap">
+                            {{ $produks->links() }}
+                        </div>
+                    @else
+                        <div class="empty-state">
+                            <div class="empty-icon">🔍</div>
+                            <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
+                                Produk Tidak Ditemukan
+                            </div>
+                            <div style="font-size:14px;color:var(--g400);margin-bottom:20px">
+                                Coba ubah filter atau kata kunci pencarian Anda.
+                            </div>
+                            <a href="{{ route('products.index') }}" class="btn btn-primary">Lihat Semua Produk</a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection

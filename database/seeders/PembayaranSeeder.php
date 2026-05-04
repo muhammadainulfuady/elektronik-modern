@@ -18,7 +18,7 @@ class PembayaranSeeder extends Seeder
                 'id_pesanan' => $i,
                 'metode_pembayaran' => $metode[$i % 2],
                 'bukti_bayar' => 'bukti_' . str_pad((string) $i, 3, '0', STR_PAD_LEFT) . '.jpg',
-                'status_konfirmasi' => $i % 2,
+                'status_konfirmasi' => $i % 3 === 0 ? 0 : ($i % 3 === 1 ? 1 : 2),
             ];
         }
 

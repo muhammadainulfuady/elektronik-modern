@@ -3,252 +3,171 @@
 @section('title', 'Keranjang Belanja – Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
+    <link rel="stylesheet" href="{{ asset('shared.css') }}" />
     <style>
-        .cart-layout {
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 24px;
-            padding: 32px 0 64px;
-            align-items: start
+        .cart-section { padding: 32px 0 72px }
+        .cart-section h1 { font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 8px }
+
+        .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start }
+
+        .cart-table { background: #fff; border-radius: var(--rlg); box-shadow: var(--sh); overflow: hidden }
+        .cart-table table { width: 100% }
+        .cart-table th { background: var(--g50); padding: 14px 20px; font-size: 12px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .04em }
+        .cart-table td { padding: 16px 20px; border-bottom: 1px solid var(--g100); vertical-align: middle }
+        .cart-table tr:last-child td { border-bottom: none }
+
+        .cart-prod { display: flex; align-items: center; gap: 14px }
+        .cart-prod img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--g100) }
+        .cart-prod-name { font-size: 14px; font-weight: 700; color: var(--g800); margin-bottom: 2px }
+        .cart-prod-cat { font-size: 11px; color: var(--g400) }
+
+        .cart-qty { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--g200); border-radius: 8px; overflow: hidden }
+        .cart-qty button {
+            width: 34px; height: 34px; border: none; background: var(--g50); cursor: pointer;
+            font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            color: var(--g700); transition: .15s
+        }
+        .cart-qty button:hover { background: var(--blue-l); color: var(--blue) }
+        .cart-qty span {
+            width: 40px; text-align: center; font-weight: 700; font-size: 14px;
+            border-left: 1.5px solid var(--g200); border-right: 1.5px solid var(--g200);
+            padding: 6px 0; background: #fff
         }
 
-        .cart-main {
-            background: #fff;
-            border-radius: var(--rlg);
-            box-shadow: var(--sh);
-            overflow: hidden
-        }
+        .cart-price { font-family: "Syne",sans-serif; font-weight: 800; color: var(--blue); white-space: nowrap }
 
-        .cart-main-head {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--g100);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--g50)
-        }
-
-        .cart-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 16px;
-            align-items: center;
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--g100)
-        }
-
-        .cart-row:last-child {
-            border-bottom: none
-        }
-
-        .cart-img {
-            width: 90px;
-            height: 90px;
-            border-radius: var(--radius);
-            object-fit: cover;
-            background: var(--g100)
-        }
-
-        .cart-name {
-            font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 4px;
-            color: var(--g800)
-        }
-
-        .cart-sub {
-            font-size: 12px;
-            color: var(--g400);
-            margin-bottom: 10px
-        }
-
-        .cart-price-col {
-            text-align: right;
-            min-width: 120px
-        }
-
-        .cart-price-val {
-            font-family: 'Syne', sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--blue)
-        }
-
+        /* Summary card */
         .summary-card {
-            background: #fff;
-            border-radius: var(--rlg);
-            box-shadow: var(--sh);
-            padding: 24px;
-            position: sticky;
-            top: 84px
+            background: #fff; border-radius: var(--rlg); box-shadow: var(--sh);
+            padding: 28px; position: sticky; top: 84px
         }
+        .summary-card h3 { font-family: "Syne",sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 20px }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px }
+        .summary-row.total { font-size: 18px; font-weight: 800; border-top: 2px solid var(--g200); padding-top: 16px; margin-top: 16px }
+        .summary-row.total .val { color: var(--blue); font-family: "Syne",sans-serif; font-size: 22px }
+        .summary-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px }
+        .summary-actions .btn { justify-content: center; padding: 14px }
+        .summary-note { text-align: center; font-size: 11px; color: var(--g400); margin-top: 12px }
 
-        .sum-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            margin-bottom: 10px;
-            color: var(--g600)
-        }
+        .empty-cart { text-align: center; padding: 60px 20px }
+        .empty-cart .empty-icon { font-size: 64px; margin-bottom: 16px }
 
-        .sum-total {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 14px;
-            margin-top: 8px;
-            border-top: 2px solid var(--g200)
-        }
-
-        .sum-total span:first-child {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--g800)
-        }
-
-        .sum-total span:last-child {
-            font-family: 'Syne', sans-serif;
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--blue)
-        }
-
-        .voucher-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 18px;
-            padding-top: 18px;
-            border-top: 1px solid var(--g100)
+        @media(max-width:900px) {
+            .cart-layout { grid-template-columns: 1fr }
+            .summary-card { position: static }
         }
     </style>
 @endsection
 
 @section('header')
-    <nav class="navbar">
-        <a href="index.html" class="nav-logo">⚡ Elektronik<span>Modern</span></a>
-        <div class="nav-right">
-            <button class="nav-icon-btn" onclick="openCart()">🛒<span class="cart-badge">0</span></button>
-            <a href="profile.html" class="nav-icon-btn" title="Profil" style="text-decoration:none;font-size:16px">👤</a>
-            <a href="index.html" class="btn btn-outline btn-sm">← Lanjut Belanja</a>
-        </div>
-    </nav>
-    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h2>🛒 Keranjang</h2><button class="cart-close" onclick="closeCart()">✕</button>
-        </div>
-        <div class="cart-items" id="cartSideItems"></div>
-        <div class="cart-footer" id="cartSideFoot"></div>
-    </div>
+    @include('partials.header')
 @endsection
 
 @section('content')
-    <div class="container">
-        <div class="breadcrumb"><a href="index.html">Home</a> › Keranjang Belanja</div>
-        <div style="margin-bottom:20px">
-            <div class="section-title" style="font-size:26px">🛒 Keranjang Belanja</div>
-        </div>
-        <div class="cart-layout">
-            <div>
-                <div class="cart-main" id="cartMain">
-                    <div class="cart-main-head">
-                        <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--blue)">
-                        <span style="font-weight:700;font-size:13px" id="cartItemCount">0 produk dipilih</span>
-                        <button
-                            style="margin-left:auto;background:var(--dl);color:var(--danger);border:none;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🗑
-                            Hapus Dipilih</button>
-                    </div>
-                    <div id="cartPageItems"></div>
+    <section class="cart-section">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Keranjang</span>
+            </div>
+            <h1>🛒 Keranjang Belanja</h1>
+            <p style="color:var(--g500);margin-bottom:28px">{{ count($items) }} produk di keranjang Anda</p>
+
+            @if (session('status'))
+                <div style="background:var(--sl);color:#15803D;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
+                    ✓ {{ session('status') }}
                 </div>
-            </div>
-            <div>
-                <div class="summary-card">
-                    <div style="font-weight:800;font-size:16px;margin-bottom:18px">📋 Ringkasan Belanja</div>
-                    <div class="sum-row"><span>Total Harga</span><span id="sumBase">–</span></div>
-                    <div class="sum-row"><span>Diskon</span><span style="color:var(--danger)" id="sumDisc">–</span>
+            @endif
+
+            @if (count($items))
+                <div class="cart-layout">
+                    <div class="cart-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produk</th>
+                                    <th>Harga</th>
+                                    <th>Jumlah</th>
+                                    <th>Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($items as $item)
+                                    <tr>
+                                        <td>
+                                            <div class="cart-prod">
+                                                <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
+                                                    alt="{{ $item->produk->nama_produk }}">
+                                                <div>
+                                                    <div class="cart-prod-name">{{ $item->produk->nama_produk }}</div>
+                                                    <div class="cart-prod-cat">{{ $item->produk->kategori->nama_kategori ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="cart-price">Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
+                                        <td>
+                                            <div class="cart-qty">
+                                                <form method="POST" action="{{ route('cart.update') }}" style="display:contents">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
+                                                    <input type="hidden" name="qty" value="{{ max(0, $item->qty - 1) }}">
+                                                    <button type="submit">−</button>
+                                                </form>
+                                                <span>{{ $item->qty }}</span>
+                                                <form method="POST" action="{{ route('cart.update') }}" style="display:contents">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
+                                                    <input type="hidden" name="qty" value="{{ $item->qty + 1 }}">
+                                                    <button type="submit">+</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        <td class="cart-price">Rp {{ number_format($item->lineTotal, 0, ',', '.') }}</td>
+                                        <td>
+                                            <form method="POST" action="{{ route('cart.remove') }}">
+                                                @csrf @method('DELETE')
+                                                <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
+                                                <button type="submit" class="btn-del" title="Hapus">🗑</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="sum-row"><span>Ongkos Kirim</span><span style="color:var(--success)">GRATIS</span></div>
-                    <div class="sum-total"><span>Total Bayar</span><span id="sumTotal">–</span></div>
-                    <a href="checkout.html" class="btn btn-primary"
-                        style="width:100%;justify-content:center;padding:14px;margin-top:20px;font-size:15px">💳 Proses
-                        Checkout</a>
-                    <div style="font-size:11px;color:var(--g400);text-align:center;margin-top:10px">🔒 Transaksi aman &
-                        terenkripsi</div>
-                    <div class="voucher-row">
-                        <input type="text" placeholder="Kode voucher..." style="font-size:13px;padding:9px 14px">
-                        <button class="btn btn-outline btn-sm" style="white-space:nowrap">Pakai</button>
+
+                    <div class="summary-card">
+                        <h3>Ringkasan Belanja</h3>
+                        <div class="summary-row">
+                            <span style="color:var(--g500)">Subtotal ({{ count($items) }} produk)</span>
+                            <span style="font-weight:700">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span style="color:var(--g500)">Ongkos Kirim</span>
+                            <span style="color:var(--success);font-weight:700">Gratis</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span class="val">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="summary-actions">
+                            <a href="{{ route('products.index') }}" class="btn btn-outline">← Lanjut Belanja</a>
+                        </div>
+                        <div class="summary-note">🔒 Transaksi aman & terenkripsi</div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="empty-cart">
+                    <div class="empty-icon">🛒</div>
+                    <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
+                        Keranjang Kosong
+                    </div>
+                    <div style="font-size:14px;color:var(--g400);margin-bottom:24px">
+                        Yuk tambahkan produk favorit kamu!
+                    </div>
+                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg">🛍️ Belanja Sekarang</a>
+                </div>
+            @endif
         </div>
-    </div>
+    </section>
 @endsection
-
-@section('footer')
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <div class="footer-brand">⚡ Elektronik Modern</div>
-                <p class="footer-desc">Platform belanja elektronik terpercaya.</p>
-            </div>
-            <div>
-                <h4>Belanja</h4><a href="products.html">Semua Produk</a>
-            </div>
-            <div>
-                <h4>Bantuan</h4><a href="#">Cara Pemesanan</a>
-            </div>
-            <div>
-                <h4>Perusahaan</h4><a href="#">Tentang Kami</a>
-            </div>
-        </div>
-        <div class="footer-bottom"><span>© 2024 Elektronik Modern – Kelompok 2 IF4E UTM</span></div>
-    </footer>
-    <div class="cart-toast" id="cart-toast"></div>
-@endsection
-
-@push('scripts')
-    <script src="{{ asset('shared.js') }}"></script>
-    <script>
-        // Seed some items if empty
-        if (!CART.length) { CART.push({ ...PRODUCTS[0], qty: 1 }, { ...PRODUCTS[1], qty: 1 }, { ...PRODUCTS[3], qty: 2 }); saveCart(); }
-
-        function renderPageCart() {
-            updateCartBadge();
-            document.getElementById('cartItemCount').textContent = CART.length + ' produk dipilih';
-            const t = cartTotal(), disc = t > 5000000 ? 500000 : 0;
-            document.getElementById('sumBase').textContent = fmt(t);
-            document.getElementById('sumDisc').textContent = '−' + fmt(disc);
-            document.getElementById('sumTotal').textContent = fmt(t - disc);
-            document.getElementById('cartPageItems').innerHTML = CART.map(i => `
-        <div class="cart-row">
-          <img src="${i.img}" alt="${i.name}" class="cart-img">
-          <div>
-            <div class="cart-name">${i.name}</div>
-            <div class="cart-sub">Garansi Resmi · Stok Tersedia</div>
-            <div class="cart-qty">
-              <button class="qty-btn" onclick="updateQty(${i.id},-1);renderPageCart()">−</button>
-              <input class="qty-num" value="${i.qty}" readonly>
-              <button class="qty-btn" onclick="updateQty(${i.id},1);renderPageCart()">+</button>
-            </div>
-          </div>
-          <div class="cart-price-col">
-            <div class="cart-price-val">${fmt(i.price * i.qty)}</div>
-            <div style="font-size:12px;color:var(--g400)">${fmt(i.price)} / unit</div>
-          </div>
-          <button style="background:none;border:none;cursor:pointer;color:var(--g300);font-size:22px;transition:.2s" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--g300)'" onclick="removeFromCart(${i.id});renderPageCart()">🗑</button>
-        </div>`).join('');
-        }
-
-        function renderCart() {
-            updateCartBadge();
-            const el = document.getElementById('cartSideItems'), foot = document.getElementById('cartSideFoot');
-            if (!CART.length) { el.innerHTML = `<div class="cart-empty"><div class="empty-icon">🛒</div><div style="font-weight:700">Keranjang Kosong</div></div>`; foot.innerHTML = ''; return; }
-            el.innerHTML = CART.map(i => `<div class="cart-item"><img src="${i.img}" class="cart-item-img"><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">${fmt(i.price)}</div><div class="cart-qty"><button class="qty-btn" onclick="updateQty(${i.id},-1);renderPageCart()">−</button><input class="qty-num" value="${i.qty}" readonly><button class="qty-btn" onclick="updateQty(${i.id},1);renderPageCart()">+</button></div></div><button class="cart-remove" onclick="removeFromCart(${i.id});renderPageCart()">🗑</button></div>`).join('');
-            foot.innerHTML = `<div class="cart-total"><span>Total</span><span>${fmt(cartTotal())}</span></div><a href="checkout.html" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px">💳 Checkout</a>`;
-        }
-        function openCart() { document.getElementById('cartSidebar').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; renderCart(); }
-        function closeCart() { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); document.body.style.overflow = ''; }
-
-        renderPageCart();
-    </script>
-@endpush
