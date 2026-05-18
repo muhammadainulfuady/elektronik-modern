@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->string('no_resi', 50);
             $table->integer('ongkos_kirim');
             $table->integer('total_bayar');
-            $table->enum('status_pesanan', ['diproses', 'dikirim', 'selesai']);
+            $table->enum('status_pesanan', ['menunggu', 'diproses', 'dikirim', 'selesai']);
 
             $table->foreign('id_users')
                 ->references('id_users')

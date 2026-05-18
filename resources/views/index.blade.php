@@ -88,18 +88,11 @@
         .why-text { font-size:13px;color:rgba(255,255,255,.5);line-height:1.7 }
 
         .new-section { padding:72px 0 }
-        .newsletter { background:linear-gradient(135deg,var(--blue),var(--blue-mid));padding:64px 32px;text-align:center }
-        .newsletter h2 { font-family:"Syne",sans-serif;font-size:34px;font-weight:800;color:#fff;margin-bottom:8px }
-        .newsletter p { color:rgba(255,255,255,.75);font-size:16px;margin-bottom:28px }
-        .newsletter-form { display:flex;gap:10px;max-width:460px;margin:0 auto }
-        .newsletter-form input { flex:1;padding:13px 20px;border-radius:50px;border:none;font-size:14px }
-
         @media(max-width:900px) {
             .hero-inner{grid-template-columns:1fr;text-align:center}
             .hero-img-col{display:none}
             .hero-stats{justify-content:center}
             .deals-grid{grid-template-columns:1fr}
-            .newsletter-form{flex-direction:column}
         }
     </style>
 @endsection
@@ -382,15 +375,6 @@
         </div>
     </section>
 
-    <!-- NEWSLETTER -->
-    <div class="newsletter">
-        <h2>📬 Dapatkan Promo Eksklusif</h2>
-        <p>Daftar ke newsletter kami dan dapatkan notifikasi flash sale & diskon spesial lebih awal.</p>
-        <div class="newsletter-form">
-            <input type="email" placeholder="Masukkan email Anda..." />
-            <button class="btn btn-white">Daftar Sekarang</button>
-        </div>
-    </div>
 @endsection
 
 @push('scripts')

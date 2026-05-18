@@ -78,6 +78,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
+                    ✗ {{ session('error') }}
+                </div>
+            @endif
+
             @if (count($items))
                 <div class="cart-layout">
                     <div class="cart-table">
@@ -142,15 +148,39 @@
                             <span style="color:var(--g500)">Subtotal ({{ count($items) }} produk)</span>
                             <span style="font-weight:700">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
+                        <form method="POST" action="{{ route('cart.voucher.apply') }}" style="display:flex;gap:8px;margin:14px 0">
+                            @csrf
+                            <input name="kode_voucher" value="{{ $appliedPromo->kode_voucher ?? old('kode_voucher') }}" placeholder="Kode voucher"
+                                style="min-width:0;flex:1;padding:10px 12px;border:1px solid var(--g200);border-radius:10px;text-transform:uppercase">
+                            <button class="btn btn-outline" type="submit" style="padding:10px 12px">Pakai</button>
+                        </form>
+                        @if ($appliedPromo)
+                            <div class="summary-row">
+                                <span style="color:var(--success);font-weight:700">Voucher {{ $appliedPromo->kode_voucher }}</span>
+                                <form method="POST" action="{{ route('cart.voucher.remove') }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-del" style="padding:5px 8px">Hapus</button>
+                                </form>
+                            </div>
+                            <div class="summary-row">
+                                <span style="color:var(--g500)">Diskon</span>
+                                <span style="font-weight:700;color:var(--success)">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
+                            </div>
+                        @endif
                         <div class="summary-row">
                             <span style="color:var(--g500)">Ongkos Kirim</span>
                             <span style="color:var(--success);font-weight:700">Gratis</span>
                         </div>
                         <div class="summary-row total">
                             <span>Total</span>
-                            <span class="val">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                            <span class="val">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         <div class="summary-actions">
+                            @auth
+                                @if (auth()->user()->role === 'customer')
+                                    <a href="{{ route('customer.checkout') }}" class="btn btn-primary" style="justify-content:center;padding:14px">✅ Checkout Sekarang</a>
+                                @endif
+                            @endauth
                             <a href="{{ route('products.index') }}" class="btn btn-outline">← Lanjut Belanja</a>
                         </div>
                         <div class="summary-note">🔒 Transaksi aman & terenkripsi</div>

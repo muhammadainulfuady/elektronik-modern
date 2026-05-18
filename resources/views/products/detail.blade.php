@@ -113,20 +113,33 @@
                     </div>
 
                     @if ($produk->stok > 0)
-                        <div class="qty-control">
-                            <button type="button" onclick="changeQty(-1)">−</button>
-                            <input type="number" id="qtyInput" value="1" min="1" max="{{ $produk->stok }}" readonly>
-                            <button type="button" onclick="changeQty(1)">+</button>
-                        </div>
+                        @auth
+                            @if (auth()->user()->role === 'customer')
+                                <div class="qty-control">
+                                    <button type="button" onclick="changeQty(-1)">−</button>
+                                    <input type="number" id="qtyInput" value="1" min="1" max="{{ $produk->stok }}" readonly>
+                                    <button type="button" onclick="changeQty(1)">+</button>
+                                </div>
 
-                        <div class="add-actions">
-                            <form method="POST" action="{{ route('cart.add') }}" id="addCartForm">
-                                @csrf
-                                <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
-                                <input type="hidden" name="qty" id="qtyHidden" value="1">
-                                <button type="submit" class="btn btn-primary btn-lg">🛒 Tambah ke Keranjang</button>
-                            </form>
-                        </div>
+                                <div class="add-actions">
+                                    <form method="POST" action="{{ route('cart.add') }}" id="addCartForm">
+                                        @csrf
+                                        <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
+                                        <input type="hidden" name="qty" id="qtyHidden" value="1">
+                                        <button type="submit" class="btn btn-primary btn-lg">🛒 Tambah ke Keranjang</button>
+                                    </form>
+                                </div>
+                            @else
+                                <div style="background:var(--wl);color:#92400E;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:600">
+                                    ⚠️ Admin dan Owner tidak dapat membeli barang.
+                                </div>
+                            @endif
+                        @else
+                            <div style="background:var(--blue-l);color:var(--blue-d);padding:14px 18px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                                🔒 Silakan login terlebih dahulu untuk membeli produk ini.
+                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Masuk Sekarang</a>
+                            </div>
+                        @endauth
                     @endif
                 </div>
             </div>

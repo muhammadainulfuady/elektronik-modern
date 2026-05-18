@@ -27,7 +27,7 @@ class PesananSeeder extends Seeder
                 'no_resi' => 'RESI' . str_pad((string) $i, 4, '0', STR_PAD_LEFT),
                 'ongkos_kirim' => $ongkir,
                 'total_bayar' => $subtotal - $diskon + $ongkir,
-                'status_pesanan' => $i % 3 === 0 ? 'selesai' : ($i % 2 === 0 ? 'dikirim' : 'diproses'),
+                'status_pesanan' => $i % 4 === 0 ? 'menunggu' : ($i % 3 === 0 ? 'selesai' : ($i % 2 === 0 ? 'dikirim' : 'diproses')),
             ];
         }
 

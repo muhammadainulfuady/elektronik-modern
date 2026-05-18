@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Promo;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -32,7 +34,23 @@ class CartController extends Controller
             }
         }
 
-        return view('cart.index', compact('items', 'subtotal'));
+        $appliedPromo = $this->appliedPromo();
+        $discount = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
+        $total = max(0, $subtotal - $discount);
+
+        return view('cart.index', compact('items', 'subtotal', 'appliedPromo', 'discount', 'total'));
+    }
+
+    /**
+     * Cek apakah user admin/owner (tidak boleh beli).
+     */
+    private function isAdminOrOwner(): bool
+    {
+        if (Auth::check()) {
+            $role = Auth::user()->role;
+            return in_array($role, ['admin', 'owner']);
+        }
+        return false;
     }
 
     /**
@@ -40,6 +58,14 @@ class CartController extends Controller
      */
     public function add(Request $request)
     {
+        // Admin/Owner tidak boleh membeli
+        if ($this->isAdminOrOwner()) {
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Admin dan Owner tidak dapat membeli barang.'], 403);
+            }
+            return back()->with('error', 'Admin dan Owner tidak dapat membeli barang.');
+        }
+
         $request->validate([
             'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
             'qty'       => ['nullable', 'integer', 'min:1'],
@@ -115,6 +141,34 @@ class CartController extends Controller
         return back()->with('status', 'Produk dihapus dari keranjang.');
     }
 
+    public function applyVoucher(Request $request)
+    {
+        $data = $request->validate([
+            'kode_voucher' => ['required', 'string', 'max:50'],
+        ]);
+
+        $promo = Promo::where('kode_voucher', strtoupper($data['kode_voucher']))
+            ->where('kuota', '>', 0)
+            ->where('tanggal_mulai', '<=', now())
+            ->where('tanggal_berakhir', '>=', now())
+            ->first();
+
+        if (!$promo) {
+            return back()->with('error', 'Kode voucher tidak valid, habis, atau sudah kedaluwarsa.');
+        }
+
+        session(['applied_promo_id' => $promo->id_promo]);
+
+        return back()->with('status', 'Voucher ' . $promo->kode_voucher . ' berhasil digunakan.');
+    }
+
+    public function removeVoucher()
+    {
+        session()->forget('applied_promo_id');
+
+        return back()->with('status', 'Voucher dihapus dari keranjang.');
+    }
+
     /**
      * Hitung jumlah item di keranjang (AJAX).
      */
@@ -123,5 +177,32 @@ class CartController extends Controller
         return response()->json([
             'cartCount' => array_sum(session('cart', [])),
         ]);
+    }
+
+    private function appliedPromo(): ?Promo
+    {
+        $promoId = session('applied_promo_id');
+        if (!$promoId) {
+            return null;
+        }
+
+        return Promo::where('id_promo', $promoId)
+            ->where('kuota', '>', 0)
+            ->where('tanggal_mulai', '<=', now())
+            ->where('tanggal_berakhir', '>=', now())
+            ->first();
+    }
+
+    private function calculateDiscount(Promo $promo, int $subtotal): int
+    {
+        if ($subtotal <= 0) {
+            return 0;
+        }
+
+        if ($promo->tipe_diskon === 'persen') {
+            return min($subtotal, (int) floor($subtotal * $promo->nilai_diskon / 100));
+        }
+
+        return min($subtotal, (int) $promo->nilai_diskon);
     }
 }

@@ -40,6 +40,12 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Masukkan password..." required>
                 </div>
+                <div style="text-align:right;margin:-8px 0 16px">
+                    <a href="{{ route('password.request') }}"
+                        style="font-size:13px;color:var(--blue);font-weight:700;text-decoration:none">
+                        Lupa password?
+                    </a>
+                </div>
                 <button class="btn btn-primary" type="submit"
                     style="width:100%;justify-content:center;padding:13px;font-size:15px">
                     Masuk ke Akun

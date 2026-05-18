@@ -4,62 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\Notifikasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotifikasiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $notifications = Notifikasi::where('id_users', Auth::id())
+            ->latest('id_notifikasi')
+            ->take(8)
+            ->get()
+            ->map(function (Notifikasi $notifikasi) {
+                return [
+                    'id' => $notifikasi->id_notifikasi,
+                    'judul' => $notifikasi->judul,
+                    'pesan' => $notifikasi->pesan,
+                    'is_read' => (bool) $notifikasi->is_read,
+                    'ikon' => $this->iconFor($notifikasi->judul),
+                ];
+            });
+
+        return response()->json([
+            'unreadCount' => Notifikasi::where('id_users', Auth::id())->where('is_read', 0)->count(),
+            'notifications' => $notifications,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function markAllRead()
     {
-        //
+        Notifikasi::where('id_users', Auth::id())->update(['is_read' => 1]);
+
+        return response()->json(['unreadCount' => 0]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    private function iconFor(string $title): string
     {
-        //
-    }
+        $title = strtolower($title);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Notifikasi $notifikasi)
-    {
-        //
-    }
+        if (str_contains($title, 'promo') || str_contains($title, 'diskon')) {
+            return '🎟️';
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Notifikasi $notifikasi)
-    {
-        //
-    }
+        if (str_contains($title, 'kirim') || str_contains($title, 'resi')) {
+            return '🚚';
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Notifikasi $notifikasi)
-    {
-        //
-    }
+        if (str_contains($title, 'bayar')) {
+            return '💳';
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Notifikasi $notifikasi)
-    {
-        //
+        return '🔔';
     }
 }

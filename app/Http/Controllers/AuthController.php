@@ -34,14 +34,67 @@ class AuthController extends Controller
             $user = Auth::user();
 
             return match ($user->role) {
-                'admin', 'owner' => redirect()->route('admin.index'),
-                default          => redirect()->route('index'),
+                'admin' => redirect()->route('admin.index'),
+                'owner' => redirect()->route('owner.index'),
+                default => redirect()->route('index'),
             };
         }
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->onlyInput('email');
+    }
+
+    public function showForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function verifyForgotPasswordEmail(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ], [
+            'email.exists' => 'Email tidak ditemukan pada sistem.',
+        ]);
+
+        $request->session()->put('reset_password_email', $data['email']);
+
+        return redirect()->route('password.reset.form');
+    }
+
+    public function showResetPassword(Request $request)
+    {
+        if (!$request->session()->has('reset_password_email')) {
+            return redirect()->route('password.request');
+        }
+
+        return view('auth.reset-password', [
+            'email' => $request->session()->get('reset_password_email'),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $email = $request->session()->get('reset_password_email');
+        if (!$email) {
+            return redirect()->route('password.request');
+        }
+
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::where('email', $email)->firstOrFail();
+        $user->update([
+            'password' => Hash::make($data['password']),
+        ]);
+
+        $request->session()->forget('reset_password_email');
+
+        return redirect()
+            ->route('login')
+            ->with('status', 'Password berhasil diperbarui. Silakan login dengan password baru.');
     }
 
     /**
@@ -70,14 +123,7 @@ class AuthController extends Controller
             'role'     => 'customer',
         ]);
 
-        Auth::attempt([
-            'email'    => $data['email'],
-            'password' => $data['password'],
-        ]);
-
-        $request->session()->regenerate();
-
-        return redirect()->route('index')->with('status', 'Registrasi berhasil! Selamat datang.');
+        return redirect()->route('login')->with('status', 'Registrasi berhasil! Silakan login untuk melanjutkan.');
     }
 
     /**

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Pengguna – Admin Elektronik Modern')
+@section('title', 'Kelola Customer – Admin Elektronik Modern')
 
 @section('head')
     <link rel="stylesheet" href="{{ asset('shared.css') }}">
@@ -15,43 +15,77 @@
 
         <div class="admin-main">
             <div class="admin-topbar">
-                <div class="page-title">Kelola Pengguna</div>
+                <div class="page-title">Kelola Customer</div>
             </div>
 
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-ico blue">👥</div>
+                    <div class="stat-ico green">👥</div>
                     <div>
-                        <div class="stat-label">Total Pengguna</div>
+                        <div class="stat-label">Total Customer</div>
                         <div class="stat-val">{{ $users->count() }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico green">🛒</div>
+                    <div class="stat-ico blue">🛒</div>
                     <div>
-                        <div class="stat-label">Customer</div>
-                        <div class="stat-val">{{ $users->where('role', 'customer')->count() }}</div>
+                        <div class="stat-label">Punya Pesanan</div>
+                        <div class="stat-val">{{ $users->where('pesanans_count', '>', 0)->count() }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">🛡️</div>
+                    <div class="stat-ico teal">📦</div>
                     <div>
-                        <div class="stat-label">Admin</div>
-                        <div class="stat-val">{{ $users->where('role', 'admin')->count() }}</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-ico warn">👑</div>
-                    <div>
-                        <div class="stat-label">Owner</div>
-                        <div class="stat-val">{{ $users->where('role', 'owner')->count() }}</div>
+                        <div class="stat-label">Total Pesanan</div>
+                        <div class="stat-val">{{ $users->sum('pesanans_count') }}</div>
                     </div>
                 </div>
             </div>
 
+            @if (session('status'))
+                <div class="data-card" style="padding:12px 16px;margin-bottom:16px">
+                    <strong>{{ session('status') }}</strong>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="data-card" style="padding:12px 16px;margin-bottom:16px;color:#ef4444">
+                    <strong>Gagal menyimpan data customer:</strong>
+                    <ul style="margin:8px 0 0 16px;font-size:12px">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="data-card" style="margin-bottom:16px">
+                <div class="data-card-head">
+                    <h3>Tambah Customer</h3>
+                </div>
+                <form method="POST" action="{{ route('admin.users.store') }}" style="padding:16px;display:grid;gap:12px;grid-template-columns:1fr 1fr 1fr auto;align-items:end">
+                    @csrf
+                    <div>
+                        <label style="font-size:12px;color:var(--g500)">Nama</label>
+                        <input name="nama" required style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:var(--g500)">Email</label>
+                        <input type="email" name="email" required style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
+                    </div>
+                    <div>
+                        <label style="font-size:12px;color:var(--g500)">Password</label>
+                        <input type="password" name="password" required style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" type="submit">Tambah</button>
+                    </div>
+                </form>
+            </div>
+
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>Daftar Pengguna</h3>
+                    <h3>Daftar Customer</h3>
                 </div>
                 <table>
                     <thead>
@@ -61,6 +95,7 @@
                             <th>Email</th>
                             <th>Role</th>
                             <th>Jumlah Pesanan</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,27 +112,24 @@
                                 </td>
                                 <td style="font-size:13px;color:var(--g500)">{{ $user->email }}</td>
                                 <td>
-                                    @php
-                                        $roleClass = match ($user->role) {
-                                            'admin' => 'badge-info',
-                                            'owner' => 'badge-warn',
-                                            default => 'badge-success',
-                                        };
-                                        $roleIcon = match ($user->role) {
-                                            'admin' => '🛡️',
-                                            'owner' => '👑',
-                                            default => '👤',
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $roleClass }}">{{ $roleIcon }} {{ ucfirst($user->role) }}</span>
+                                    <span class="badge badge-success">👤 {{ ucfirst($user->role) }}</span>
                                 </td>
                                 <td>
                                     <span class="badge badge-info">{{ $user->pesanans_count }} pesanan</span>
                                 </td>
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <a class="btn-edit" href="{{ route('admin.users.edit', $user) }}">Edit</a>
+                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Yakin ingin menghapus customer ini? Semua data pesanan miliknya juga akan terhapus.')">
+                                            @csrf @method('DELETE')
+                                            <button class="btn-del" type="submit">Hapus</button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align:center;color:var(--g400);padding:18px">Belum ada pengguna.</td>
+                                <td colspan="5" style="text-align:center;color:var(--g400);padding:18px">Belum ada customer.</td>
                             </tr>
                         @endforelse
                     </tbody>

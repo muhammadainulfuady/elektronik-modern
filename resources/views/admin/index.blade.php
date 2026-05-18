@@ -43,16 +43,9 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">🧾</div>
-                    <div>
-                        <div class="stat-label">Pesanan Dikirim</div>
-                        <div class="stat-val">{{ $pesananDikirim }}</div>
-                    </div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-ico green">👥</div>
                     <div>
-                        <div class="stat-label">Total Pengguna</div>
+                        <div class="stat-label">Total Customer</div>
                         <div class="stat-val">{{ $jumlahUser }}</div>
                     </div>
                 </div>
@@ -62,6 +55,13 @@
                         <div class="stat-label">Menunggu Konfirmasi</div>
                         <div class="stat-val">{{ $jumlahMenungguKonfirmasi }}</div>
                         <div class="stat-chg" style="color:var(--warn)">Perlu ditangani</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-ico teal">✅</div>
+                    <div>
+                        <div class="stat-label">Pesanan Selesai</div>
+                        <div class="stat-val">{{ $pesananSelesai }}</div>
                     </div>
                 </div>
             </div>
@@ -92,6 +92,7 @@
                             $total = max(1, ($statusPesanan->sum('total')));
                         @endphp
                         @foreach([
+                            ['Menunggu', 'menunggu', '--pend'],
                             ['Diproses', 'diproses', '--blue'],
                             ['Dikirim', 'dikirim', '--teal'],
                             ['Selesai', 'selesai', '--success'],
@@ -135,20 +136,42 @@
                                     Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
                                 </td>
                                 <td>
-                                    <span class="badge {{ $pesanan->status_pesanan === 'selesai' ? 'badge-success' : ($pesanan->status_pesanan === 'dikirim' ? 'badge-info' : 'badge-warn') }}">
+                                    @php
+                                        $badgeClass = match ($pesanan->status_pesanan) {
+                                            'menunggu' => 'badge-pend',
+                                            'diproses' => 'badge-warn',
+                                            'dikirim'  => 'badge-info',
+                                            'selesai'  => 'badge-success',
+                                            default    => 'badge-info',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">
                                         {{ ucfirst($pesanan->status_pesanan) }}
                                     </span>
                                 </td>
                                 <td>
                                     @if ($pesanan->status_pesanan !== 'selesai')
-                                        <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}">
-                                            @csrf @method('PATCH')
-                                            <input type="hidden" name="status_pesanan"
-                                                value="{{ $pesanan->status_pesanan === 'diproses' ? 'dikirim' : 'selesai' }}">
-                                            <button class="btn-edit" type="submit">
-                                                → {{ $pesanan->status_pesanan === 'diproses' ? 'Kirim' : 'Selesai' }}
-                                            </button>
-                                        </form>
+                                        @php
+                                            $nextStatus = match ($pesanan->status_pesanan) {
+                                                'menunggu' => 'diproses',
+                                                'diproses' => 'dikirim',
+                                                'dikirim'  => 'selesai',
+                                                default    => null,
+                                            };
+                                            $nextLabel = match ($nextStatus) {
+                                                'diproses' => '→ Proses',
+                                                'dikirim'  => '→ Kirim',
+                                                'selesai'  => '→ Selesai',
+                                                default    => '',
+                                            };
+                                        @endphp
+                                        @if ($nextStatus)
+                                            <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
+                                                <button class="btn-edit" type="submit">{{ $nextLabel }}</button>
+                                            </form>
+                                        @endif
                                     @else
                                         <span class="badge badge-success">✓ Done</span>
                                     @endif
