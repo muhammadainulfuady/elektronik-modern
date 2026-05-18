@@ -112,7 +112,7 @@
                         @foreach ($pesanan->detailPesanans as $detail)
                             <div class="order-item">
                                 @if ($detail->produk)
-                                    <img src="{{ asset('storage/products/' . $detail->produk->gambar) }}" alt="{{ $detail->produk->nama_produk }}">
+                                    <img src="{{ asset('storage/products/' . $detail->produk->gambar) }}" alt="{{ $detail->produk->nama_produk }}" loading="lazy" decoding="async">
                                     <div>
                                         <div class="order-item-name">{{ $detail->produk->nama_produk }}</div>
                                         <div class="order-item-qty">{{ $detail->qty }} × Rp {{ number_format($detail->harga_beli, 0, ',', '.') }}</div>

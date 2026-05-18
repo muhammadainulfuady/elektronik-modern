@@ -90,7 +90,8 @@
                                         @if ($iconExists)
                                             <img src="{{ asset('storage/categories/' . $kategori->ikon_kategori) }}"
                                                 alt="{{ $kategori->nama_kategori }}"
-                                                style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--g200)">
+                                                style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--g200)"
+                                                loading="lazy" decoding="async">
                                         @endif
                                         <span class="badge badge-info">{{ $kategori->ikon_kategori }}</span>
                                     </div>

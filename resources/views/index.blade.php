@@ -135,7 +135,7 @@
             </div>
             <div class="hero-img-col">
                 <img src="https://images.unsplash.com/photo-1593784991095-a205069470b6?w=700&q=85" alt="Electronics"
-                    class="hero-main-img" />
+                    class="hero-main-img" decoding="async" fetchpriority="high" />
                 <div class="hero-float-card hero-float-1">
                     <div class="hfc-icon" style="background: #eef3ff">🚚</div>
                     <div>
@@ -210,7 +210,7 @@
                     <a href="{{ route('products.show', $item->produk) }}" class="prod-card" style="text-decoration:none;color:inherit">
                         <div class="prod-img-wrap">
                             <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
-                                alt="{{ $item->produk->nama_produk }}" loading="lazy">
+                                alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
                             <div class="prod-card-badge badge badge-danger">TERLARIS</div>
                         </div>
                         <div class="prod-body">
@@ -244,7 +244,7 @@
                 @foreach ($produkTerlaris->take(2) as $item)
                     <div class="deal-card">
                         <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
-                            alt="{{ $item->produk->nama_produk }}" />
+                            alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async" />
                         <div class="deal-overlay" @if (!$loop->first) style="background: linear-gradient(135deg, rgba(14, 165, 160, 0.85) 0%, transparent 100%);" @endif>
                             <div class="deal-tag">🔥 Penawaran Terlaris</div>
                             <div class="deal-title">{{ $item->produk->nama_produk }}</div>
@@ -274,7 +274,7 @@
                 @foreach ($produkBaru as $produk)
                     <a href="{{ route('products.show', $produk) }}" class="prod-card" style="text-decoration:none;color:inherit">
                         <div class="prod-img-wrap">
-                            <img src="{{ asset('storage/products/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" loading="lazy">
+                            <img src="{{ asset('storage/products/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async">
                             <div class="prod-card-badge badge badge-new">BARU</div>
                         </div>
                         <div class="prod-body">
@@ -342,7 +342,7 @@
                     <div class="review-stars">⭐⭐⭐⭐⭐</div>
                     <p class="review-text">"Produk kualitasnya luar biasa! Pengiriman cepat, harga terjangkau, dan barang 100% original."</p>
                     <div class="review-author">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=75" alt="Budi" class="review-avatar" />
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=75" alt="Budi" class="review-avatar" loading="lazy" decoding="async" />
                         <div>
                             <div class="review-name">Budi Santoso</div>
                             <div class="review-date">Customer • Surabaya</div>
@@ -353,7 +353,7 @@
                     <div class="review-stars">⭐⭐⭐⭐⭐</div>
                     <p class="review-text">"Admin responsif dan pesanan diproses dalam 1 hari. Sangat puas berbelanja di sini!"</p>
                     <div class="review-author">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=75" alt="Siti" class="review-avatar" />
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=75" alt="Siti" class="review-avatar" loading="lazy" decoding="async" />
                         <div>
                             <div class="review-name">Siti Rahayu</div>
                             <div class="review-date">Customer • Bangkalan</div>
@@ -364,7 +364,7 @@
                     <div class="review-stars">⭐⭐⭐⭐⭐</div>
                     <p class="review-text">"Proses upload bukti bayar mudah. Barang sampai dalam kondisi sempurna."</p>
                     <div class="review-author">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&q=75" alt="Ahmad" class="review-avatar" />
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&q=75" alt="Ahmad" class="review-avatar" loading="lazy" decoding="async" />
                         <div>
                             <div class="review-name">Ahmad Fauzi</div>
                             <div class="review-date">Customer • Pamekasan</div>
@@ -379,8 +379,7 @@
 
 @push('scripts')
     <script>
-        // Build particles
-        (function () {
+        function buildHeroParticles() {
             const c = document.getElementById("particles");
             if(!c) return;
             for (let i = 0; i < 20; i++) {
@@ -390,6 +389,12 @@
                 d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${Math.random()*-20}%;animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*10}s`;
                 c.appendChild(d);
             }
-        })();
+        }
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(buildHeroParticles);
+        } else {
+            window.addEventListener('load', buildHeroParticles);
+        }
     </script>
 @endpush

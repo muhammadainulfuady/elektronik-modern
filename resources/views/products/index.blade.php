@@ -138,7 +138,7 @@
                                 <a href="{{ route('products.show', $produk) }}" class="prod-card" style="text-decoration:none;color:inherit">
                                     <div class="prod-img-wrap">
                                         <img src="{{ asset('storage/products/' . $produk->gambar) }}"
-                                            alt="{{ $produk->nama_produk }}" loading="lazy">
+                                            alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async">
                                         @if ($produk->stok <= 0)
                                             <div class="prod-card-badge badge badge-danger">HABIS</div>
                                         @elseif ($produk->stok <= 10)

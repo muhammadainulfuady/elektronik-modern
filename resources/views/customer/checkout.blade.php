@@ -101,7 +101,7 @@
                             <h3>📦 Produk Dipesan</h3>
                             @foreach ($items as $item)
                                 <div class="checkout-item">
-                                    <img src="{{ asset('storage/products/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama_produk }}">
+                                    <img src="{{ asset('storage/products/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
                                     <div>
                                         <div class="checkout-item-name">{{ $item->produk->nama_produk }}</div>
                                         <div class="checkout-item-qty">{{ $item->qty }} × Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</div>

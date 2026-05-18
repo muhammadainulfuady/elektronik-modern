@@ -103,7 +103,7 @@
                                         <td>
                                             <div class="cart-prod">
                                                 <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
-                                                    alt="{{ $item->produk->nama_produk }}">
+                                                    alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
                                                 <div>
                                                     <div class="cart-prod-name">{{ $item->produk->nama_produk }}</div>
                                                     <div class="cart-prod-cat">{{ $item->produk->kategori->nama_kategori ?? '-' }}</div>

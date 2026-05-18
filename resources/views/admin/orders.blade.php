@@ -129,7 +129,7 @@
                                             <a class="badge badge-info" href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank">PDF</a>
                                         @else
                                             <a href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank" title="Lihat Bukti Bayar">
-                                                <img src="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" alt="Bukti Bayar" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:1.5px solid #bbf7d0">
+                                                <img src="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" alt="Bukti Bayar" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:1.5px solid #bbf7d0" loading="lazy" decoding="async">
                                             </a>
                                         @endif
                                         <div style="margin-top:8px">

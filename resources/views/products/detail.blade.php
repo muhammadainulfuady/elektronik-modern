@@ -88,7 +88,7 @@
             <div class="detail-grid">
                 <!-- Product Image -->
                 <div class="detail-img-wrap">
-                    <img src="{{ asset('storage/products/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}">
+                    <img src="{{ asset('storage/products/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" decoding="async" fetchpriority="high">
                 </div>
 
                 <!-- Product Info -->
@@ -173,7 +173,7 @@
                             <a href="{{ route('products.show', $related) }}" class="prod-card" style="text-decoration:none;color:inherit">
                                 <div class="prod-img-wrap">
                                     <img src="{{ asset('storage/products/' . $related->gambar) }}"
-                                        alt="{{ $related->nama_produk }}" loading="lazy">
+                                        alt="{{ $related->nama_produk }}" loading="lazy" decoding="async">
                                 </div>
                                 <div class="prod-body">
                                     <div class="prod-cat">{{ $related->kategori->nama_kategori ?? '-' }}</div>

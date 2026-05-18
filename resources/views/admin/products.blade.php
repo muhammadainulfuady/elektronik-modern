@@ -134,7 +134,7 @@
                                     <div style="display:flex;align-items:center;gap:10px">
                                         <img src="{{ asset('storage/products/' . $produk->gambar) }}"
                                             style="width:44px;height:44px;border-radius:8px;object-fit:cover"
-                                            alt="{{ $produk->nama_produk }}">
+                                            alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async">
                                         <span style="font-weight:700;font-size:13px">{{ $produk->nama_produk }}</span>
                                     </div>
                                 </td>

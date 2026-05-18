@@ -4,7 +4,7 @@
     <div class="nav-search">
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="Cari TV, kulkas, AC, mesin cuci..." id="navSearchInput"
-            onkeydown="if(event.key==='Enter') window.location='{{ route('products.index') }}?q='+this.value" />
+            onkeydown="if(event.key==='Enter') window.location='{{ route('products.index') }}?q='+encodeURIComponent(this.value)" />
     </div>
     <div class="nav-right">
         @auth
@@ -121,8 +121,12 @@
 
             document.addEventListener('DOMContentLoaded', () => {
                 setBadge(cartBadgeNav, '{{ array_sum(session('cart', [])) }}');
-                refreshCartBadge();
-                loadNotifications();
+                setBadge(notifBadgeNav, 0);
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(loadNotifications);
+                } else {
+                    window.addEventListener('load', loadNotifications);
+                }
             });
         </script>
     @endif
