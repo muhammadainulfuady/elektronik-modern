@@ -10,7 +10,7 @@ class DetailPesananSeeder extends Seeder
     public function run(): void
     {
         $rows = [];
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $rows[] = [
                 'id_detail' => $i,
                 'id_pesanan' => $i,

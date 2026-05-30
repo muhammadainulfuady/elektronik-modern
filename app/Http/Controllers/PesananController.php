@@ -10,6 +10,7 @@ use App\Models\AlamatUser;
 use App\Models\Notifikasi;
 use App\Models\Pembayaran;
 use App\Models\Promo;
+use App\Models\Keranjang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,13 +27,26 @@ class PesananController extends Controller
      */
     public function index()
     {
-        $pesanans = Pesanan::with(['user', 'pembayaran', 'ekspedisi', 'detailPesanans.produk'])
+        $pesanans = Pesanan::with([
+                'user:id_users,nama,email',
+                'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi',
+                'ekspedisi:id_ekspedisi,nama_ekspedisi,biaya_pengiriman',
+                'detailPesanans.produk:id_produk,nama_produk,gambar,harga',
+            ])
+            ->select('id_pesanan','id_users','id_ekspedisi','no_resi','tanggal_pesan',
+                     'status_pesanan','total_bayar','subtotal','diskon','ongkos_kirim')
             ->latest('tanggal_pesan')
-            ->get();
-        $jumlahDiproses = Pesanan::where('status_pesanan', 'diproses')->count();
-        $jumlahDikirim = Pesanan::where('status_pesanan', 'dikirim')->count();
-        $jumlahSelesai = Pesanan::where('status_pesanan', 'selesai')->count();
-        $jumlahMenunggu = Pesanan::where('status_pesanan', 'menunggu')->count();
+            ->paginate(20);
+
+        // Hitung semua status dalam 1 query groupBy
+        $statusCounts = Pesanan::selectRaw('status_pesanan, count(*) as total')
+            ->groupBy('status_pesanan')
+            ->pluck('total', 'status_pesanan');
+
+        $jumlahMenunggu  = $statusCounts->get('menunggu', 0);
+        $jumlahDiproses  = $statusCounts->get('diproses', 0);
+        $jumlahDikirim   = $statusCounts->get('dikirim', 0);
+        $jumlahSelesai   = $statusCounts->get('selesai', 0);
 
         return view('admin.orders', compact('pesanans', 'jumlahDiproses', 'jumlahDikirim', 'jumlahSelesai', 'jumlahMenunggu'));
     }
@@ -80,10 +94,16 @@ class PesananController extends Controller
      */
     public function customerOrders()
     {
-        $pesanans = Pesanan::with(['detailPesanans.produk', 'ekspedisi', 'pembayaran'])
+        $pesanans = Pesanan::with([
+                'detailPesanans.produk:id_produk,nama_produk,gambar,harga',
+                'ekspedisi:id_ekspedisi,nama_ekspedisi,biaya_pengiriman',
+                'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi',
+            ])
+            ->select('id_pesanan','id_users','id_ekspedisi','no_resi','tanggal_pesan',
+                     'status_pesanan','total_bayar','subtotal','diskon','ongkos_kirim')
             ->where('id_users', Auth::id())
             ->latest('tanggal_pesan')
-            ->get();
+            ->paginate(10);
 
         return view('customer.orders', compact('pesanans'));
     }
@@ -93,33 +113,35 @@ class PesananController extends Controller
      */
     public function checkout()
     {
-        $cart = session('cart', []);
-        if (empty($cart)) {
+        $keranjang = Keranjang::where('id_users', Auth::id())
+            ->with('detailKeranjangs.produk')
+            ->first();
+
+        if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
         }
 
-        $ids = array_keys($cart);
-        $produks = Produk::whereIn('id_produk', $ids)->get()->keyBy('id_produk');
-
-        $items = [];
+        $items    = [];
         $subtotal = 0;
-        foreach ($cart as $id => $qty) {
-            if ($produks->has($id)) {
-                $produk = $produks[$id];
-                $lineTotal = $produk->harga * $qty;
+        foreach ($keranjang->detailKeranjangs as $detail) {
+            if ($detail->produk) {
+                $lineTotal = $detail->produk->harga * $detail->qty;
                 $subtotal += $lineTotal;
                 $items[] = (object) [
-                    'produk' => $produk,
-                    'qty' => $qty,
+                    'produk'    => $detail->produk,
+                    'qty'       => $detail->qty,
                     'lineTotal' => $lineTotal,
                 ];
             }
         }
 
         $appliedPromo = $this->appliedPromo();
-        $discount = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
-        $alamats = AlamatUser::where('id_users', Auth::id())->get();
-        $ekspedisis = Ekspedisi::all();
+        $discount     = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
+        $alamats    = AlamatUser::where('id_users', Auth::id())
+            ->select('id_alamat','id_users','id_dusun','label_alamat','nomor_telepon','detail_alamat','is_utama')
+            ->with(['dusun.desa.kecamatan.kota.provinsi'])
+            ->get();
+        $ekspedisis = Ekspedisi::select('id_ekspedisi','nama_ekspedisi','biaya_pengiriman')->get();
 
         return view('customer.checkout', compact('items', 'subtotal', 'discount', 'appliedPromo', 'alamats', 'ekspedisis'));
     }
@@ -144,30 +166,32 @@ class PesananController extends Controller
             return back()->with('error', 'Alamat pengiriman tidak valid.')->withInput();
         }
 
-        $cart = session('cart', []);
-        if (empty($cart)) {
+        $keranjang = Keranjang::where('id_users', Auth::id())
+            ->with('detailKeranjangs.produk')
+            ->first();
+
+        if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
         }
 
-        $ids = array_keys($cart);
-        $produks = Produk::whereIn('id_produk', $ids)->get()->keyBy('id_produk');
-        $ekspedisi = Ekspedisi::findOrFail($request->id_ekspedisi);
-
-        $subtotal = 0;
+        $ekspedisi  = Ekspedisi::findOrFail($request->id_ekspedisi);
+        $subtotal   = 0;
         $orderItems = [];
-        foreach ($cart as $id => $qty) {
-            if ($produks->has($id)) {
-                $produk = $produks[$id];
+
+        foreach ($keranjang->detailKeranjangs as $detail) {
+            if ($detail->produk) {
+                $produk = $detail->produk;
+                $qty    = $detail->qty;
                 if ($produk->stok < $qty) {
                     return back()
                         ->with('error', 'Stok ' . $produk->nama_produk . ' tidak mencukupi.')
                         ->withInput();
                 }
-                $lineTotal = $produk->harga * $qty;
-                $subtotal += $lineTotal;
+                $lineTotal  = $produk->harga * $qty;
+                $subtotal  += $lineTotal;
                 $orderItems[] = [
-                    'id_produk' => $id,
-                    'qty' => $qty,
+                    'id_produk'  => $produk->id_produk,
+                    'qty'        => $qty,
                     'harga_beli' => $produk->harga,
                 ];
             }
@@ -236,8 +260,8 @@ class PesananController extends Controller
             'Pesanan ' . $createdPesanan->no_resi . ' sudah diterima dan menunggu verifikasi pembayaran admin.'
         );
 
-        // Kosongkan keranjang
-        session()->forget('cart');
+        // Kosongkan keranjang di database
+        $keranjang->detailKeranjangs()->delete();
         session()->forget('applied_promo_id');
 
         return redirect()->route('customer.orders')->with('status', 'Pesanan berhasil dibuat! Pembayaran Anda akan segera diverifikasi oleh admin.');

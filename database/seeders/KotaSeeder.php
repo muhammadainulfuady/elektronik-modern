@@ -10,16 +10,11 @@ class KotaSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Bandung', 1],
-            ['Semarang', 2],
-            ['Surabaya', 3],
-            ['Jakarta', 4],
-            ['Serang', 5],
-            ['Yogyakarta', 6],
-            ['Denpasar', 7],
-            ['Medan', 8],
-            ['Palembang', 9],
-            ['Makassar', 10],
+            ['Surabaya', 1],
+            ['Sidoarjo', 1],
+            ['Gresik', 1],
+            ['Malang', 1],
+            ['Mojokerto', 1],
         ];
 
         $rows = [];

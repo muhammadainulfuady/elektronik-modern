@@ -41,16 +41,11 @@
         }
 
         .add-actions { display: flex; gap: 12px; flex-wrap: wrap }
-
-        /* Reviews */
-        .reviews-section { margin-top: 48px }
-        .reviews-section h2 { font-family: "Syne",sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 20px }
-        .review-list { display: flex; flex-direction: column; gap: 16px }
-        .review-item { background: var(--g50); border-radius: var(--rlg); padding: 20px; border: 1px solid var(--g100) }
-        .review-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px }
-        .review-item-name { font-size: 13px; font-weight: 700; color: var(--g800) }
-        .review-item-rating { color: #f59e0b; font-size: 14px }
-        .review-item-text { font-size: 14px; color: var(--g600); line-height: 1.7 }
+        .wishlist-detail-btn.liked {
+            border-color: #fca5a5 !important;
+            background: #fef2f2 !important;
+            color: var(--danger) !important;
+        }
 
         /* Related */
         .related-section { margin-top: 48px; padding-top: 48px; border-top: 1px solid var(--g200) }
@@ -99,11 +94,11 @@
 
                     <div class="detail-stock">
                         @if ($produk->stok > 10)
-                            <span class="badge badge-success">✓ Stok Tersedia</span>
+                            <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check-circle"></i> Stok Tersedia</span>
                         @elseif ($produk->stok > 0)
-                            <span class="badge badge-warn">⚠ Stok Terbatas ({{ $produk->stok }})</span>
+                            <span class="badge badge-warn" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-triangle-warning"></i> Stok Terbatas ({{ $produk->stok }})</span>
                         @else
-                            <span class="badge badge-danger">✗ Stok Habis</span>
+                            <span class="badge badge-danger" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-cross-circle"></i> Stok Habis</span>
                         @endif
                     </div>
 
@@ -122,52 +117,42 @@
                                 </div>
 
                                 <div class="add-actions">
-                                    <form method="POST" action="{{ route('cart.add') }}" id="addCartForm">
+                                    <form method="POST" action="{{ route('cart.add') }}" id="addCartForm" style="display:inline-block">
                                         @csrf
                                         <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
                                         <input type="hidden" name="qty" id="qtyHidden" value="1">
-                                        <button type="submit" class="btn btn-primary btn-lg">🛒 Tambah ke Keranjang</button>
+                                        <button type="submit" class="btn btn-primary btn-lg" style="display:inline-flex;align-items:center;gap:8px"><i class="fi fi-rr-shopping-cart"></i> Tambah ke Keranjang</button>
                                     </form>
+                                    <button type="button"
+                                        class="btn btn-outline btn-lg wishlist-detail-btn {{ in_array($produk->id_produk, $wishlistIds) ? 'liked' : '' }}"
+                                        onclick="toggleWishlistDetail(this, {{ $produk->id_produk }})">
+                                        @if(in_array($produk->id_produk, $wishlistIds))
+                                            <i class="fi fi-sr-heart" style="color:var(--danger); margin-right: 6px;"></i> Hapus dari Wishlist
+                                        @else
+                                            <i class="fi fi-rr-heart" style="margin-right: 6px;"></i> Tambah ke Wishlist
+                                        @endif
+                                    </button>
                                 </div>
                             @else
                                 <div style="background:var(--wl);color:#92400E;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:600">
-                                    ⚠️ Admin dan Owner tidak dapat membeli barang.
+                                    <i class="fi fi-rr-triangle-warning" style="margin-right:6px"></i> Admin dan Owner tidak dapat membeli barang.
                                 </div>
                             @endif
                         @else
-                            <div style="background:var(--blue-l);color:var(--blue-d);padding:14px 18px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                                🔒 Silakan login terlebih dahulu untuk membeli produk ini.
-                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Masuk Sekarang</a>
-                            </div>
+                             <div style="background:var(--blue-l);color:var(--blue-d);padding:14px 18px;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                                 <i class="fi fi-rr-lock" style="margin-right: 6px;"></i> Silakan login terlebih dahulu untuk membeli produk ini.
+                                 <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Masuk Sekarang</a>
+                             </div>
                         @endauth
                     @endif
                 </div>
             </div>
 
-            <!-- Reviews -->
-            @if ($produk->ulasans->count())
-                <div class="reviews-section">
-                    <h2>💬 Ulasan ({{ $produk->ulasans->count() }})</h2>
-                    <div class="review-list">
-                        @foreach ($produk->ulasans as $ulasan)
-                            <div class="review-item">
-                                <div class="review-item-head">
-                                    <div class="review-item-name">{{ $ulasan->user->nama ?? 'Anonim' }}</div>
-                                    <div class="review-item-rating">
-                                        @for ($i = 0; $i < $ulasan->rating; $i++) ⭐ @endfor
-                                    </div>
-                                </div>
-                                <div class="review-item-text">{{ $ulasan->komentar }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
 
             <!-- Related Products -->
             @if ($produkTerkait->count())
                 <div class="related-section">
-                    <h2>📦 Produk Terkait</h2>
+                    <h2><i class="fi fi-rr-boxes" style="margin-right: 8px;"></i> Produk Terkait</h2>
                     <div class="prod-grid">
                         @foreach ($produkTerkait as $related)
                             <a href="{{ route('products.show', $related) }}" class="prod-card" style="text-decoration:none;color:inherit">
@@ -193,7 +178,7 @@
         </div>
     </section>
 
-    <div class="toast-success" id="cartToast">✓ Produk ditambahkan ke keranjang!</div>
+    <div class="toast-success" id="cartToast"><i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> Produk ditambahkan ke keranjang!</div>
 @endsection
 
 @push('scripts')
@@ -207,10 +192,44 @@
             hidden.value = val;
         }
 
-        @if(session('status'))
+        function toggleWishlistDetail(btn, id_produk) {
+            fetch('{{ route('wishlist.toggle') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ id_produk: id_produk })
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    window.location = '{{ route('login') }}';
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && typeof data.liked !== 'undefined') {
+                    if (data.liked) {
+                        btn.classList.add('liked');
+                        btn.innerHTML = '<i class="fi fi-sr-heart" style="color:var(--danger); margin-right: 6px;"></i> Hapus dari Wishlist';
+                    } else {
+                        btn.classList.remove('liked');
+                        btn.innerHTML = '<i class="fi fi-rr-heart" style="margin-right: 6px;"></i> Tambah ke Wishlist';
+                    }
+                    if (typeof refreshWishlistBadge === 'function') {
+                        refreshWishlistBadge();
+                    }
+                }
+            })
+            .catch(() => {});
+        }
+
+        @if(session('status') || session('error'))
             // Show toast
             const toast = document.getElementById('cartToast');
-            toast.textContent = '✓ {{ session('status') }}';
+            toast.innerHTML = `<i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> {{ session('status') ?: session('error') }}`;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         @endif

@@ -37,7 +37,9 @@
             @endif
 
             <div class="data-card" style="margin-bottom:16px">
-                <div class="data-card-head"><h3>Tambah Promo</h3></div>
+                <div class="data-card-head">
+                    <h3>Tambah Promo</h3>
+                </div>
                 <form method="POST" action="{{ route('admin.promos.store') }}" style="padding:16px;display:grid;gap:12px">
                     @csrf
                     <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:12px">
@@ -48,7 +50,8 @@
                         </div>
                         <div>
                             <label style="font-size:12px;color:var(--g500)">Tipe Diskon</label>
-                            <select name="tipe_diskon" required style="width:100%;padding:10px 12px;border:1px solid var(--g200);border-radius:10px">
+                            <select name="tipe_diskon" required
+                                style="width:100%;padding:10px 12px;border:1px solid var(--g200);border-radius:10px">
                                 <option value="persen" @selected(old('tipe_diskon') === 'persen')>Persen</option>
                                 <option value="nominal" @selected(old('tipe_diskon') === 'nominal')>Nominal</option>
                             </select>
@@ -72,7 +75,8 @@
                         </div>
                         <div>
                             <label style="font-size:12px;color:var(--g500)">Tanggal Berakhir</label>
-                            <input type="datetime-local" name="tanggal_berakhir" value="{{ old('tanggal_berakhir') }}" required
+                            <input type="datetime-local" name="tanggal_berakhir" value="{{ old('tanggal_berakhir') }}"
+                                required
                                 style="width:100%;padding:10px 12px;border:1px solid var(--g200);border-radius:10px">
                         </div>
                         <button class="btn btn-primary" type="submit">Simpan Promo</button>
@@ -101,41 +105,56 @@
                             @php
                                 $mulai = \Illuminate\Support\Carbon::parse($promo->tanggal_mulai);
                                 $akhir = \Illuminate\Support\Carbon::parse($promo->tanggal_berakhir);
-                                $aktif = $promo->kuota > 0 && now()->between($mulai, $akhir);
+                                $aktif = $promo->kuota > 0 &&
+                                    now()->greaterThanOrEqualTo($mulai) &&
+                                    now()->lessThanOrEqualTo($akhir);
                             @endphp
                             <tr>
                                 <td>
-                                    <form id="promo-{{ $promo->id_promo }}" method="POST" action="{{ route('admin.promos.update', $promo) }}" style="display:grid;grid-template-columns:1fr 110px 110px 90px;gap:8px">
+                                    <form id="promo-{{ $promo->id_promo }}" method="POST"
+                                        action="{{ route('admin.promos.update', $promo) }}">
                                         @csrf @method('PUT')
-                                        <input name="kode_voucher" value="{{ old('kode_voucher', $promo->kode_voucher) }}" required
-                                            style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;text-transform:uppercase">
-                                        <select name="tipe_diskon" required style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
-                                            <option value="persen" @selected(old('tipe_diskon', $promo->tipe_diskon) === 'persen')>Persen</option>
-                                            <option value="nominal" @selected(old('tipe_diskon', $promo->tipe_diskon) === 'nominal')>Nominal</option>
-                                        </select>
-                                        <input type="number" name="nilai_diskon" min="1" value="{{ old('nilai_diskon', $promo->nilai_diskon) }}" required
-                                            style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
-                                        <input type="number" name="kuota" min="0" value="{{ old('kuota', $promo->kuota) }}" required
-                                            style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
                                     </form>
+                                    <input form="promo-{{ $promo->id_promo }}" name="kode_voucher"
+                                        value="{{ old('kode_voucher', $promo->kode_voucher) }}" required
+                                        style="width:100%;min-width:120px;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;text-transform:uppercase">
                                 </td>
-                                <td style="font-weight:800">
-                                    {{ $promo->tipe_diskon === 'persen' ? $promo->nilai_diskon . '%' : 'Rp ' . number_format($promo->nilai_diskon, 0, ',', '.') }}
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <select form="promo-{{ $promo->id_promo }}" name="tipe_diskon" required
+                                            style="padding:8px;border:1px solid var(--g200);border-radius:8px">
+                                            <option value="persen" @selected(old('tipe_diskon', $promo->tipe_diskon) === 'persen')>%</option>
+                                            <option value="nominal" @selected(old('tipe_diskon', $promo->tipe_diskon) === 'nominal')>Rp</option>
+                                        </select>
+                                        <input form="promo-{{ $promo->id_promo }}" type="number" name="nilai_diskon" min="1"
+                                            value="{{ old('nilai_diskon', $promo->nilai_diskon) }}" required
+                                            style="width:100px;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
+                                    </div>
                                 </td>
                                 <td style="font-size:12px;color:var(--g500)">
                                     <div style="display:grid;gap:6px">
-                                        <input type="datetime-local" name="tanggal_mulai" form="promo-{{ $promo->id_promo }}" value="{{ old('tanggal_mulai', $mulai->format('Y-m-d\TH:i')) }}" required
+                                        <input type="datetime-local" name="tanggal_mulai" form="promo-{{ $promo->id_promo }}"
+                                            value="{{ old('tanggal_mulai', $mulai->format('Y-m-d\TH:i')) }}" required
                                             style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
-                                        <input type="datetime-local" name="tanggal_berakhir" form="promo-{{ $promo->id_promo }}" value="{{ old('tanggal_berakhir', $akhir->format('Y-m-d\TH:i')) }}" required
+                                        <input type="datetime-local" name="tanggal_berakhir" form="promo-{{ $promo->id_promo }}"
+                                            value="{{ old('tanggal_berakhir', $akhir->format('Y-m-d\TH:i')) }}" required
                                             style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
                                     </div>
                                 </td>
-                                <td><span class="badge badge-info">{{ $promo->kuota }}</span></td>
-                                <td><span class="badge {{ $aktif ? 'badge-success' : 'badge-warn' }}">{{ $aktif ? 'Aktif' : 'Tidak Aktif' }}</span></td>
+                                <td>
+                                    <input form="promo-{{ $promo->id_promo }}" type="number" name="kuota" min="0"
+                                        value="{{ old('kuota', $promo->kuota) }}" required
+                                        style="width:80px;padding:8px 10px;border:1px solid var(--g200);border-radius:8px">
+                                </td>
+                                <td><span
+                                        class="badge {{ $aktif ? 'badge-success' : 'badge-warn' }}">{{ $aktif ? 'Aktif' : 'Tidak Aktif' }}</span>
+                                </td>
                                 <td>
                                     <div style="display:flex;gap:6px">
-                                        <button class="btn-edit" type="submit" form="promo-{{ $promo->id_promo }}">Simpan</button>
-                                        <form method="POST" action="{{ route('admin.promos.destroy', $promo) }}" onsubmit="return confirm('Hapus promo ini?')">
+                                        <button class="btn-edit" type="submit"
+                                            form="promo-{{ $promo->id_promo }}">Simpan</button>
+                                        <form method="POST" action="{{ route('admin.promos.destroy', $promo) }}"
+                                            onsubmit="return confirm('Hapus promo ini?')">
                                             @csrf @method('DELETE')
                                             <button class="btn-del" type="submit">Hapus</button>
                                         </form>

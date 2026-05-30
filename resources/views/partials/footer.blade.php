@@ -2,18 +2,18 @@
 <footer class="footer">
     <div class="footer-grid">
         <div>
-            <div class="footer-brand">⚡ Elektronik Modern</div>
+            <div class="footer-brand"><i class="fi fi-rr-bolt" style="margin-right: 6px; color: #eab308;"></i> Elektronik Modern</div>
             <p class="footer-desc">
                 Platform belanja elektronik rumah tangga terpercaya. Produk
                 original, harga bersaing, pengiriman cepat ke seluruh Indonesia.
             </p>
             <div style="display: flex; gap: 8px; flex-wrap: wrap">
                 <a href="#" class="btn btn-sm"
-                    style="background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.12);">📘
-                    Facebook</a>
+                    style="background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.12); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fi fi-brands-facebook"></i> Facebook</a>
                 <a href="#" class="btn btn-sm"
-                    style="background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.12);">📸
-                    Instagram</a>
+                    style="background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.12); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fi fi-brands-instagram"></i> Instagram</a>
             </div>
         </div>
         <div>

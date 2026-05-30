@@ -10,16 +10,11 @@ class ProvinsiSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            'Jawa Barat',
-            'Jawa Tengah',
             'Jawa Timur',
+            'Jawa Tengah',
+            'Jawa Barat',
             'DKI Jakarta',
-            'Banten',
             'DI Yogyakarta',
-            'Bali',
-            'Sumatera Utara',
-            'Sumatera Selatan',
-            'Sulawesi Selatan',
         ];
 
         $rows = [];

@@ -20,40 +20,40 @@
 
             @if (session('status'))
                 <div class="data-card" style="padding:12px 16px;margin-bottom:16px;background:var(--sl);color:#15803D">
-                    <strong>✓ {{ session('status') }}</strong>
+                    <strong><i class="fi fi-rr-check-circle" style="color:var(--success);margin-right:6px"></i> {{ session('status') }}</strong>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="data-card" style="padding:12px 16px;margin-bottom:16px;background:var(--dl);color:#991B1B">
-                    <strong>✗ {{ session('error') }}</strong>
+                    <strong><i class="fi fi-rr-cross-circle" style="color:var(--danger);margin-right:6px"></i> {{ session('error') }}</strong>
                 </div>
             @endif
 
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-ico blue">⏳</div>
+                    <div class="stat-ico blue"><i class="fi fi-rr-time-fast"></i></div>
                     <div>
                         <div class="stat-label">Menunggu</div>
                         <div class="stat-val">{{ $jumlahMenunggu }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico blue">⚙️</div>
+                    <div class="stat-ico blue"><i class="fi fi-rr-settings"></i></div>
                     <div>
                         <div class="stat-label">Diproses</div>
                         <div class="stat-val">{{ $jumlahDiproses }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">🚚</div>
+                    <div class="stat-ico teal"><i class="fi fi-rr-truck-side"></i></div>
                     <div>
                         <div class="stat-label">Dikirim</div>
                         <div class="stat-val">{{ $jumlahDikirim }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico green">✅</div>
+                    <div class="stat-ico green"><i class="fi fi-rr-check-circle"></i></div>
                     <div>
                         <div class="stat-label">Selesai</div>
                         <div class="stat-val">{{ $jumlahSelesai }}</div>
@@ -63,7 +63,7 @@
 
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>Daftar Pesanan</h3>
+                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Daftar Pesanan</h3>
                 </div>
                 <table>
                     <thead>
@@ -80,10 +80,10 @@
                         @forelse ($pesanans as $pesanan)
                             @php
                                 $statusLabel = match ($pesanan->status_pesanan) {
-                                    'diproses' => '⚙️ Diproses',
-                                    'dikirim'  => '🚚 Dikirim',
-                                    'selesai'  => '✅ Selesai',
-                                    default    => '⏳ Menunggu',
+                                    'diproses' => 'Diproses',
+                                    'dikirim'  => 'Dikirim',
+                                    'selesai'  => 'Selesai',
+                                    default    => 'Menunggu',
                                 };
                                 $statusClass = match ($pesanan->status_pesanan) {
                                     'diproses' => 'badge-warn',
@@ -169,20 +169,20 @@
                                                         default    => null,
                                                     };
                                                     $nextLabel = match ($nextStatus) {
-                                                        'diproses' => '→ Proses',
-                                                        'dikirim'  => '→ Kirim',
-                                                        'selesai'  => '→ Selesai',
+                                                        'diproses' => '<i class="fi fi-rr-settings" style="margin-right:4px"></i> Proses',
+                                                        'dikirim'  => '<i class="fi fi-rr-truck-side" style="margin-right:4px"></i> Kirim',
+                                                        'selesai'  => '<i class="fi fi-rr-check-circle" style="margin-right:4px"></i> Selesai',
                                                         default    => '',
                                                     };
                                                 @endphp
                                                 @if ($nextStatus)
                                                     <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
-                                                    <button type="submit" class="btn-edit">{{ $nextLabel }}</button>
+                                                    <button type="submit" class="btn-edit">{!! $nextLabel !!}</button>
                                                 @endif
                                             </div>
                                         </form>
                                     @else
-                                        <span class="badge badge-success">✓ Selesai</span>
+                                        <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check"></i> Selesai</span>
                                     @endif
                                 </td>
                             </tr>
@@ -193,6 +193,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div style="padding:16px">
+                    {{ $pesanans->links() }}
+                </div>
             </div>
         </div>
     </div>

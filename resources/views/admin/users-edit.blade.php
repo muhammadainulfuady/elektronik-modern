@@ -52,7 +52,7 @@
                         <div style="font-size:11px;color:var(--g400);margin-top:4px">Kosongkan jika tidak ingin mengubah password.</div>
                     </div>
                     <div style="margin-top:10px">
-                        <button class="btn btn-primary" type="submit">💾 Simpan Perubahan</button>
+                        <button class="btn btn-primary" type="submit" style="display:inline-flex;align-items:center;gap:8px"><i class="fi fi-rr-disk"></i> Simpan Perubahan</button>
                     </div>
                 </form>
             </div>

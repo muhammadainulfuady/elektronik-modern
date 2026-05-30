@@ -11,7 +11,7 @@ class PromoSeeder extends Seeder
     public function run(): void
     {
         $rows = [];
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $rows[] = [
                 'id_promo' => $i,
                 'kode_voucher' => 'PROMO' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),

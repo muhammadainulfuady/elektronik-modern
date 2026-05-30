@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Keranjang;
 use App\Models\Promo;
 use App\Models\Produk;
 use Illuminate\Http\Request;
@@ -14,31 +15,34 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cart    = session('cart', []);
-        $ids     = array_keys($cart);
-        $produks = Produk::with('kategori')->whereIn('id_produk', $ids)->get()->keyBy('id_produk');
+        $keranjang = $this->getUserKeranjang();
+        $details   = $keranjang ? $keranjang->detailKeranjangs()->with('produk.kategori')->get() : collect();
 
-        $items = [];
+        $items    = [];
         $subtotal = 0;
 
-        foreach ($cart as $id => $qty) {
-            if ($produks->has($id)) {
-                $produk = $produks[$id];
-                $lineTotal = $produk->harga * $qty;
+        foreach ($details as $detail) {
+            if ($detail->produk) {
+                $lineTotal = $detail->produk->harga * $detail->qty;
                 $subtotal += $lineTotal;
                 $items[] = (object) [
-                    'produk'    => $produk,
-                    'qty'       => $qty,
+                    'produk'    => $detail->produk,
+                    'qty'       => $detail->qty,
                     'lineTotal' => $lineTotal,
                 ];
             }
         }
 
         $appliedPromo = $this->appliedPromo();
-        $discount = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
-        $total = max(0, $subtotal - $discount);
+        $discount     = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
+        $total        = max(0, $subtotal - $discount);
 
-        return view('cart.index', compact('items', 'subtotal', 'appliedPromo', 'discount', 'total'));
+        $promos = Promo::where('tanggal_mulai', '<=', now())
+            ->where('tanggal_berakhir', '>=', now())
+            ->where('kuota', '>', 0)
+            ->get();
+
+        return view('cart.index', compact('items', 'subtotal', 'appliedPromo', 'discount', 'total', 'promos'));
     }
 
     /**
@@ -47,10 +51,26 @@ class CartController extends Controller
     private function isAdminOrOwner(): bool
     {
         if (Auth::check()) {
-            $role = Auth::user()->role;
-            return in_array($role, ['admin', 'owner']);
+            return in_array(Auth::user()->role, ['admin', 'owner']);
         }
         return false;
+    }
+
+    /**
+     * Ambil keranjang milik user yang login (tanpa membuat baru).
+     */
+    private function getUserKeranjang(): ?Keranjang
+    {
+        if (!Auth::check()) return null;
+        return Keranjang::where('id_users', Auth::id())->first();
+    }
+
+    /**
+     * Ambil atau buat keranjang milik user yang login.
+     */
+    private function getOrCreateKeranjang(): Keranjang
+    {
+        return Keranjang::firstOrCreate(['id_users' => Auth::id()]);
     }
 
     /**
@@ -58,7 +78,6 @@ class CartController extends Controller
      */
     public function add(Request $request)
     {
-        // Admin/Owner tidak boleh membeli
         if ($this->isAdminOrOwner()) {
             if ($request->ajax()) {
                 return response()->json(['message' => 'Admin dan Owner tidak dapat membeli barang.'], 403);
@@ -74,14 +93,21 @@ class CartController extends Controller
         $id  = (int) $request->id_produk;
         $qty = (int) ($request->qty ?? 1);
 
-        $cart = session('cart', []);
-        $cart[$id] = ($cart[$id] ?? 0) + $qty;
-        session(['cart' => $cart]);
+        $keranjang = $this->getOrCreateKeranjang();
+        $detail    = $keranjang->detailKeranjangs()->where('id_produk', $id)->first();
+
+        if ($detail) {
+            $detail->increment('qty', $qty);
+        } else {
+            $keranjang->detailKeranjangs()->create(['id_produk' => $id, 'qty' => $qty]);
+        }
+
+        $cartCount = $keranjang->detailKeranjangs()->sum('qty');
 
         if ($request->ajax()) {
             return response()->json([
                 'message'   => 'Produk ditambahkan ke keranjang!',
-                'cartCount' => array_sum($cart),
+                'cartCount' => $cartCount,
             ]);
         }
 
@@ -98,23 +124,27 @@ class CartController extends Controller
             'qty'       => ['required', 'integer', 'min:0'],
         ]);
 
-        $id  = (int) $request->id_produk;
-        $qty = (int) $request->qty;
+        $id        = (int) $request->id_produk;
+        $qty       = (int) $request->qty;
+        $keranjang = $this->getUserKeranjang();
 
-        $cart = session('cart', []);
-
-        if ($qty <= 0) {
-            unset($cart[$id]);
-        } else {
-            $cart[$id] = $qty;
+        if ($keranjang) {
+            $detail = $keranjang->detailKeranjangs()->where('id_produk', $id)->first();
+            if ($detail) {
+                if ($qty <= 0) {
+                    $detail->delete();
+                } else {
+                    $detail->update(['qty' => $qty]);
+                }
+            }
         }
 
-        session(['cart' => $cart]);
+        $cartCount = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
 
         if ($request->ajax()) {
             return response()->json([
                 'message'   => 'Keranjang diperbarui.',
-                'cartCount' => array_sum($cart),
+                'cartCount' => $cartCount,
             ]);
         }
 
@@ -126,15 +156,19 @@ class CartController extends Controller
      */
     public function remove(Request $request)
     {
-        $id   = (int) $request->id_produk;
-        $cart = session('cart', []);
-        unset($cart[$id]);
-        session(['cart' => $cart]);
+        $id        = (int) $request->id_produk;
+        $keranjang = $this->getUserKeranjang();
+
+        if ($keranjang) {
+            $keranjang->detailKeranjangs()->where('id_produk', $id)->delete();
+        }
+
+        $cartCount = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
 
         if ($request->ajax()) {
             return response()->json([
                 'message'   => 'Produk dihapus dari keranjang.',
-                'cartCount' => array_sum($cart),
+                'cartCount' => $cartCount,
             ]);
         }
 
@@ -174,17 +208,19 @@ class CartController extends Controller
      */
     public function count()
     {
-        return response()->json([
-            'cartCount' => array_sum(session('cart', [])),
-        ]);
+        $count = 0;
+        if (Auth::check()) {
+            $keranjang = $this->getUserKeranjang();
+            $count     = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
+        }
+
+        return response()->json(['cartCount' => $count]);
     }
 
-    private function appliedPromo(): ?Promo
+    public function appliedPromo(): ?Promo
     {
         $promoId = session('applied_promo_id');
-        if (!$promoId) {
-            return null;
-        }
+        if (!$promoId) return null;
 
         return Promo::where('id_promo', $promoId)
             ->where('kuota', '>', 0)
@@ -193,11 +229,9 @@ class CartController extends Controller
             ->first();
     }
 
-    private function calculateDiscount(Promo $promo, int $subtotal): int
+    public function calculateDiscount(Promo $promo, int $subtotal): int
     {
-        if ($subtotal <= 0) {
-            return 0;
-        }
+        if ($subtotal <= 0) return 0;
 
         if ($promo->tipe_diskon === 'persen') {
             return min($subtotal, (int) floor($subtotal * $promo->nilai_diskon / 100));

@@ -19,4 +19,24 @@ class Kategori extends Model
     {
         return $this->hasMany(Produk::class, 'id_kategori', 'id_kategori');
     }
+
+    /**
+     * Use nama_kategori (lowercase with underscores) instead of id_kategori for routing.
+     */
+    public function getRouteKey()
+    {
+        return str_replace(' ', '_', strtolower($this->nama_kategori));
+    }
+
+    /**
+     * Resolve model binding using id_kategori or nama_kategori.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $nameForQuery = str_replace('_', ' ', $value);
+
+        return $this->where('id_kategori', $value)
+            ->orWhere('nama_kategori', 'like', $nameForQuery)
+            ->firstOrFail();
+    }
 }

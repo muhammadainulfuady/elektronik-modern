@@ -7,7 +7,6 @@ use App\Models\AlamatUser;
 use App\Models\Keranjang;
 use App\Models\Notifikasi;
 use App\Models\Pesanan;
-use App\Models\Ulasan;
 use App\Models\Wishlist;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -68,10 +67,6 @@ class User extends Authenticatable
         return $this->hasMany(Wishlist::class, 'id_users', 'id_users');
     }
 
-    public function ulasans(): HasMany
-    {
-        return $this->hasMany(Ulasan::class, 'id_users', 'id_users');
-    }
 
     public function notifikasis(): HasMany
     {

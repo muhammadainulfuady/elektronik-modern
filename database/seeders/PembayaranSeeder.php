@@ -12,7 +12,7 @@ class PembayaranSeeder extends Seeder
         $metode = ['transfer', 'ewallet'];
 
         $rows = [];
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $rows[] = [
                 'id_pembayaran' => $i,
                 'id_pesanan' => $i,

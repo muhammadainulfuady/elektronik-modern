@@ -4,62 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Halaman wishlist milik customer.
      */
     public function index()
     {
-        //
+        $wishlists = Wishlist::where('id_users', Auth::id())
+            ->with('produk.kategori')
+            ->get();
+
+        return view('customer.wishlist', compact('wishlists'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Toggle wishlist (tambah/hapus) via AJAX.
      */
-    public function create()
+    public function toggle(Request $request)
     {
-        //
+        $request->validate([
+            'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
+        ]);
+
+        $existing = Wishlist::where('id_users', Auth::id())
+            ->where('id_produk', $request->id_produk)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $liked = false;
+        } else {
+            Wishlist::create([
+                'id_users'  => Auth::id(),
+                'id_produk' => $request->id_produk,
+            ]);
+            $liked = true;
+        }
+
+        $wishlistCount = Wishlist::where('id_users', Auth::id())->count();
+
+        return response()->json([
+            'liked'         => $liked,
+            'wishlistCount' => $wishlistCount
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Ambil jumlah item di wishlist.
      */
-    public function store(Request $request)
+    public function count()
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Wishlist $wishlist)
-    {
-        //
+        $wishlistCount = Wishlist::where('id_users', Auth::id())->count();
+        return response()->json(['wishlistCount' => $wishlistCount]);
     }
 }

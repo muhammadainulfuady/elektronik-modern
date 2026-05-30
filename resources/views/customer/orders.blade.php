@@ -65,18 +65,18 @@
             <div class="breadcrumb">
                 <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Pesanan Saya</span>
             </div>
-            <h1>📦 Pesanan Saya</h1>
+            <h1 style="display:flex;align-items:center;gap:10px"><i class="fi fi-rr-box" style="color:var(--blue)"></i> Pesanan Saya</h1>
             <p style="color:var(--g500);margin-bottom:28px">Riwayat dan status pesanan Anda</p>
 
             @if (session('status'))
                 <div style="background:var(--sl);color:#15803D;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    ✓ {{ session('status') }}
+                    <i class="fi fi-rr-check-circle"></i> {{ session('status') }}
                 </div>
             @endif
 
             @if (session('error'))
                 <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    ✗ {{ session('error') }}
+                    <i class="fi fi-rr-cross-circle"></i> {{ session('error') }}
                 </div>
             @endif
 
@@ -90,10 +90,10 @@
                         default    => 'badge-info',
                     };
                     $statusLabel = match ($pesanan->status_pesanan) {
-                        'menunggu' => '⏳ Menunggu',
-                        'diproses' => '⚙️ Diproses',
-                        'dikirim'  => '🚚 Dikirim',
-                        'selesai'  => '✅ Selesai',
+                        'menunggu' => 'Menunggu',
+                        'diproses' => 'Diproses',
+                        'dikirim'  => 'Dikirim',
+                        'selesai'  => 'Selesai',
                         default    => ucfirst($pesanan->status_pesanan),
                     };
                 @endphp
@@ -143,16 +143,19 @@
                 </div>
             @empty
                 <div class="empty-orders">
-                    <div class="empty-icon">📦</div>
+                    <div class="empty-icon"><i class="fi fi-rr-box" style="font-size: 64px;"></i></div>
                     <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
                         Belum Ada Pesanan
                     </div>
                     <div style="font-size:14px;color:var(--g400);margin-bottom:24px">
                         Yuk mulai belanja produk elektronik berkualitas!
                     </div>
-                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg">🛍️ Belanja Sekarang</a>
+                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg"><i class="fi fi-rr-shopping-bag" style="margin-right: 6px;"></i> Belanja Sekarang</a>
                 </div>
             @endforelse
+            <div style="margin-top:24px">
+                {{ $pesanans->links() }}
+            </div>
         </div>
     </section>
 @endsection

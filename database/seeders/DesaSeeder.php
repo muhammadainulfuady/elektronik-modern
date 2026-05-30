@@ -10,16 +10,11 @@ class DesaSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Dago', 1],
-            ['Bulusan', 2],
-            ['Keputih', 3],
-            ['Pegangsaan', 4],
-            ['Banjaragung', 5],
-            ['Muja Muju', 6],
-            ['Sanur', 7],
-            ['Titi Rantai', 8],
-            ['5 Ilir', 9],
-            ['Karampuang', 10],
+            ['Airlangga', 1],
+            ['Pepelegi', 2],
+            ['Randuagung', 3],
+            ['Tlogomas', 4],
+            ['Gunung Gedangan', 5],
         ];
 
         $rows = [];

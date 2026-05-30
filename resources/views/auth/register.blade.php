@@ -12,7 +12,7 @@
 @section('content')
     <div class="auth-bg">
         <div class="auth-card">
-            <div class="auth-logo-mark">📝</div>
+            <div class="auth-logo-mark"><i class="fi fi-rr-edit" style="color:var(--blue)"></i></div>
             <div class="auth-title">Buat Akun Baru</div>
             <div class="auth-sub">Bergabung dengan Elektronik Modern — gratis!</div>
 
@@ -52,7 +52,7 @@
                         Modern</span>
                 </div>
                 <button class="btn btn-primary" type="submit"
-                    style="width:100%;justify-content:center;padding:13px;font-size:15px">🚀 Daftar Sekarang</button>
+                    style="width:100%;justify-content:center;padding:13px;font-size:15px;display:inline-flex;align-items:center;gap:8px"><i class="fi fi-rr-user-add"></i> Daftar Sekarang</button>
             </form>
 
             <div class="divider">atau</div>

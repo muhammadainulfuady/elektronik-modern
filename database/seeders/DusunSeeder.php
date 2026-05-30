@@ -10,16 +10,11 @@ class DusunSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Dago Atas', 1],
-            ['Bulusan Timur', 2],
-            ['Keputih Barat', 3],
-            ['Pegangsaan Utara', 4],
-            ['Banjaragung Utara', 5],
-            ['Muja Muju Selatan', 6],
-            ['Sanur Kaja', 7],
-            ['Titi Rantai Barat', 8],
-            ['5 Ilir Timur', 9],
-            ['Karampuang Tengah', 10],
+            ['Airlangga Gubeng', 1],
+            ['Pepelegi Indah', 2],
+            ['Randuagung Timur', 3],
+            ['Tlogomas Permai', 4],
+            ['Gunung Gedangan Asri', 5],
         ];
 
         $rows = [];

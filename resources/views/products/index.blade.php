@@ -40,17 +40,22 @@
 
         .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px }
         .pagination-wrap { margin-top: 32px; display: flex; justify-content: center }
-        .pagination-wrap nav { display: flex; gap: 4px }
-        .pagination-wrap .page-link {
-            padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
-            text-decoration: none; color: var(--g600); background: #fff; border: 1px solid var(--g200); transition: .15s
-        }
-        .pagination-wrap .page-link:hover { border-color: var(--blue); color: var(--blue) }
-        .pagination-wrap .page-item.active .page-link { background: var(--blue); color: #fff; border-color: var(--blue) }
-        .pagination-wrap .page-item.disabled .page-link { color: var(--g300); cursor: default }
 
         .empty-state { text-align: center; padding: 60px 20px }
         .empty-state .empty-icon { font-size: 60px; margin-bottom: 16px }
+
+        /* Wishlist button on card */
+        .prod-card { position: relative }
+        .wishlist-btn {
+            position: absolute; top: 10px; right: 10px; z-index: 2;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: rgba(255,255,255,.9); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+            transition: .2s; backdrop-filter: blur(4px)
+        }
+        .wishlist-btn:hover { transform: scale(1.15); background: #fff }
+        .wishlist-btn.liked { background: #fee2e2 }
 
         @media(max-width:768px) {
             .catalog-layout { grid-template-columns: 1fr }
@@ -67,8 +72,10 @@
     <section class="catalog-section">
         <div class="container">
             <div class="catalog-header">
-                <div class="breadcrumb">
-                    <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Katalog Produk</span>
+                <div class="breadcrumb" style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:13px">
+                    <a href="{{ route('index') }}" style="color:var(--g500);text-decoration:none"><i class="fi fi-rr-home"></i> Beranda</a> 
+                    <i class="fi fi-rr-angle-small-right" style="color:var(--g400)"></i> 
+                    <span style="color:var(--g800);font-weight:600">Katalog Produk</span>
                 </div>
                 <h1>Katalog Produk</h1>
                 <p>Temukan produk elektronik berkualitas dengan harga terbaik</p>
@@ -77,20 +84,21 @@
             <div class="catalog-layout">
                 <!-- FILTER SIDEBAR -->
                 <aside class="filter-panel">
-                    <div class="filter-title">🔍 Filter</div>
+                    <div class="filter-title"><i class="fi fi-rr-filter" style="margin-right: 6px;"></i> Filter</div>
 
                     <!-- Search -->
                     <div class="filter-group">
                         <h4>Pencarian</h4>
-                        <form method="GET" action="{{ route('products.index') }}">
+                        <form method="GET" action="{{ route('products.index') }}" style="position:relative">
                             @if(request('kategori'))
                                 <input type="hidden" name="kategori" value="{{ request('kategori') }}">
                             @endif
                             @if(request('sort'))
                                 <input type="hidden" name="sort" value="{{ request('sort') }}">
                             @endif
+                            <i class="fi fi-rr-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--g400)"></i>
                             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari produk..."
-                                style="padding:10px 14px;font-size:13px">
+                                style="padding:10px 14px 10px 38px;font-size:13px;width:100%;border:1px solid var(--g200);border-radius:10px">
                         </form>
                     </div>
 
@@ -100,13 +108,20 @@
                         <div class="filter-cat">
                             <a href="{{ route('products.index', array_merge(request()->except('kategori','page'), [])) }}"
                                 class="{{ !request('kategori') ? 'active' : '' }}">
-                                Semua Kategori
+                                <div style="display:flex;align-items:center;gap:8px">
+                                    <i class="fi fi-rr-apps"></i> Semua Kategori
+                                </div>
                                 <span class="count">{{ $kategoris->sum('produks_count') }}</span>
                             </a>
                             @foreach ($kategoris as $kategori)
-                                <a href="{{ route('products.index', array_merge(request()->except('page'), ['kategori' => $kategori->id_kategori])) }}"
-                                    class="{{ request('kategori') == $kategori->id_kategori ? 'active' : '' }}">
-                                    {{ $kategori->nama_kategori }}
+                                <a href="{{ route('products.index', array_merge(request()->except('page'), ['kategori' => $kategori->nama_kategori])) }}"
+                                    class="{{ request('kategori') == $kategori->nama_kategori ? 'active' : '' }}">
+                                    <div style="display:flex;align-items:center;gap:8px">
+                                        @if($kategori->ikon_kategori)
+                                            <i class="{{ $kategori->ikon_kategori }}"></i>
+                                        @endif
+                                        {{ $kategori->nama_kategori }}
+                                    </div>
                                     <span class="count">{{ $kategori->produks_count }}</span>
                                 </a>
                             @endforeach
@@ -135,7 +150,23 @@
                     @if ($produks->count())
                         <div class="prod-grid">
                             @foreach ($produks as $produk)
-                                <a href="{{ route('products.show', $produk) }}" class="prod-card" style="text-decoration:none;color:inherit">
+                                <div class="prod-card" style="text-decoration:none;color:inherit;display:block">
+                                    @auth
+                                        @if (auth()->user()->role === 'customer')
+                                        <button
+                                            class="wishlist-btn {{ in_array($produk->id_produk, $wishlistIds) ? 'liked' : '' }}"
+                                            data-id="{{ $produk->id_produk }}"
+                                            title="Tambah ke Wishlist"
+                                            onclick="toggleWishlist(this, {{ $produk->id_produk }}, event)">
+                                            @if (in_array($produk->id_produk, $wishlistIds))
+                                                <i class="fi fi-sr-heart" style="color: #ef4444;"></i>
+                                            @else
+                                                <i class="fi fi-rr-heart" style="color: #9ca3af;"></i>
+                                            @endif
+                                        </button>
+                                        @endif
+                                    @endauth
+                                    <a href="{{ route('products.show', $produk) }}" style="text-decoration:none;color:inherit">
                                     <div class="prod-img-wrap">
                                         <img src="{{ asset('storage/products/' . $produk->gambar) }}"
                                             alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async">
@@ -155,7 +186,8 @@
                                             <span class="prod-stock">Stok: {{ $produk->stok }} unit</span>
                                         </div>
                                     </div>
-                                </a>
+                                    </a>
+                                </div>
                             @endforeach
                         </div>
 
@@ -164,7 +196,7 @@
                         </div>
                     @else
                         <div class="empty-state">
-                            <div class="empty-icon">🔍</div>
+                            <div class="empty-icon"><i class="fi fi-rr-search-alt" style="font-size: 64px; color: var(--g300)"></i></div>
                             <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
                                 Produk Tidak Ditemukan
                             </div>
@@ -179,3 +211,46 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        function toggleWishlist(btn, id_produk, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            fetch('{{ route('wishlist.toggle') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ id_produk: id_produk })
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    window.location = '{{ route('login') }}';
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && typeof data.liked !== 'undefined') {
+                    if (data.liked) {
+                        btn.classList.add('liked');
+                        btn.innerHTML = '<i class="fi fi-sr-heart" style="color: #ef4444;"></i>';
+                    } else {
+                        btn.classList.remove('liked');
+                        btn.innerHTML = '<i class="fi fi-rr-heart" style="color: #9ca3af;"></i>';
+                    }
+                    if (typeof refreshWishlistBadge === 'function') {
+                        refreshWishlistBadge();
+                    }
+                }
+            })
+            .catch(() => {});
+        }
+    </script>
+@endpush

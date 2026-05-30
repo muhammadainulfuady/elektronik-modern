@@ -10,16 +10,11 @@ class KecamatanSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Coblong', 1],
-            ['Tembalang', 2],
-            ['Sukolilo', 3],
-            ['Menteng', 4],
-            ['Cipocok Jaya', 5],
-            ['Umbulharjo', 6],
-            ['Denpasar Selatan', 7],
-            ['Medan Baru', 8],
-            ['Ilir Timur I', 9],
-            ['Panakkukang', 10],
+            ['Gubeng', 1],
+            ['Waru', 2],
+            ['Kebomas', 3],
+            ['Lowokwaru', 4],
+            ['Magersari', 5],
         ];
 
         $rows = [];

@@ -20,24 +20,24 @@
 
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-ico green">👥</div>
+                    <div class="stat-ico green"><i class="fi fi-rr-users"></i></div>
                     <div>
                         <div class="stat-label">Total Customer</div>
-                        <div class="stat-val">{{ $users->count() }}</div>
+                        <div class="stat-val">{{ $users->total() }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico blue">🛒</div>
+                    <div class="stat-ico blue"><i class="fi fi-rr-shopping-cart"></i></div>
                     <div>
                         <div class="stat-label">Punya Pesanan</div>
-                        <div class="stat-val">{{ $users->where('pesanans_count', '>', 0)->count() }}</div>
+                        <div class="stat-val">{{ $users->getCollection()->where('pesanans_count', '>', 0)->count() }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">📦</div>
+                    <div class="stat-ico teal"><i class="fi fi-rr-box"></i></div>
                     <div>
                         <div class="stat-label">Total Pesanan</div>
-                        <div class="stat-val">{{ $users->sum('pesanans_count') }}</div>
+                        <div class="stat-val">{{ $users->getCollection()->sum('pesanans_count') }}</div>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
 
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>Daftar Customer</h3>
+                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-users" style="color:var(--blue)"></i> Daftar Customer</h3>
                 </div>
                 <table>
                     <thead>
@@ -112,17 +112,17 @@
                                 </td>
                                 <td style="font-size:13px;color:var(--g500)">{{ $user->email }}</td>
                                 <td>
-                                    <span class="badge badge-success">👤 {{ ucfirst($user->role) }}</span>
+                                    <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-user" style="font-size:12px"></i> {{ ucfirst($user->role) }}</span>
                                 </td>
                                 <td>
                                     <span class="badge badge-info">{{ $user->pesanans_count }} pesanan</span>
                                 </td>
                                 <td>
                                     <div style="display:flex;gap:6px">
-                                        <a class="btn-edit" href="{{ route('admin.users.edit', $user) }}">Edit</a>
+                                        <a class="btn-edit" style="display:inline-flex;align-items:center;gap:4px" href="{{ route('admin.users.edit', $user) }}"><i class="fi fi-rr-edit"></i> Edit</a>
                                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Yakin ingin menghapus customer ini? Semua data pesanan miliknya juga akan terhapus.')">
                                             @csrf @method('DELETE')
-                                            <button class="btn-del" type="submit">Hapus</button>
+                                            <button class="btn-del" type="submit" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-trash"></i> Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -134,6 +134,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div style="padding:16px">
+                    {{ $users->links() }}
+                </div>
             </div>
         </div>
     </div>

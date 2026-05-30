@@ -26,7 +26,9 @@
                     <div class="page-title">Dashboard Admin</div>
                 </div>
                 <div style="display:flex;gap:10px;align-items:center">
-                    <span class="btn btn-outline btn-sm">📅 {{ now()->format('d M Y') }}</span>
+                    <span class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:6px">
+                    <i class="fi fi-rr-calendar"></i> {{ now()->format('d M Y') }}
+                </span>
                     <div style="width:40px;height:40px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px">
                         {{ strtoupper(substr(auth()->user()->nama ?? 'A', 0, 2)) }}
                     </div>
@@ -36,21 +38,21 @@
             <!-- Stats -->
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-ico blue">📦</div>
+                    <div class="stat-ico blue"><i class="fi fi-rr-box"></i></div>
                     <div>
                         <div class="stat-label">Total Produk</div>
                         <div class="stat-val">{{ $jumlahProduk }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico green">👥</div>
+                    <div class="stat-ico green"><i class="fi fi-rr-users"></i></div>
                     <div>
                         <div class="stat-label">Total Customer</div>
                         <div class="stat-val">{{ $jumlahUser }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico warn">⏳</div>
+                    <div class="stat-ico warn"><i class="fi fi-rr-time-fast"></i></div>
                     <div>
                         <div class="stat-label">Menunggu Konfirmasi</div>
                         <div class="stat-val">{{ $jumlahMenungguKonfirmasi }}</div>
@@ -58,7 +60,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">✅</div>
+                    <div class="stat-ico teal"><i class="fi fi-rr-check-circle"></i></div>
                     <div>
                         <div class="stat-label">Pesanan Selesai</div>
                         <div class="stat-val">{{ $pesananSelesai }}</div>
@@ -70,7 +72,7 @@
             <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:24px">
                 <div class="data-card">
                     <div class="data-card-head">
-                        <h3>📈 Pesanan 7 Hari Terakhir</h3>
+                        <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-chart-line-up" style="color:var(--blue)"></i> Pesanan 7 Hari Terakhir</h3>
                         <span class="badge badge-info">{{ $pesanan_tujuh_hari_terakhir }} pesanan</span>
                     </div>
                     <div style="padding:20px">
@@ -86,7 +88,7 @@
                     </div>
                 </div>
                 <div class="data-card">
-                    <div class="data-card-head"><h3>📦 Status Pesanan</h3></div>
+                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-chart-histogram" style="color:var(--blue)"></i> Status Pesanan</h3></div>
                     <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
                         @php
                             $total = max(1, ($statusPesanan->sum('total')));
@@ -97,7 +99,7 @@
                             ['Dikirim', 'dikirim', '--teal'],
                             ['Selesai', 'selesai', '--success'],
                         ] as [$label, $key, $color])
-                            @php $val = $statusPesanan->where('status_pesanan', $key)->first()->total ?? 0; @endphp
+                            @php $val = $statusPesanan->get($key, 0); @endphp
                             <div>
                                 <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
                                     <span>{{ $label }}</span><strong>{{ $val }}</strong>
@@ -114,7 +116,7 @@
             <!-- Recent Orders -->
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>🧾 Pesanan Terbaru</h3>
+                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Pesanan Terbaru</h3>
                     <a href="{{ route('admin.orders.index') }}" class="btn btn-outline btn-sm">Lihat Semua →</a>
                 </div>
                 <table>
@@ -173,7 +175,7 @@
                                             </form>
                                         @endif
                                     @else
-                                        <span class="badge badge-success">✓ Done</span>
+                                        <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check"></i> Done</span>
                                     @endif
                                 </td>
                             </tr>

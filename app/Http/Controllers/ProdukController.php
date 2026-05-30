@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\User;
-use App\Models\Ulasan;
+
+use App\Models\Wishlist;
 use App\Models\DetailPesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
@@ -29,24 +31,38 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $produks = Produk::with('kategori')->get();
-        $produkBaru = Produk::with('kategori')->latest('id_produk')->take(4)->get();
-        $kategoris = Kategori::withCount('produks')->get();
+        // Ambil hanya kolom yang dibutuhkan untuk landing page
+        $produkBaru = Produk::with('kategori')
+            ->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok')
+            ->latest('id_produk')
+            ->take(8)
+            ->get();
+
+        $kategoris = Kategori::withCount('produks')
+            ->select('id_kategori', 'nama_kategori', 'ikon_kategori')
+            ->get();
+
+        // Hitung statistik dalam 2 query ringkas
         $jumlahProduk = Produk::count();
-        $jumlahUser = User::count();
-        $rating = Ulasan::avg('rating') ?? 0;
+        $jumlahUser   = User::count();
+
+        // Produk terlaris: eager load kolom minimal
         $produkTerlaris = DetailPesanan::query()
             ->select('id_produk')
             ->selectRaw('SUM(qty) as total_terjual')
-            ->whereHas('pesanan', function ($q) {
-                $q->where('status_pesanan', 'dikirim');
-            })
+            ->whereHas('pesanan', fn($q) => $q->where('status_pesanan', 'dikirim'))
             ->groupBy('id_produk')
             ->orderByDesc('total_terjual')
-            ->with('produk.kategori')
+            ->with(['produk' => fn($q) => $q->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok')
+                ->with(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')])])
             ->take(8)
             ->get();
-        return view('index', compact('produks', 'produkBaru', 'kategoris', 'jumlahProduk', 'jumlahUser', 'rating', 'produkTerlaris'));
+
+        $wishlistIds = Auth::check()
+            ? Wishlist::where('id_users', Auth::id())->pluck('id_produk')->toArray()
+            : [];
+
+        return view('index', compact('produkBaru', 'kategoris', 'jumlahProduk', 'jumlahUser', 'produkTerlaris', 'wishlistIds'));
     }
 
     /**
@@ -54,32 +70,45 @@ class ProdukController extends Controller
      */
     public function catalog(Request $request)
     {
-        $kategoris = Kategori::withCount('produks')->orderBy('nama_kategori')->get();
+        $kategoris = Kategori::withCount('produks')
+            ->select('id_kategori', 'nama_kategori', 'ikon_kategori')
+            ->orderBy('nama_kategori')
+            ->get();
 
-        $query = Produk::with('kategori');
+        $query = Produk::with(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')])
+            ->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok');
 
-        // Filter by kategori
+        // Filter by kategori (bisa nama_kategori atau id_kategori)
         if ($request->filled('kategori')) {
-            $query->where('id_kategori', $request->kategori);
+            $katVal = $request->kategori;
+            if (is_numeric($katVal)) {
+                $query->where('id_kategori', $katVal);
+            } else {
+                $query->whereHas('kategori', fn($q) => $q->where('nama_kategori', $katVal));
+            }
         }
 
-        // Search by name
+        // Search by name – filter di DB bukan di Collection
         if ($request->filled('q')) {
             $query->where('nama_produk', 'like', '%' . $request->q . '%');
         }
 
-        // Sort
-        $sort = $request->get('sort', 'terbaru');
+        // Sort – di DB
+        $sort  = $request->get('sort', 'terbaru');
         $query = match ($sort) {
-            'termurah'  => $query->orderBy('harga', 'asc'),
-            'termahal'  => $query->orderBy('harga', 'desc'),
-            'nama'      => $query->orderBy('nama_produk', 'asc'),
-            default     => $query->latest('id_produk'),
+            'termurah' => $query->orderBy('harga', 'asc'),
+            'termahal' => $query->orderBy('harga', 'desc'),
+            'nama'     => $query->orderBy('nama_produk', 'asc'),
+            default    => $query->latest('id_produk'),
         };
 
         $produks = $query->paginate(12)->appends($request->query());
 
-        return view('products.index', compact('produks', 'kategoris'));
+        $wishlistIds = Auth::check()
+            ? Wishlist::where('id_users', Auth::id())->pluck('id_produk')->toArray()
+            : [];
+
+        return view('products.index', compact('produks', 'kategoris', 'wishlistIds'));
     }
 
     /**
@@ -87,23 +116,35 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk)
     {
-        $produk->load(['kategori', 'ulasans.user']);
-        $produkTerkait = Produk::with('kategori')
+        $produk->load(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')]);
+
+        $produkTerkait = Produk::with(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')])
+            ->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok')
             ->where('id_kategori', $produk->id_kategori)
             ->where('id_produk', '!=', $produk->id_produk)
             ->take(4)
             ->get();
 
-        return view('products.detail', compact('produk', 'produkTerkait'));
+        $wishlistIds = Auth::check()
+            ? Wishlist::where('id_users', Auth::id())->pluck('id_produk')->toArray()
+            : [];
+
+        return view('products.detail', compact('produk', 'produkTerkait', 'wishlistIds'));
     }
 
     /**
-     * Admin: daftar produk.
+     * Admin: daftar produk – dengan pagination agar tidak load semua sekaligus.
      */
     public function adminIndex()
     {
-        $produks = Produk::with('kategori')->latest('id_produk')->get();
-        $kategoris = Kategori::orderBy('nama_kategori')->get();
+        $produks   = Produk::with(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')])
+            ->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok')
+            ->latest('id_produk')
+            ->paginate(20);
+
+        $kategoris = Kategori::orderBy('nama_kategori')
+            ->select('id_kategori', 'nama_kategori')
+            ->get();
 
         return view('admin.products', compact('produks', 'kategoris'));
     }

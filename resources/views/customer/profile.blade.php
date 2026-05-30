@@ -77,17 +77,17 @@
             <div class="breadcrumb">
                 <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Profil Saya</span>
             </div>
-            <h1>👤 Profil Saya</h1>
+            <h1><i class="fi fi-rr-user" style="margin-right: 8px;"></i> Profil Saya</h1>
             <p style="color:var(--g500);margin-bottom:28px">Kelola informasi akun Anda</p>
 
             @if (session('status'))
                 <div style="background:var(--sl);color:#15803D;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    ✓ {{ session('status') }}
+                    <i class="fi fi-rr-check" style="margin-right: 6px;"></i> {{ session('status') }}
                 </div>
             @endif
             @if (session('error'))
                 <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    ✗ {{ session('error') }}
+                    <i class="fi fi-rr-cross-small" style="margin-right: 6px;"></i> {{ session('error') }}
                 </div>
             @endif
 
@@ -107,17 +107,17 @@
                     </div>
                     <div class="profile-name">{{ $user->nama }}</div>
                     <div class="profile-email">{{ $user->email }}</div>
-                    <span class="badge badge-success">👤 Customer</span>
+                    <span class="badge badge-success"><i class="fi fi-rr-user-tag" style="margin-right: 4px;"></i> Customer</span>
 
                     <div class="profile-nav">
                         <a href="#" class="active" onclick="switchTab('edit-profile', this)">
-                            <span>📝</span> Edit Profil
+                            <i class="fi fi-rr-edit" style="font-size:14px"></i> Edit Profil
                         </a>
                         <a href="#" onclick="switchTab('alamat', this)">
-                            <span>📍</span> Alamat Pengiriman
+                            <i class="fi fi-rr-map-marker" style="font-size:14px"></i> Alamat Pengiriman
                         </a>
                         <a href="{{ route('customer.orders') }}">
-                            <span>📦</span> Pesanan Saya
+                            <i class="fi fi-rr-box" style="font-size:14px"></i> Pesanan Saya
                         </a>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                         </div>
 
                         <div style="border-top:1px solid var(--g200);padding-top:20px;margin-top:8px;margin-bottom:18px">
-                            <div style="font-size:13px;font-weight:700;color:var(--g700);margin-bottom:4px">🔒 Ubah Password</div>
+                            <div style="font-size:13px;font-weight:700;color:var(--g700);margin-bottom:4px"><i class="fi fi-rr-lock" style="margin-right: 6px;"></i> Ubah Password</div>
                             <div style="font-size:12px;color:var(--g400);margin-bottom:16px">Kosongkan jika tidak ingin mengubah password</div>
                         </div>
 
@@ -159,7 +159,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="save-btn">💾 Simpan Profil</button>
+                        <button type="submit" class="save-btn"><i class="fi fi-rr-disk" style="margin-right: 6px;"></i> Simpan Profil</button>
                     </form>
                 </div>
                 
@@ -305,7 +305,7 @@
                                     <span style="font-size:14px;font-weight:600;color:var(--g800)">Jadikan sebagai alamat utama</span>
                                 </label>
                             </div>
-                            <button type="submit" class="save-btn" style="background: var(--g800)">➕ Tambah Alamat</button>
+                            <button type="submit" class="save-btn" style="background: var(--g800)"><i class="fi fi-rr-plus" style="margin-right: 6px;"></i> Tambah Alamat</button>
                         </form>
                     </div>
                 </div>

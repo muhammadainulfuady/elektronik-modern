@@ -1,8 +1,11 @@
 <!-- NAVBAR -->
 <nav class="navbar">
-    <a href="{{ route('index') }}" class="nav-logo">⚡ Elektronik<span>Modern</span></a>
+    <a href="{{ route('index') }}" class="nav-logo">
+        <i class="fi fi-rr-bolt" style="color:var(--blue)"></i>
+        Elektronik<span>Modern</span>
+    </a>
     <div class="nav-search">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><i class="fi fi-rr-search"></i></span>
         <input type="text" placeholder="Cari TV, kulkas, AC, mesin cuci..." id="navSearchInput"
             onkeydown="if(event.key==='Enter') window.location='{{ route('products.index') }}?q='+encodeURIComponent(this.value)" />
     </div>
@@ -11,24 +14,36 @@
             @if (auth()->user()->role === 'customer')
                 {{-- Customer: tampilkan keranjang, profil, dan pesanan --}}
                 <button type="button" class="nav-icon-btn" title="Notifikasi" onclick="toggleNotifPanel()">
-                    🔔<span class="notif-badge" id="notifBadgeNav">0</span>
+                    <i class="fi fi-rr-bell"></i><span class="notif-badge" id="notifBadgeNav">0</span>
                 </button>
-                <a href="{{ route('cart.index') }}" class="nav-icon-btn" title="Keranjang" style="text-decoration:none">
-                    🛒<span class="cart-badge" id="cartBadgeNav">{{ array_sum(session('cart', [])) }}</span>
+                <a href="{{ route('customer.wishlist') }}" class="nav-icon-btn" title="Wishlist" style="text-decoration:none">
+                    <i class="fi fi-rr-heart"></i><span class="wishlist-badge" id="wishlistBadgeNav">{{ auth()->user()->wishlists()->count() }}</span>
                 </a>
-                <a href="{{ route('customer.profile') }}" class="nav-icon-btn" title="Profil Saya"
-                    style="text-decoration: none; font-size: 16px">👤</a>
-                <a href="{{ route('customer.orders') }}" class="btn btn-outline btn-sm">📦 Pesanan</a>
+                <a href="{{ route('cart.index') }}" class="nav-icon-btn" title="Keranjang" style="text-decoration:none">
+                    <i class="fi fi-rr-shopping-cart"></i><span class="cart-badge" id="cartBadgeNav">{{ auth()->user()->keranjang ? auth()->user()->keranjang->detailKeranjangs()->sum('qty') : 0 }}</span>
+                </a>
+                <a href="{{ route('customer.profile') }}" class="nav-icon-btn" title="Profil Saya" style="text-decoration:none">
+                    <i class="fi fi-rr-user"></i>
+                </a>
+                <a href="{{ route('customer.orders') }}" class="btn btn-outline btn-sm">
+                    <i class="fi fi-rr-box" style="margin-right:4px"></i> Pesanan
+                </a>
             @elseif (auth()->user()->role === 'admin')
                 {{-- Admin: link ke dashboard admin --}}
-                <a href="{{ route('admin.index') }}" class="btn btn-outline btn-sm">🛡️ Admin</a>
+                <a href="{{ route('admin.index') }}" class="btn btn-outline btn-sm">
+                    <i class="fi fi-rr-shield" style="margin-right:4px"></i> Admin
+                </a>
             @elseif (auth()->user()->role === 'owner')
                 {{-- Owner: link ke dashboard owner --}}
-                <a href="{{ route('owner.index') }}" class="btn btn-outline btn-sm">👑 Owner</a>
+                <a href="{{ route('owner.index') }}" class="btn btn-outline btn-sm">
+                    <i class="fi fi-rr-crown" style="margin-right:4px"></i> Owner
+                </a>
             @endif
             <form method="POST" action="{{ route('logout') }}" style="margin:0">
                 @csrf
-                <button type="submit" class="btn btn-outline btn-sm">Keluar</button>
+                <button type="submit" class="btn btn-outline btn-sm">
+                    <i class="fi fi-rr-sign-out-alt" style="margin-right:4px"></i> Keluar
+                </button>
             </form>
         @else
             <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
@@ -52,6 +67,7 @@
 
         <script>
             const cartBadgeNav = document.getElementById('cartBadgeNav');
+            const wishlistBadgeNav = document.getElementById('wishlistBadgeNav');
             const notifBadgeNav = document.getElementById('notifBadgeNav');
             const notifPanel = document.getElementById('notifPanel');
             const notifOverlay = document.getElementById('notifOverlay');
@@ -68,6 +84,13 @@
                 fetch('{{ route('cart.count') }}')
                     .then(response => response.json())
                     .then(data => setBadge(cartBadgeNav, data.cartCount))
+                    .catch(() => {});
+            }
+
+            function refreshWishlistBadge() {
+                fetch('{{ route('wishlist.count') }}')
+                    .then(response => response.json())
+                    .then(data => setBadge(wishlistBadgeNav, data.wishlistCount))
                     .catch(() => {});
             }
 
@@ -120,7 +143,8 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
-                setBadge(cartBadgeNav, '{{ array_sum(session('cart', [])) }}');
+                setBadge(cartBadgeNav, '{{ auth()->user()->keranjang ? auth()->user()->keranjang->detailKeranjangs()->sum('qty') : 0 }}');
+                setBadge(wishlistBadgeNav, '{{ auth()->user()->wishlists()->count() }}');
                 setBadge(notifBadgeNav, 0);
                 if ('requestIdleCallback' in window) {
                     requestIdleCallback(loadNotifications);

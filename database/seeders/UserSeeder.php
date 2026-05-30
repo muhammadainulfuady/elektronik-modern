@@ -11,16 +11,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Admin Toko', 'admin@example.com', 'admin'],
-            ['Owner Toko', 'owner@example.com', 'owner'],
-            ['Budi Santoso', 'budi@example.com', 'customer'],
-            ['Siti Aminah', 'siti@example.com', 'customer'],
-            ['Andi Pratama', 'andi@example.com', 'customer'],
-            ['Rina Lestari', 'rina@example.com', 'customer'],
-            ['Dewi Kartika', 'dewi@example.com', 'customer'],
-            ['Rahmat Hidayat', 'rahmat@example.com', 'customer'],
-            ['Intan Permata', 'intan@example.com', 'customer'],
-            ['Fajar Nugroho', 'fajar@example.com', 'customer'],
+            ['ainulfuady', 'fuady@gmail.com', 'customer'],
+            ['fajar', 'fajar@gmail.com', 'customer'],
+            ['angga', 'angga@gmail.com', 'admin'],
+            ['joni', 'joni@gmail.com', 'owner'],
+            ['labib', 'labib@gmail.com', 'owner'],
         ];
 
         $rows = [];

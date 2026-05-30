@@ -32,7 +32,6 @@ class DatabaseSeeder extends Seeder
             DetailPesananSeeder::class,
             PembayaranSeeder::class,
             WishlistSeeder::class,
-            UlasanSeeder::class,
             NotifikasiSeeder::class,
         ]);
     }

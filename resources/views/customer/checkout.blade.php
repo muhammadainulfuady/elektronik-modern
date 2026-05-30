@@ -75,12 +75,12 @@
                 <a href="{{ route('cart.index') }}">Keranjang</a> <span>›</span>
                 <span>Checkout</span>
             </div>
-            <h1>🛒 Checkout</h1>
+            <h1><i class="fi fi-rr-shopping-bag" style="margin-right: 8px;"></i> Checkout</h1>
             <p style="color:var(--g500);margin-bottom:28px">Periksa pesanan Anda sebelum melanjutkan</p>
 
             @if (session('error'))
                 <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    ✗ {{ session('error') }}
+                    <i class="fi fi-rr-cross-small" style="margin-right: 6px;"></i> {{ session('error') }}
                 </div>
             @endif
 
@@ -98,7 +98,7 @@
                     <div>
                         <!-- Items -->
                         <div class="checkout-card">
-                            <h3>📦 Produk Dipesan</h3>
+                            <h3><i class="fi fi-rr-box" style="margin-right: 8px;"></i> Produk Dipesan</h3>
                             @foreach ($items as $item)
                                 <div class="checkout-item">
                                     <img src="{{ asset('storage/products/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
@@ -113,7 +113,7 @@
 
                         <!-- Alamat Pengiriman -->
                         <div class="checkout-card">
-                            <h3>📍 Alamat Pengiriman</h3>
+                            <h3><i class="fi fi-rr-map-marker" style="margin-right: 8px;"></i> Alamat Pengiriman</h3>
                             @if ($alamats->count())
                                 @foreach ($alamats as $alamat)
                                     <label style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--g50);border-radius:10px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--g200);transition:.2s">
@@ -125,13 +125,13 @@
                                                 {{ $alamat->label_alamat }}
                                             </div>
                                             <div style="font-size:13px;color:var(--g600)">{{ $alamat->detail_alamat }}</div>
-                                            <div style="font-size:12px;color:var(--g500);margin-top:4px">📞 {{ $alamat->nomor_telepon }}</div>
+                                            <div style="font-size:12px;color:var(--g500);margin-top:4px"><i class="fi fi-rr-phone-call" style="margin-right: 6px;"></i> {{ $alamat->nomor_telepon }}</div>
                                         </div>
                                     </label>
                                 @endforeach
                             @else
                                 <div class="no-address">
-                                    ⚠️ Anda belum memiliki alamat pengiriman. Tambahkan alamat terlebih dahulu melalui halaman profil.
+                                    <i class="fi fi-rr-exclamation" style="margin-right: 6px;"></i> Anda belum memiliki alamat pengiriman. Tambahkan alamat terlebih dahulu melalui halaman profil.
                                 </div>
                                 <a href="{{ route('customer.profile') }}?tab=alamat" class="btn btn-outline">Tambah Alamat</a>
                             @endif
@@ -139,7 +139,7 @@
 
                         <!-- Ekspedisi -->
                         <div class="checkout-card">
-                            <h3>🚚 Pilih Ekspedisi</h3>
+                            <h3><i class="fi fi-rr-truck-side" style="margin-right: 8px;"></i> Pilih Ekspedisi</h3>
                             @foreach ($ekspedisis as $ekspedisi)
                                 <label style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--g50);border-radius:10px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--g200);transition:.2s">
                                     <input type="radio" name="id_ekspedisi" value="{{ $ekspedisi->id_ekspedisi }}"
@@ -156,11 +156,11 @@
                         </div>
                         <!-- Pembayaran & Upload -->
                         <div class="checkout-card">
-                            <h3>💳 Metode & Bukti Pembayaran</h3>
+                            <h3><i class="fi fi-rr-credit-card" style="margin-right: 8px;"></i> Metode & Bukti Pembayaran</h3>
                             
                             <div class="pay-opt selected" onclick="selectPay(this, 'bank')">
                                 <input type="radio" name="metode_pembayaran" value="Transfer Bank" checked />
-                                <div style="font-size:28px">🏦</div>
+                                <div style="font-size:28px; color:var(--blue)"><i class="fi fi-rr-bank"></i></div>
                                 <div>
                                     <div style="font-weight:700;font-size:14px;color:var(--g800)">Transfer Bank</div>
                                     <div style="font-size:12px;color:var(--g500)">BCA · BRI · BNI · Mandiri</div>
@@ -168,7 +168,7 @@
                             </div>
                             <div class="pay-opt" onclick="selectPay(this, 'ewallet')">
                                 <input type="radio" name="metode_pembayaran" value="E-Wallet" />
-                                <div style="font-size:28px">💚</div>
+                                <div style="font-size:28px; color:#22c55e"><i class="fi fi-rr-wallet"></i></div>
                                 <div>
                                     <div style="font-weight:700;font-size:14px;color:var(--g800)">E-Wallet</div>
                                     <div style="font-size:12px;color:var(--g500)">GoPay · OVO · DANA · ShopeePay</div>
@@ -176,7 +176,7 @@
                             </div>
                             
                             <div class="bank-detail" id="bankDetail" style="display:block">
-                                <div style="font-weight:700;color:var(--blue);margin-bottom:6px">📋 Detail Transfer Bank:</div>
+                                <div style="font-weight:700;color:var(--blue);margin-bottom:6px"><i class="fi fi-rr-document" style="margin-right: 6px;"></i> Detail Transfer Bank:</div>
                                 <div style="font-size:14px;color:var(--g700)"><strong>Bank BCA</strong> – No. Rek: <strong>1234-5678-90</strong></div>
                                 <div style="font-size:13px;color:var(--g500)">a.n. Elektronik Modern Store</div>
                             </div>
@@ -184,13 +184,13 @@
                             <div style="margin-top:24px">
                                 <label style="display:block;font-weight:700;margin-bottom:12px;font-size:14px;color:var(--g800)">Upload Bukti Pembayaran</label>
                                 <div class="upload-zone" onclick="document.getElementById('bukti_bayar').click()">
-                                    <div style="font-size:44px;margin-bottom:10px">📸</div>
+                                    <div style="font-size:36px;margin-bottom:10px;color:var(--g400)"><i class="fi fi-rr-camera"></i></div>
                                     <div style="font-weight:700;font-size:15px;margin-bottom:4px">Klik atau seret file ke sini</div>
                                     <div style="font-size:13px">Format: JPG, PNG, PDF · Maks. 5MB</div>
                                     <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*,.pdf" style="display:none" onchange="handleUpload(this)" required />
                                 </div>
                                 <div id="uploadPreview" style="display:none;margin-top:12px;background:var(--sl);border-radius:10px;padding:12px;font-size:13px;color:var(--success);font-weight:600">
-                                    ✅ File berhasil dipilih!
+                                    <i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> File berhasil dipilih!
                                 </div>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
 
                     <!-- Summary -->
                     <div class="summary-card">
-                        <h3>💳 Ringkasan Pembayaran</h3>
+                        <h3><i class="fi fi-rr-receipt" style="margin-right: 8px;"></i> Ringkasan Pembayaran</h3>
                         <div class="summary-row">
                             <span style="color:var(--g500)">Subtotal ({{ count($items) }} produk)</span>
                             <span style="font-weight:700">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
@@ -219,11 +219,11 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary" {{ $alamats->isEmpty() ? 'disabled' : '' }} style="width:100%;justify-content:center;padding:14px;font-size:15px;margin-top:16px;{{ $alamats->isEmpty() ? 'opacity:.6;cursor:not-allowed' : '' }}">
-                            ✅ Buat Pesanan
+                            <i class="fi fi-rr-checkbox" style="margin-right: 6px;"></i> Buat Pesanan
                         </button>
 
                         <div style="text-align:center;font-size:11px;color:var(--g400);margin-top:12px">
-                            🔒 Transaksi aman & terenkripsi
+                            <i class="fi fi-rr-lock" style="margin-right: 6px;"></i> Transaksi aman & terenkripsi
                         </div>
                     </div>
                 </div>
@@ -243,7 +243,7 @@
     function handleUpload(inp) {
         if (inp.files.length > 0) {
             document.getElementById('uploadPreview').style.display = 'block';
-            document.getElementById('uploadPreview').textContent = '✅ File terpilih: ' + inp.files[0].name;
+            document.getElementById('uploadPreview').innerHTML = '<i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> File terpilih: ' + inp.files[0].name;
         }
     }
 </script>

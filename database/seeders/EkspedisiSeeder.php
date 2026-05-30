@@ -15,11 +15,6 @@ class EkspedisiSeeder extends Seeder
             ['SiCepat', 16000],
             ['POS', 15000],
             ['TIKI', 17500],
-            ['AnterAja', 16500],
-            ['Ninja', 19000],
-            ['Wahana', 14000],
-            ['ID Express', 15500],
-            ['Lion Parcel', 18500],
         ];
 
         $rows = [];

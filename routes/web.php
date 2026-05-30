@@ -9,7 +9,9 @@ use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PromoController;
+
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,21 +20,25 @@ use App\Http\Controllers\UserController;
 */
 
 // Halaman utama (publik)
-Route::get('/', function() {
+Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
-        if ($user->role === 'admin') return redirect()->route('admin.index');
-        if ($user->role === 'owner') return redirect()->route('owner.index');
+        if ($user->role === 'admin')
+            return redirect()->route('admin.index');
+        if ($user->role === 'owner')
+            return redirect()->route('owner.index');
     }
     return app(ProdukController::class)->index();
 })->name('index');
 
 // Katalog produk (publik - bisa browsing tanpa login)
-Route::get('/products', function(Illuminate\Http\Request $request) {
+Route::get('/products', function (Illuminate\Http\Request $request) {
     if (Auth::check()) {
         $user = Auth::user();
-        if ($user->role === 'admin') return redirect()->route('admin.index');
-        if ($user->role === 'owner') return redirect()->route('owner.index');
+        if ($user->role === 'admin')
+            return redirect()->route('admin.index');
+        if ($user->role === 'owner')
+            return redirect()->route('owner.index');
     }
     return app(ProdukController::class)->catalog($request);
 })->name('products.index');
@@ -87,6 +93,12 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/checkout', [PesananController::class, 'placeOrder'])->name('customer.placeOrder');
     Route::get('/notifications', [NotifikasiController::class, 'index'])->name('customer.notifications.index');
     Route::patch('/notifications/read-all', [NotifikasiController::class, 'markAllRead'])->name('customer.notifications.readAll');
+
+    // Wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('customer.wishlist');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+
 });
 
 /*

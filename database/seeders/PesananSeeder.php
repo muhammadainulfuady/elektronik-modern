@@ -11,7 +11,7 @@ class PesananSeeder extends Seeder
     public function run(): void
     {
         $rows = [];
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $subtotal = 100000 + ($i * 15000);
             $diskon = $i % 2 === 0 ? 10000 : 5000;
             $ongkir = 15000 + ($i * 500);

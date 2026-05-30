@@ -111,7 +111,7 @@
 
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>Daftar Produk</h3>
+                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-box" style="color:var(--blue)"></i> Daftar Produk</h3>
                 </div>
                 <table>
                     <thead>
@@ -155,12 +155,12 @@
                                 </td>
                                 <td>
                                     <div style="display:flex;gap:6px">
-                                        <a class="btn-edit" href="{{ route('admin.products.edit', $produk) }}">Edit</a>
+                                        <a class="btn-edit" style="display:inline-flex;align-items:center;gap:4px" href="{{ route('admin.products.edit', $produk) }}"><i class="fi fi-rr-edit"></i> Edit</a>
                                         <form method="POST" action="{{ route('admin.products.destroy', $produk) }}"
                                             onsubmit="return confirm('Hapus produk ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn-del" type="submit">Hapus</button>
+                                            <button class="btn-del" type="submit" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-trash"></i> Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -172,6 +172,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div style="padding:16px">
+                    {{ $produks->links() }}
+                </div>
             </div>
         </div>
     </div>

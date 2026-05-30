@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\DetailKeranjang;
 use App\Models\DetailPesanan;
 use App\Models\Kategori;
-use App\Models\Ulasan;
 use App\Models\Wishlist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,8 +44,25 @@ class Produk extends Model
         return $this->hasMany(Wishlist::class, 'id_produk', 'id_produk');
     }
 
-    public function ulasans(): HasMany
+    /**
+     * Use nama_produk (lowercase with underscores) instead of id_produk for routing.
+     */
+    public function getRouteKey()
     {
-        return $this->hasMany(Ulasan::class, 'id_produk', 'id_produk');
+        // "Kabel LAN" -> "kabel_lan"
+        return str_replace(' ', '_', strtolower($this->nama_produk));
+    }
+
+    /**
+     * Resolve model binding using id_produk or nama_produk.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        // "kabel_lan" -> "kabel lan"
+        $nameForQuery = str_replace('_', ' ', $value);
+
+        return $this->where('id_produk', $value)
+            ->orWhere('nama_produk', 'like', $nameForQuery)
+            ->firstOrFail();
     }
 }

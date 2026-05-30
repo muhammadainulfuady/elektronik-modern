@@ -10,16 +10,11 @@ class KategoriSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['Lampu', 'icon-lampu.svg'],
-            ['Kabel', 'icon-kabel.svg'],
-            ['Daya', 'icon-daya.svg'],
-            ['Audio', 'icon-audio.svg'],
-            ['Jaringan', 'icon-jaringan.svg'],
-            ['Komputer', 'icon-komputer.svg'],
-            ['Aksesoris', 'icon-aksesoris.svg'],
-            ['Keamanan', 'icon-keamanan.svg'],
-            ['Smart Home', 'icon-smart-home.svg'],
-            ['Peralatan', 'icon-peralatan.svg'],
+            ['Lampu', 'fi fi-rr-bulb'],
+            ['Kabel', 'fi fi-rr-pulse'],
+            ['Daya', 'fi fi-rr-charging-station'],
+            ['Audio', 'fi fi-rr-volume'],
+            ['Jaringan', 'fi fi-rr-wifi'],
         ];
 
         $rows = [];

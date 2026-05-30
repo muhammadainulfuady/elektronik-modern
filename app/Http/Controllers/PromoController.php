@@ -23,10 +23,14 @@ class PromoController extends Controller
         $data['kode_voucher'] = strtoupper($data['kode_voucher']);
 
         Promo::create($data);
-        $this->notifyCustomers(
-            'Promo Baru: ' . $data['kode_voucher'],
-            'Gunakan voucher ' . $data['kode_voucher'] . ' untuk mendapatkan diskon ' . $this->discountLabel($data) . '.'
-        );
+
+        // Hanya kirim notifikasi jika promo sudah aktif saat ini
+        if (now()->greaterThanOrEqualTo($data['tanggal_mulai'])) {
+            $this->notifyCustomers(
+                'Promo Baru: ' . $data['kode_voucher'],
+                'Gunakan voucher ' . $data['kode_voucher'] . ' untuk mendapatkan diskon ' . $this->discountLabel($data) . '.'
+            );
+        }
 
         return redirect()
             ->route('admin.promos.index')
@@ -47,12 +51,6 @@ class PromoController extends Controller
 
     public function destroy(Promo $promo)
     {
-        if ($promo->pesanans()->exists()) {
-            return redirect()
-                ->route('admin.promos.index')
-                ->with('error', 'Promo tidak bisa dihapus karena sudah dipakai pesanan.');
-        }
-
         $promo->delete();
 
         return redirect()

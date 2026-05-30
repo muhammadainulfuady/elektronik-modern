@@ -60,7 +60,7 @@
                     <div class="page-title">Dashboard Owner</div>
                 </div>
                 <div style="display:flex;gap:10px;align-items:center">
-                    <span class="btn btn-outline btn-sm">📅 {{ now()->format('d M Y') }}</span>
+                    <span class="btn btn-outline btn-sm"><i class="fi fi-rr-calendar"></i> {{ now()->format('d M Y') }}</span>
                     <div style="width:40px;height:40px;background:linear-gradient(135deg, #f59e0b, #d97706);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px">
                         {{ strtoupper(substr(auth()->user()->nama ?? 'O', 0, 2)) }}
                     </div>
@@ -70,22 +70,22 @@
             <!-- Revenue Card -->
             <div class="overview-grid">
                 <div class="revenue-card">
-                    <div class="revenue-label">💰 Total Pendapatan</div>
+                    <div class="revenue-label"><i class="fi fi-rr-sack-dollar"></i> Total Pendapatan</div>
                     <div class="revenue-val">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</div>
                     <div class="revenue-sub">Dari {{ $jumlahSelesai }} pesanan selesai</div>
                 </div>
                 <div class="revenue-card" style="background:linear-gradient(135deg, var(--teal) 0%, #34d399 100%)">
-                    <div class="revenue-label">📈 Pendapatan Bulan Ini</div>
+                    <div class="revenue-label"><i class="fi fi-rr-chart-line-up"></i> Pendapatan Bulan Ini</div>
                     <div class="revenue-val">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</div>
                     <div class="revenue-sub">{{ $pesananBulanIni }} pesanan bulan ini · {{ $persenPendapatan >= 0 ? '+' : '' }}{{ $persenPendapatan }}% dari bulan lalu</div>
                 </div>
                 <div class="revenue-card" style="background:linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)">
-                    <div class="revenue-label">🧮 Rata-rata Transaksi</div>
+                    <div class="revenue-label"><i class="fi fi-rr-receipt"></i> Rata-rata Transaksi</div>
                     <div class="revenue-val">Rp {{ number_format($rataRataTransaksi, 0, ',', '.') }}</div>
                     <div class="revenue-sub">Dihitung dari pesanan selesai</div>
                 </div>
                 <div class="revenue-card" style="background:linear-gradient(135deg, #0f172a 0%, #334155 100%)">
-                    <div class="revenue-label">📅 Pendapatan Bulan Lalu</div>
+                    <div class="revenue-label"><i class="fi fi-rr-briefcase"></i> Pendapatan Bulan Lalu</div>
                     <div class="revenue-val">Rp {{ number_format($pendapatanBulanLalu, 0, ',', '.') }}</div>
                     <div class="revenue-sub">Pembanding performa bulan berjalan</div>
                 </div>
@@ -94,28 +94,28 @@
             <!-- Stats -->
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-ico blue">📦</div>
+                    <div class="stat-ico blue"><i class="fi fi-rr-box"></i></div>
                     <div>
                         <div class="stat-label">Total Produk</div>
                         <div class="stat-val">{{ $jumlahProduk }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico green">👥</div>
+                    <div class="stat-ico green"><i class="fi fi-rr-users"></i></div>
                     <div>
                         <div class="stat-label">Total Customer</div>
                         <div class="stat-val">{{ $jumlahCustomer }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico teal">🛡️</div>
+                    <div class="stat-ico teal"><i class="fi fi-rr-shield-check"></i></div>
                     <div>
                         <div class="stat-label">Total Admin</div>
                         <div class="stat-val">{{ $jumlahAdmin }}</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-ico warn">🧾</div>
+                    <div class="stat-ico warn"><i class="fi fi-rr-receipt"></i></div>
                     <div>
                         <div class="stat-label">Total Pesanan</div>
                         <div class="stat-val">{{ $totalPesanan }}</div>
@@ -126,7 +126,7 @@
             <!-- Order Status Overview -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
                 <div class="data-card">
-                    <div class="data-card-head"><h3>📊 Status Pesanan</h3></div>
+                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-chart-histogram" style="color:var(--blue)"></i> Status Pesanan</h3></div>
                     <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
                         @php
                             $total = max(1, $totalPesanan);
@@ -152,22 +152,22 @@
                 </div>
 
                 <div class="data-card">
-                    <div class="data-card-head"><h3>📋 Ringkasan</h3></div>
+                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Ringkasan</h3></div>
                     <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--g50);border-radius:10px">
-                            <span style="font-size:13px;color:var(--g600)">⏳ Menunggu Konfirmasi</span>
+                            <span style="font-size:13px;color:var(--g600);display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-time-fast"></i> Menunggu Konfirmasi</span>
                             <span class="badge badge-pend" style="font-size:13px;padding:5px 14px">{{ $jumlahMenunggu }}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--g50);border-radius:10px">
-                            <span style="font-size:13px;color:var(--g600)">⚙️ Sedang Diproses</span>
+                            <span style="font-size:13px;color:var(--g600);display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-settings"></i> Sedang Diproses</span>
                             <span class="badge badge-info" style="font-size:13px;padding:5px 14px">{{ $jumlahDiproses }}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--g50);border-radius:10px">
-                            <span style="font-size:13px;color:var(--g600)">🚚 Dalam Pengiriman</span>
+                            <span style="font-size:13px;color:var(--g600);display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-truck-side"></i> Dalam Pengiriman</span>
                             <span class="badge badge-info" style="font-size:13px;padding:5px 14px">{{ $jumlahDikirim }}</span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--g50);border-radius:10px">
-                            <span style="font-size:13px;color:var(--g600)">✅ Selesai</span>
+                            <span style="font-size:13px;color:var(--g600);display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check-circle"></i> Selesai</span>
                             <span class="badge badge-success" style="font-size:13px;padding:5px 14px">{{ $jumlahSelesai }}</span>
                         </div>
                     </div>
@@ -176,7 +176,7 @@
 
             <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:20px;margin-bottom:24px">
                 <div class="data-card">
-                    <div class="data-card-head"><h3>📈 Pendapatan Bulanan</h3></div>
+                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-coins" style="color:var(--blue)"></i> Pendapatan Bulanan</h3></div>
                     @php
                         $maxPendapatan = max(1, (int) collect($pendapatanBulanan)->max());
                         $bulanLabels = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Agu',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'];
@@ -197,7 +197,7 @@
                 </div>
 
                 <div class="data-card">
-                    <div class="data-card-head"><h3>🍩 Penjualan per Kategori</h3></div>
+                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-tags" style="color:var(--blue)"></i> Penjualan per Kategori</h3></div>
                     <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
                         @php $totalKategori = max(1, (int) $penjualanKategori->sum('total_nominal')); @endphp
                         @forelse($penjualanKategori as $kategori)
@@ -220,7 +220,7 @@
             </div>
 
             <div class="data-card" style="margin-bottom:24px">
-                <div class="data-card-head"><h3>🏆 Produk Terlaris</h3></div>
+                <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-flame" style="color:var(--blue)"></i> Produk Terlaris</h3></div>
                 <table>
                     <thead>
                         <tr>
@@ -250,7 +250,7 @@
             <!-- Recent Orders -->
             <div class="data-card">
                 <div class="data-card-head">
-                    <h3>🧾 Pesanan Terbaru</h3>
+                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Pesanan Terbaru</h3>
                     <span class="badge badge-info">{{ $totalPesanan }} total</span>
                 </div>
                 <table>
@@ -274,10 +274,10 @@
                                     default    => 'badge-info',
                                 };
                                 $statusLabel = match ($pesanan->status_pesanan) {
-                                    'menunggu' => '⏳ Menunggu',
-                                    'diproses' => '⚙️ Diproses',
-                                    'dikirim'  => '🚚 Dikirim',
-                                    'selesai'  => '✅ Selesai',
+                                    'menunggu' => '<i class="fi fi-rr-time-fast" style="margin-right:4px"></i> Menunggu',
+                                    'diproses' => '<i class="fi fi-rr-settings" style="margin-right:4px"></i> Diproses',
+                                    'dikirim'  => '<i class="fi fi-rr-truck-side" style="margin-right:4px"></i> Dikirim',
+                                    'selesai'  => '<i class="fi fi-rr-check-circle" style="margin-right:4px"></i> Selesai',
                                     default    => ucfirst($pesanan->status_pesanan),
                                 };
                             @endphp
@@ -290,7 +290,7 @@
                                 <td style="font-weight:800;color:var(--blue);font-family:'Syne',sans-serif">
                                     Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
                                 </td>
-                                <td><span class="badge {{ $statusClass }}">{{ $statusLabel }}</span></td>
+                                <td><span class="badge {{ $statusClass }}">{!! $statusLabel !!}</span></td>
                             </tr>
                         @empty
                             <tr>
