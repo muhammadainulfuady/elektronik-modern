@@ -3,32 +3,31 @@
 @section('title', 'Kelola Produk – Admin Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
 @endsection
 
 @section('header')
 @endsection
 
 @section('content')
-    <div class="admin-layout">
+    <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="admin-main">
-            <div class="admin-topbar">
-                <div class="page-title">Kelola Produk</div>
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Produk</h1>
             </div>
 
             @if (session('status'))
-                <div class="data-card" style="padding:12px 16px;margin-bottom:16px">
-                    <strong>{{ session('status') }}</strong>
+                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
+                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="data-card" style="padding:12px 16px;margin-bottom:16px">
-                    <strong>Gagal menyimpan produk.</strong>
-                    <div style="font-size:12px;color:var(--g500)">Cek kembali input yang wajib diisi.</div>
-                    <ul style="margin:8px 0 0 16px;font-size:12px;color:var(--g500)">
+                <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
+                    <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal menyimpan produk.</div>
+                    <div class="text-[12px] font-medium text-red-600 mb-2">Cek kembali input yang wajib diisi.</div>
+                    <ul class="list-disc pl-5 text-[12px] font-semibold space-y-1">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -36,145 +35,180 @@
                 </div>
             @endif
 
-            <div class="data-card" style="margin-bottom:16px">
-                <div class="data-card-head">
-                    <h3>Tambah Produk</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-g100 mb-8">
+                <div class="p-6 border-b border-g100">
+                    <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                        <i class="fi fi-rr-layer-plus text-primary"></i> Tambah Produk
+                    </h3>
                 </div>
-                <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data"
-                    style="padding:16px;display:grid;gap:12px">
+                <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="p-6">
                     @csrf
-                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label style="font-size:12px;color:var(--g500)">Nama Produk</label>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Nama Produk</label>
                             <input name="nama_produk" value="{{ old('nama_produk') }}" required
-                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('nama_produk') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                                class="w-full py-2.5 px-3 border-[1.5px] {{ $errors->has('nama_produk') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
                             @error('nama_produk')
-                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                                <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                         <div>
-                            <label style="font-size:12px;color:var(--g500)">Kategori</label>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Kategori</label>
                             <select name="id_kategori" required
-                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('id_kategori') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                                class="w-full py-2.5 px-3 border-[1.5px] {{ $errors->has('id_kategori') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10 cursor-pointer">
                                 <option value="">Pilih kategori</option>
                                 @foreach ($kategoris as $kategori)
-                                    <option value="{{ $kategori->id_kategori }}"
-                                        @selected(old('id_kategori') == $kategori->id_kategori)>
+                                    <option value="{{ $kategori->id_kategori }}" @selected(old('id_kategori') == $kategori->id_kategori)>
                                         {{ $kategori->nama_kategori }}
                                     </option>
                                 @endforeach
                             </select>
                             @error('id_kategori')
-                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                                <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label style="font-size:12px;color:var(--g500)">Harga</label>
-                            <input type="number" name="harga" min="0" value="{{ old('harga') }}" required
-                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('harga') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Harga</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[13px] font-bold text-g500">Rp</div>
+                                <input type="number" name="harga" min="0" value="{{ old('harga') }}" required
+                                    class="w-full py-2.5 pl-9 pr-3 border-[1.5px] {{ $errors->has('harga') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
+                            </div>
                             @error('harga')
-                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                                <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                         <div>
-                            <label style="font-size:12px;color:var(--g500)">Stok</label>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Stok</label>
                             <input type="number" name="stok" min="0" value="{{ old('stok') }}" required
-                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('stok') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                                class="w-full py-2.5 px-3 border-[1.5px] {{ $errors->has('stok') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
                             @error('stok')
-                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                                <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                         <div>
-                            <label style="font-size:12px;color:var(--g500)">Gambar Produk</label>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Gambar Produk</label>
                             <input type="file" name="gambar" accept="image/*" required
-                                style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('gambar') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">
+                                class="w-full py-2 px-3 border-[1.5px] {{ $errors->has('gambar') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[12px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
                             @error('gambar')
-                                <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                                <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    <div>
-                        <label style="font-size:12px;color:var(--g500)">Deskripsi</label>
+                    
+                    <div class="mb-5">
+                        <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Deskripsi</label>
                         <textarea name="deskripsi" rows="3" required
-                            style="width:100%;padding:10px 12px;border:1px solid {{ $errors->has('deskripsi') ? '#ef4444' : 'var(--g200)' }};border-radius:10px">{{ old('deskripsi') }}</textarea>
+                            class="w-full py-2.5 px-3 border-[1.5px] {{ $errors->has('deskripsi') ? 'border-red-500' : 'border-g200' }} rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">{{ old('deskripsi') }}</textarea>
                         @error('deskripsi')
-                            <div style="margin-top:6px;font-size:12px;color:#ef4444">{{ $message }}</div>
+                            <div class="mt-1 text-[11px] font-bold text-red-500">{{ $message }}</div>
                         @enderror
                     </div>
+                    
                     <div>
-                        <button class="btn btn-primary" type="submit">Simpan Produk</button>
+                        <button type="submit" class="inline-flex py-2.5 px-5 bg-primary text-white rounded-lg font-bold text-[13px] shadow-sm hover:bg-primary-dark hover:-translate-y-px transition-all items-center gap-2">
+                            <i class="fi fi-rr-disk"></i> Simpan Produk
+                        </button>
                     </div>
                 </form>
             </div>
 
-            <div class="data-card">
-                <div class="data-card-head">
-                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-box" style="color:var(--blue)"></i> Daftar Produk</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-g100">
+                <div class="p-6 border-b border-g100 flex justify-between items-center">
+                    <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                        <i class="fi fi-rr-box text-primary"></i> Daftar Produk
+                    </h3>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Produk</th>
-                            <th>Kategori</th>
-                            <th>Harga</th>
-                            <th>Stok</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($produks as $produk)
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full min-w-[800px] text-left border-collapse">
+                        <thead>
                             <tr>
-                                <td style="color:var(--g400);font-size:12px">
-                                    #P{{ str_pad((string) $produk->id_produk, 3, '0', STR_PAD_LEFT) }}</td>
-                                <td>
-                                    <div style="display:flex;align-items:center;gap:10px">
-                                        <img src="{{ asset('storage/products/' . $produk->gambar) }}"
-                                            style="width:44px;height:44px;border-radius:8px;object-fit:cover"
-                                            alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async">
-                                        <span style="font-weight:700;font-size:13px">{{ $produk->nama_produk }}</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge badge-info">{{ $produk->kategori->nama_kategori ?? '-' }}</span></td>
-                                <td style="font-weight:800;font-family:'Syne',sans-serif">Rp
-                                    {{ number_format($produk->harga, 0, ',', '.') }}
-                                </td>
-                                <td>
-                                    <span
-                                        class="badge {{ $produk->stok > 10 ? 'badge-success' : ($produk->stok > 0 ? 'badge-warn' : 'badge-danger') }}">
-                                        {{ $produk->stok }} unit
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ $produk->stok > 0 ? 'badge-success' : 'badge-danger' }}">
-                                        {{ $produk->stok > 0 ? 'Aktif' : 'Habis' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px">
-                                        <a class="btn-edit" style="display:inline-flex;align-items:center;gap:4px" href="{{ route('admin.products.edit', $produk) }}"><i class="fi fi-rr-edit"></i> Edit</a>
-                                        <form method="POST" action="{{ route('admin.products.destroy', $produk) }}"
-                                            onsubmit="return confirm('Hapus produk ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn-del" type="submit" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-trash"></i> Hapus</button>
-                                        </form>
-                                    </div>
-                                </td>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">ID</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Produk</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Kategori</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Harga</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Stok</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Status</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200 text-right">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" style="text-align:center;color:var(--g400);padding:18px">Belum ada produk.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                <div style="padding:16px">
-                    {{ $produks->links() }}
+                        </thead>
+                        <tbody>
+                            @forelse ($produks as $produk)
+                                <tr class="group hover:bg-g50/50 transition-colors">
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-bold text-g400 text-[12px]">#P{{ str_pad((string) $produk->id_produk, 3, '0', STR_PAD_LEFT) }}</div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-11 h-11 rounded-lg bg-white border border-g100 p-1 flex items-center justify-center shrink-0">
+                                                @if($produk->gambar)
+                                                    <img src="{{ asset('storage/products/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" loading="lazy" decoding="async" class="w-full h-full object-contain mix-blend-multiply">
+                                                @else
+                                                    <i class="fi fi-rr-picture text-g300"></i>
+                                                @endif
+                                            </div>
+                                            <div class="font-bold text-g800 text-[13px] line-clamp-2 max-w-[200px]">{{ $produk->nama_produk }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <span class="inline-flex items-center bg-blue-50 text-blue-600 border border-blue-200 py-1 px-2.5 rounded text-[10px] font-extrabold tracking-widest uppercase">
+                                            {{ $produk->kategori->nama_kategori ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-heading font-extrabold text-g900 text-[14px] whitespace-nowrap">
+                                            Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        @php
+                                            $stokClass = $produk->stok > 10 ? 'bg-green-50 text-green-600 border-green-200' : ($produk->stok > 0 ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-red-50 text-red-600 border-red-200');
+                                        @endphp
+                                        <span class="inline-flex items-center {{ $stokClass }} border py-1 px-2.5 rounded text-[11px] font-extrabold tracking-widest">
+                                            {{ $produk->stok }} unit
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <span class="inline-flex items-center gap-1.5 {{ $produk->stok > 0 ? 'text-green-600' : 'text-red-500' }} text-[12px] font-bold">
+                                            <span class="w-2 h-2 rounded-full {{ $produk->stok > 0 ? 'bg-green-500' : 'bg-red-500' }}"></span>
+                                            {{ $produk->stok > 0 ? 'Aktif' : 'Habis' }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('admin.products.edit', $produk) }}" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors" title="Edit">
+                                                <i class="fi fi-rr-edit"></i>
+                                            </a>
+                                            <form method="POST" action="{{ route('admin.products.destroy', $produk) }}" onsubmit="return confirm('Hapus produk ini?')" class="m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors" title="Hapus">
+                                                    <i class="fi fi-rr-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="py-8 px-6 text-center text-g500 font-semibold text-[13px]">
+                                        Belum ada produk terdaftar.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
+                @if($produks->hasPages())
+                <div class="p-6 border-t border-g100 flex justify-center w-full overflow-hidden">
+                    <div class="inline-flex max-w-full bg-white rounded-xl shadow-sm border border-g200 p-1">
+                        {{ $produks->links('pagination::tailwind') }}
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

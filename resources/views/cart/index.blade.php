@@ -3,208 +3,6 @@
 @section('title', 'Keranjang Belanja – Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}" />
-    <style>
-        .cart-section {
-            padding: 32px 0 72px
-        }
-
-        .cart-section h1 {
-            font-family: "Syne", sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 8px
-        }
-
-        .cart-layout {
-            display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 28px;
-            align-items: start
-        }
-
-        .cart-table {
-            background: #fff;
-            border-radius: var(--rlg);
-            box-shadow: var(--sh);
-            overflow: hidden
-        }
-
-        .cart-table table {
-            width: 100%
-        }
-
-        .cart-table th {
-            background: var(--g50);
-            padding: 14px 20px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--g500);
-            text-transform: uppercase;
-            letter-spacing: .04em
-        }
-
-        .cart-table td {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--g100);
-            vertical-align: middle
-        }
-
-        .cart-table tr:last-child td {
-            border-bottom: none
-        }
-
-        .cart-prod {
-            display: flex;
-            align-items: center;
-            gap: 14px
-        }
-
-        .cart-prod img {
-            width: 64px;
-            height: 64px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: var(--g100)
-        }
-
-        .cart-prod-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--g800);
-            margin-bottom: 2px
-        }
-
-        .cart-prod-cat {
-            font-size: 11px;
-            color: var(--g400)
-        }
-
-        .cart-qty {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            border: 1.5px solid var(--g200);
-            border-radius: 8px;
-            overflow: hidden
-        }
-
-        .cart-qty button {
-            width: 34px;
-            height: 34px;
-            border: none;
-            background: var(--g50);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--g700);
-            transition: .15s
-        }
-
-        .cart-qty button:hover {
-            background: var(--blue-l);
-            color: var(--blue)
-        }
-
-        .cart-qty span {
-            width: 40px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 14px;
-            border-left: 1.5px solid var(--g200);
-            border-right: 1.5px solid var(--g200);
-            padding: 6px 0;
-            background: #fff
-        }
-
-        .cart-price {
-            font-family: "Syne", sans-serif;
-            font-weight: 800;
-            color: var(--blue);
-            white-space: nowrap
-        }
-
-        /* Summary card */
-        .summary-card {
-            background: #fff;
-            border-radius: var(--rlg);
-            box-shadow: var(--sh);
-            padding: 28px;
-            position: sticky;
-            top: 84px
-        }
-
-        .summary-card h3 {
-            font-family: "Syne", sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 20px
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 14px
-        }
-
-        .summary-row.total {
-            font-size: 18px;
-            font-weight: 800;
-            border-top: 2px solid var(--g200);
-            padding-top: 16px;
-            margin-top: 16px
-        }
-
-        .summary-row.total .val {
-            color: var(--blue);
-            font-family: "Syne", sans-serif;
-            font-size: 22px
-        }
-
-        .summary-actions {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px
-        }
-
-        .summary-actions .btn {
-            justify-content: center;
-            padding: 14px
-        }
-
-        .summary-note {
-            text-align: center;
-            font-size: 11px;
-            color: var(--g400);
-            margin-top: 12px
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 60px 20px
-        }
-
-        .empty-cart .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px
-        }
-
-        @media(max-width:900px) {
-            .cart-layout {
-                grid-template-columns: 1fr
-            }
-
-            .summary-card {
-                position: static
-            }
-        }
-    </style>
 @endsection
 
 @section('header')
@@ -212,79 +10,108 @@
 @endsection
 
 @section('content')
-    <section class="cart-section">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Keranjang</span>
+    <section class="py-8 md:py-[72px] bg-g50 min-h-screen px-4 md:px-8">
+        <div class="max-w-[1280px] mx-auto" id="cartContainer">
+            <div class="flex items-center gap-1.5 mb-6 text-[13px]">
+                <a href="{{ route('index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Beranda</a> 
+                <i class="fi fi-rr-angle-small-right text-g400"></i> 
+                <span class="text-g800 font-semibold">Keranjang</span>
             </div>
-            <h1><i class="fi fi-rr-shopping-cart" style="margin-right: 8px;"></i> Keranjang Belanja</h1>
-            <p style="color:var(--g500);margin-bottom:28px">{{ count($items) }} produk di keranjang Anda</p>
+            
+            <div class="mb-8">
+                <h1 class="font-heading text-[28px] md:text-[32px] font-extrabold text-g900 mb-2 flex items-center gap-3">
+                    <i class="fi fi-rr-shopping-cart text-primary"></i> Keranjang Belanja
+                </h1>
+                <p class="text-g500 text-[15px]">{{ count($items) }} produk di keranjang Anda</p>
+            </div>
 
             @if (session('status'))
-                <div
-                    style="background:var(--sl);color:#15803D;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    <i class="fi fi-rr-check" style="margin-right: 6px;"></i> {{ session('status') }}
-                </div>
+                <x-alert type="success" class="mb-6">
+                    {{ session('status') }}
+                </x-alert>
             @endif
 
             @if (session('error'))
-                <div
-                    style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    <i class="fi fi-rr-cross-small" style="margin-right: 6px;"></i> {{ session('error') }}
-                </div>
+                <x-alert type="danger" class="mb-6">
+                    {{ session('error') }}
+                </x-alert>
+            @endif
+
+            @if ($errors->any())
+                <x-alert type="danger" class="mb-6">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-alert>
             @endif
 
             @if (count($items))
-                <div class="cart-layout">
-                    <div class="cart-table">
-                        <table>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <!-- Cart Items -->
+                    <div class="flex-1 bg-white rounded-2xl shadow-card overflow-x-auto border border-g100 w-full">
+                        <table class="w-full min-w-[600px] text-left border-collapse">
                             <thead>
                                 <tr>
-                                    <th>Produk</th>
-                                    <th>Harga</th>
-                                    <th>Jumlah</th>
-                                    <th>Subtotal</th>
-                                    <th></th>
+                                    <th class="bg-g50 py-3.5 px-5 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Produk</th>
+                                    <th class="bg-g50 py-3.5 px-5 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Harga</th>
+                                    <th class="bg-g50 py-3.5 px-5 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Jumlah</th>
+                                    <th class="bg-g50 py-3.5 px-5 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Subtotal</th>
+                                    <th class="bg-g50 py-3.5 px-5 border-b border-g200"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($items as $item)
-                                    <tr>
-                                        <td>
-                                            <div class="cart-prod">
-                                                <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
-                                                    alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
+                                    <tr class="group hover:bg-g50 transition-colors">
+                                        <td class="py-4 px-5 border-b border-g100 group-last:border-none">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-16 h-16 rounded-xl bg-g50 border border-g100 p-1 flex items-center justify-center shrink-0">
+                                                    @if($item->produk->gambar)
+                                                        <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
+                                                            alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async" class="w-full h-full object-contain mix-blend-multiply">
+                                                    @else
+                                                        <i class="fi fi-rr-picture text-2xl text-g300"></i>
+                                                    @endif
+                                                </div>
                                                 <div>
-                                                    <div class="cart-prod-name">{{ $item->produk->nama_produk }}</div>
-                                                    <div class="cart-prod-cat">{{ $item->produk->kategori->nama_kategori ?? '-' }}
-                                                    </div>
+                                                    <x-badge variant="primary" class="mb-1 uppercase tracking-wider">
+                                                        {{ $item->produk->kategori->nama_kategori ?? '-' }}
+                                                    </x-badge>
+                                                    <div class="text-sm font-bold text-g800 line-clamp-2">{{ $item->produk->nama_produk }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="cart-price">Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</td>
-                                        <td>
-                                            <div class="cart-qty">
-                                                <form method="POST" action="{{ route('cart.update') }}" style="display:contents">
+                                        <td class="py-4 px-5 border-b border-g100 group-last:border-none">
+                                            <div class="font-heading font-extrabold text-g800 whitespace-nowrap">Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</div>
+                                        </td>
+                                        <td class="py-4 px-5 border-b border-g100 group-last:border-none">
+                                            <div class="flex items-center gap-0 border-[1.5px] border-g200 rounded-lg overflow-hidden w-fit bg-white shadow-sm">
+                                                <form method="POST" action="{{ route('cart.update') }}" class="m-0">
                                                     @csrf @method('PATCH')
                                                     <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
                                                     <input type="hidden" name="qty" value="{{ max(0, $item->qty - 1) }}">
-                                                    <button type="submit">−</button>
+                                                    <button type="submit" class="w-8 h-8 border-none bg-g50 text-g700 text-lg font-bold flex items-center justify-center cursor-pointer hover:bg-primary-light hover:text-primary transition-colors">−</button>
                                                 </form>
-                                                <span>{{ $item->qty }}</span>
-                                                <form method="POST" action="{{ route('cart.update') }}" style="display:contents">
+                                                <span class="w-10 text-center font-bold text-[13px] border-x-[1.5px] border-g200 py-1.5">{{ $item->qty }}</span>
+                                                <form method="POST" action="{{ route('cart.update') }}" class="m-0">
                                                     @csrf @method('PATCH')
                                                     <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
                                                     <input type="hidden" name="qty" value="{{ $item->qty + 1 }}">
-                                                    <button type="submit">+</button>
+                                                    <button type="submit" class="w-8 h-8 border-none bg-g50 text-g700 text-lg font-bold flex items-center justify-center cursor-pointer hover:bg-primary-light hover:text-primary transition-colors">+</button>
                                                 </form>
                                             </div>
                                         </td>
-                                        <td class="cart-price">Rp {{ number_format($item->lineTotal, 0, ',', '.') }}</td>
-                                        <td>
-                                            <form method="POST" action="{{ route('cart.remove') }}">
+                                        <td class="py-4 px-5 border-b border-g100 group-last:border-none">
+                                            <div class="font-heading font-extrabold text-primary whitespace-nowrap">Rp {{ number_format($item->lineTotal, 0, ',', '.') }}</div>
+                                        </td>
+                                        <td class="py-4 px-5 border-b border-g100 group-last:border-none text-right">
+                                            <form method="POST" action="{{ route('cart.remove') }}" class="m-0 inline-block">
                                                 @csrf @method('DELETE')
                                                 <input type="hidden" name="id_produk" value="{{ $item->produk->id_produk }}">
-                                                <button type="submit" class="btn-del" title="Hapus"><i class="fi fi-rr-trash"></i></button>
+                                                <button type="submit" class="w-8 h-8 rounded-full bg-red-50 text-red-500 border border-red-100 flex items-center justify-center cursor-pointer hover:bg-red-500 hover:text-white transition-all shadow-sm" title="Hapus">
+                                                    <i class="fi fi-rr-trash"></i>
+                                                </button>
                                             </form>
                                         </td>
                                     </tr>
@@ -293,72 +120,130 @@
                         </table>
                     </div>
 
-                    <div class="summary-card">
-                        <h3>Ringkasan Belanja</h3>
+                    <!-- Summary Card -->
+                    <x-card class="w-full lg:w-[360px] shrink-0 p-6 lg:sticky lg:top-[84px] shadow-card">
+                        <h3 class="font-heading text-lg font-extrabold text-g900 mb-5">Ringkasan Belanja</h3>
 
-                        <div class="summary-row">
-                            <span style="color:var(--g500)">Subtotal ({{ count($items) }} produk)</span>
-                            <span style="font-weight:700">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                        <div class="flex justify-between items-center mb-3 text-[13px]">
+                            <span class="text-g500">Subtotal ({{ count($items) }} produk)</span>
+                            <span class="font-bold text-g800">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
-                        <form method="POST" action="{{ route('cart.voucher.apply') }}"
-                            style="display:flex;gap:8px;margin:14px 0">
+                        
+                        <form method="POST" action="{{ route('cart.voucher.apply') }}" class="flex gap-2 my-4">
                             @csrf
                             <input name="kode_voucher" value="{{ $appliedPromo->kode_voucher ?? old('kode_voucher') }}"
-                                placeholder="Kode voucher"
-                                style="min-width:0;flex:1;padding:10px 12px;border:1px solid var(--g200);border-radius:10px;text-transform:uppercase">
-                            <button class="btn btn-outline" type="submit" style="padding:10px 12px">Pakai</button>
+                                placeholder="Kode voucher" required
+                                class="flex-1 py-2 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-bold text-g800 uppercase focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
+                            <x-button type="submit" variant="secondary" class="py-2 px-4 text-[13px]">Pakai</x-button>
                         </form>
-                        <div class="daftar_promo">
-                            <h6>PROMO YANG TERSEDIA</h6>
-                            <hr>
+                        
+                        <div class="mb-4">
+                            <h6 class="text-[10px] font-extrabold text-g400 uppercase tracking-widest mb-2">Promo yang Tersedia</h6>
+                            <div class="flex flex-col gap-1">
                             @foreach ($promos as $promo)
-                                <div class="summary-row">
-                                    <span style="color:var(--success);font-weight:700">{{ $promo->kode_voucher }}</span>
+                                <div class="bg-primary-light border border-primary/20 py-1.5 px-3 rounded text-[11px] font-bold text-primary flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> {{ $promo->kode_voucher }}</div>
                                 </div>
                             @endforeach
+                            </div>
                         </div>
+                        
                         @if ($appliedPromo)
-                            <div class="summary-row">
-                                <span style="color:var(--success);font-weight:700">Voucher {{ $appliedPromo->kode_voucher }}</span>
-                                <form method="POST" action="{{ route('cart.voucher.remove') }}">
+                            <div class="flex justify-between items-center mb-2 bg-green-50 py-1.5 px-3 rounded-lg border border-green-100">
+                                <span class="text-[11px] font-bold text-green-700 flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> {{ $appliedPromo->kode_voucher }}</span>
+                                <form method="POST" action="{{ route('cart.voucher.remove') }}" class="m-0">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn-del" style="padding:5px 8px">Hapus</button>
+                                    <button type="submit" class="text-[10px] font-extrabold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors">Hapus</button>
                                 </form>
                             </div>
-                            <div class="summary-row">
-                                <span style="color:var(--g500)">Diskon</span>
-                                <span style="font-weight:700;color:var(--success)">- Rp
-                                    {{ number_format($discount, 0, ',', '.') }}</span>
+                            <div class="flex justify-between items-center mb-3 text-[13px]">
+                                <span class="text-g500">Diskon</span>
+                                <span class="font-bold text-green-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
                         @endif
-                        <div class="summary-row total">
-                            <span>Total</span>
-                            <span class="val">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        
+                        <div class="flex justify-between items-center mt-5 pt-4 border-t-2 border-g100">
+                            <span class="text-sm font-bold text-g500">Total</span>
+                            <span class="font-heading text-xl font-extrabold text-primary">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
-                        <div class="summary-actions">
+                        
+                        <div class="mt-6 flex flex-col gap-3">
                             @auth
                                 @if (auth()->user()->role === 'customer')
-                                    <a href="{{ route('customer.checkout') }}" class="btn btn-primary"
-                                        style="justify-content:center;padding:14px"><i class="fi fi-rr-checkbox" style="margin-right: 6px;"></i> Checkout Sekarang</a>
+                                    <x-button onclick="window.location='{{ route('customer.checkout') }}'" class="w-full">
+                                        <i class="fi fi-rr-checkbox"></i> Checkout Sekarang
+                                    </x-button>
                                 @endif
                             @endauth
-                            <a href="{{ route('products.index') }}" class="btn btn-outline">← Lanjut Belanja</a>
+                            <x-button variant="outline" onclick="window.location='{{ route('products.index') }}'" class="w-full border-g200 text-g700 hover:border-primary">
+                                <i class="fi fi-rr-arrow-left"></i> Lanjut Belanja
+                            </x-button>
                         </div>
-                        <div class="summary-note"><i class="fi fi-rr-lock" style="margin-right: 6px;"></i> Transaksi aman & terenkripsi</div>
-                    </div>
+                        <div class="text-center text-[11px] font-semibold text-g400 mt-4 flex items-center justify-center gap-1.5">
+                            <i class="fi fi-rr-lock"></i> Transaksi aman & terenkripsi
+                        </div>
+                    </x-card>
                 </div>
             @else
-                <div class="empty-cart">
-                    <div class="empty-icon"><i class="fi fi-rr-shopping-cart" style="font-size: 64px;"></i></div>
-                    <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
-                        Keranjang Kosong
-                    </div>
-                    <div style="font-size:14px;color:var(--g400);margin-bottom:24px">
-                        Yuk tambahkan produk favorit kamu!
-                    </div>
-                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg"><i class="fi fi-rr-shopping-bag" style="margin-right: 6px;"></i> Belanja Sekarang</a>
+                <div class="bg-white rounded-2xl shadow-sm border border-g100 p-12 text-center mt-5">
+                    <div class="text-[64px] text-g300 mb-4 inline-flex justify-center"><i class="fi fi-rr-shopping-cart"></i></div>
+                    <h3 class="font-heading text-xl font-extrabold text-g800 mb-2">Keranjang Kosong</h3>
+                    <p class="text-g500 text-sm mb-6 max-w-sm mx-auto">Yuk tambahkan produk favorit kamu ke keranjang dan mulai berbelanja!</p>
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 py-3 px-6 rounded-full font-bold text-[15px] bg-primary text-white shadow-[0_4px_12px_rgba(26,92,255,0.3)] hover:bg-primary-dark hover:-translate-y-px transition-all">
+                        <i class="fi fi-rr-shopping-bag"></i> Belanja Sekarang
+                    </a>
                 </div>
             @endif
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('submit', async function(e) {
+    const form = e.target;
+    // Intercept only forms inside cart container
+    if (!form.closest('#cartContainer')) return;
+    
+    e.preventDefault();
+    
+    const container = document.getElementById('cartContainer');
+    // Visual feedback during request
+    container.style.transition = 'opacity 0.2s';
+    container.style.opacity = '0.5';
+    container.style.pointerEvents = 'none';
+
+    try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: form.method || 'POST',
+            body: formData,
+            // Intentionally not sending X-Requested-With so Laravel returns HTML instead of JSON
+        });
+
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const newContainer = doc.getElementById('cartContainer');
+        if (newContainer) {
+            container.innerHTML = newContainer.innerHTML;
+            
+            // Sync navbar badge
+            const newBadge = doc.getElementById('cartBadgeNav');
+            const oldBadge = document.getElementById('cartBadgeNav');
+            if (newBadge && oldBadge) {
+                oldBadge.innerHTML = newBadge.innerHTML;
+                oldBadge.style.display = newBadge.style.display;
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Gagal memproses permintaan. Silakan periksa koneksi Anda.');
+    } finally {
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+    }
+});
+</script>
+@endpush

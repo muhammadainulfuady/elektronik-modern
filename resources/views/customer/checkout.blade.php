@@ -3,64 +3,6 @@
 @section('title', 'Checkout – Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}" />
-    <style>
-        .checkout-section { padding: 32px 0 72px }
-        .checkout-section h1 { font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 8px }
-
-        .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start }
-
-        .checkout-card {
-            background: #fff; border-radius: var(--rlg); box-shadow: var(--sh);
-            padding: 28px; margin-bottom: 20px
-        }
-        .checkout-card h3 {
-            font-family: var(--font-h); font-size: 18px; font-weight: 800;
-            margin-bottom: 20px; color: var(--g900)
-        }
-
-        .checkout-item {
-            display: flex; align-items: center; gap: 14px;
-            padding: 12px 0; border-bottom: 1px solid var(--g100)
-        }
-        .checkout-item:last-child { border-bottom: none }
-        .checkout-item img {
-            width: 56px; height: 56px; border-radius: 10px;
-            object-fit: cover; background: var(--g100)
-        }
-        .checkout-item-name { font-size: 13px; font-weight: 700; color: var(--g800) }
-        .checkout-item-qty { font-size: 12px; color: var(--g500) }
-        .checkout-item-price {
-            margin-left: auto; font-family: var(--font-h);
-            font-weight: 800; color: var(--blue); font-size: 14px; white-space: nowrap
-        }
-
-        .summary-card {
-            background: #fff; border-radius: var(--rlg); box-shadow: var(--sh);
-            padding: 28px; position: sticky; top: 84px
-        }
-        .summary-card h3 { font-family: var(--font-h); font-size: 18px; font-weight: 800; margin-bottom: 20px }
-        .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px }
-        .summary-row.total { font-size: 18px; font-weight: 800; border-top: 2px solid var(--g200); padding-top: 16px; margin-top: 16px }
-        .summary-row.total .val { color: var(--blue); font-family: var(--font-h); font-size: 22px }
-
-        .pay-opt { display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid var(--g200); border-radius: var(--rlg); cursor: pointer; transition: .2s; margin-bottom: 10px }
-        .pay-opt:hover, .pay-opt.selected { border-color: var(--blue); background: var(--blue-l) }
-        .pay-opt input[type="radio"] { accent-color: var(--blue); width: 18px; height: 18px }
-        .bank-detail { background: var(--blue-l); border-radius: 10px; padding: 16px; margin-top: 12px; border-left: 4px solid var(--blue); display: none }
-        .upload-zone { border: 2px dashed var(--g300); border-radius: var(--rlg); padding: 32px; text-align: center; color: var(--g400); cursor: pointer; transition: .2s }
-        .upload-zone:hover { border-color: var(--blue); background: var(--blue-l) }
-
-        .no-address {
-            background: var(--wl); border-radius: 10px; padding: 16px;
-            font-size: 13px; color: #92400E; margin-bottom: 16px
-        }
-
-        @media(max-width:900px) {
-            .checkout-layout { grid-template-columns: 1fr }
-            .summary-card { position: static }
-        }
-    </style>
 @endsection
 
 @section('header')
@@ -68,183 +10,245 @@
 @endsection
 
 @section('content')
-    <section class="checkout-section">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="{{ route('index') }}">Beranda</a> <span>›</span>
-                <a href="{{ route('cart.index') }}">Keranjang</a> <span>›</span>
-                <span>Checkout</span>
+    <section class="py-8 md:py-[72px] bg-g50 min-h-screen px-4 md:px-8">
+        <div class="max-w-[1280px] mx-auto">
+            <div class="flex items-center gap-1.5 mb-6 text-[13px]">
+                <a href="{{ route('index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Beranda</a> 
+                <i class="fi fi-rr-angle-small-right text-g400"></i> 
+                <a href="{{ route('cart.index') }}" class="text-g500 hover:text-primary transition-colors">Keranjang</a>
+                <i class="fi fi-rr-angle-small-right text-g400"></i>
+                <span class="text-g800 font-semibold">Checkout</span>
             </div>
-            <h1><i class="fi fi-rr-shopping-bag" style="margin-right: 8px;"></i> Checkout</h1>
-            <p style="color:var(--g500);margin-bottom:28px">Periksa pesanan Anda sebelum melanjutkan</p>
+            
+            <div class="mb-8">
+                <h1 class="font-heading text-[28px] md:text-[32px] font-extrabold text-g900 mb-2 flex items-center gap-3">
+                    <i class="fi fi-rr-shopping-bag text-primary"></i> Checkout
+                </h1>
+                <p class="text-g500 text-[15px]">Periksa pesanan Anda sebelum melanjutkan pembayaran</p>
+            </div>
 
             @if (session('error'))
-                <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    <i class="fi fi-rr-cross-small" style="margin-right: 6px;"></i> {{ session('error') }}
-                </div>
+                <x-alert type="danger" class="mb-6">
+                    {{ session('error') }}
+                </x-alert>
             @endif
 
-            @if ($errors->any())
-                <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
+            <x-error :messages="$errors->all()" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl" />
 
             <form method="POST" action="{{ route('customer.placeOrder') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="checkout-layout">
-                    <div>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="flex-1 w-full space-y-5">
                         <!-- Items -->
-                        <div class="checkout-card">
-                            <h3><i class="fi fi-rr-box" style="margin-right: 8px;"></i> Produk Dipesan</h3>
+                        <x-card class="p-6">
+                            <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
+                                <i class="fi fi-rr-box text-primary"></i> Produk Dipesan
+                            </h3>
+                            <div class="flex flex-col divide-y divide-g100">
                             @foreach ($items as $item)
-                                <div class="checkout-item">
-                                    <img src="{{ asset('storage/products/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async">
-                                    <div>
-                                        <div class="checkout-item-name">{{ $item->produk->nama_produk }}</div>
-                                        <div class="checkout-item-qty">{{ $item->qty }} × Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</div>
+                                <div class="py-3.5 flex items-center gap-4 group">
+                                    <div class="w-16 h-16 rounded-xl bg-g50 border border-g100 p-1 flex items-center justify-center shrink-0">
+                                        @if($item->produk->gambar)
+                                            <img src="{{ asset('storage/products/' . $item->produk->gambar) }}" alt="{{ $item->produk->nama_produk }}" loading="lazy" decoding="async" class="w-full h-full object-contain mix-blend-multiply">
+                                        @else
+                                            <i class="fi fi-rr-picture text-2xl text-g300"></i>
+                                        @endif
                                     </div>
-                                    <div class="checkout-item-price">Rp {{ number_format($item->lineTotal, 0, ',', '.') }}</div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[13px] font-bold text-g800 line-clamp-2 mb-1">{{ $item->produk->nama_produk }}</div>
+                                        <div class="text-xs text-g500">{{ $item->qty }} × Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</div>
+                                    </div>
+                                    <div class="font-heading font-extrabold text-primary text-[15px] whitespace-nowrap pl-4">
+                                        Rp {{ number_format($item->lineTotal, 0, ',', '.') }}
+                                    </div>
                                 </div>
                             @endforeach
-                        </div>
+                            </div>
+                        </x-card>
 
                         <!-- Alamat Pengiriman -->
-                        <div class="checkout-card">
-                            <h3><i class="fi fi-rr-map-marker" style="margin-right: 8px;"></i> Alamat Pengiriman</h3>
+                        <x-card class="p-6">
+                            <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
+                                <i class="fi fi-rr-map-marker text-primary"></i> Alamat Pengiriman
+                            </h3>
                             @if ($alamats->count())
+                                <div class="space-y-3">
                                 @foreach ($alamats as $alamat)
-                                    <label style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--g50);border-radius:10px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--g200);transition:.2s">
+                                    <label class="flex items-start gap-3 p-4 bg-white rounded-xl cursor-pointer border-[1.5px] border-g200 hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light/50 has-[:checked]:ring-4 has-[:checked]:ring-primary/10">
                                         <input type="radio" name="id_alamat" value="{{ $alamat->id_alamat }}"
                                             {{ $loop->first ? 'checked' : '' }}
-                                            style="width:18px;height:18px;margin-top:2px;accent-color:var(--blue);flex-shrink:0">
+                                            class="w-4 h-4 mt-0.5 accent-primary shrink-0 rounded-full text-primary focus:ring-primary">
                                         <div>
-                                            <div style="font-size:14px;font-weight:700;color:var(--g800);margin-bottom:2px">
-                                                {{ $alamat->label_alamat }}
-                                            </div>
-                                            <div style="font-size:13px;color:var(--g600)">{{ $alamat->detail_alamat }}</div>
-                                            <div style="font-size:12px;color:var(--g500);margin-top:4px"><i class="fi fi-rr-phone-call" style="margin-right: 6px;"></i> {{ $alamat->nomor_telepon }}</div>
+                                            <div class="text-[14px] font-bold text-g800 mb-0.5">{{ $alamat->label_alamat }}</div>
+                                            <div class="text-[13px] text-g600 leading-relaxed mb-1">{{ $alamat->detail_alamat }}</div>
+                                            <div class="text-[12px] font-semibold text-g500 flex items-center gap-1.5"><i class="fi fi-rr-phone-call"></i> {{ $alamat->nomor_telepon }}</div>
                                         </div>
                                     </label>
                                 @endforeach
-                            @else
-                                <div class="no-address">
-                                    <i class="fi fi-rr-exclamation" style="margin-right: 6px;"></i> Anda belum memiliki alamat pengiriman. Tambahkan alamat terlebih dahulu melalui halaman profil.
                                 </div>
-                                <a href="{{ route('customer.profile') }}?tab=alamat" class="btn btn-outline">Tambah Alamat</a>
+                            @else
+                                <x-alert type="warning" class="mb-4">
+                                    Anda belum memiliki alamat pengiriman. Tambahkan alamat terlebih dahulu melalui halaman profil.
+                                </x-alert>
+                                <x-button variant="outline" onclick="window.location='{{ route('customer.profile') }}?tab=alamat'">
+                                    <i class="fi fi-rr-plus"></i> Tambah Alamat
+                                </x-button>
                             @endif
-                        </div>
+                        </x-card>
 
                         <!-- Ekspedisi -->
-                        <div class="checkout-card">
-                            <h3><i class="fi fi-rr-truck-side" style="margin-right: 8px;"></i> Pilih Ekspedisi</h3>
+                        <x-card class="p-6">
+                            <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
+                                <i class="fi fi-rr-truck-side text-primary"></i> Pilih Ekspedisi
+                            </h3>
+                            <div class="space-y-3" id="ekspedisiList">
                             @foreach ($ekspedisis as $ekspedisi)
-                                <label style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--g50);border-radius:10px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--g200);transition:.2s">
+                                <label class="flex items-center gap-3 p-4 bg-white rounded-xl cursor-pointer border-[1.5px] border-g200 hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light/50 has-[:checked]:ring-4 has-[:checked]:ring-primary/10">
                                     <input type="radio" name="id_ekspedisi" value="{{ $ekspedisi->id_ekspedisi }}"
+                                        data-biaya="{{ $ekspedisi->biaya_pengiriman }}"
                                         {{ $loop->first ? 'checked' : '' }}
-                                        style="width:18px;height:18px;accent-color:var(--blue);flex-shrink:0">
-                                    <div style="flex:1">
-                                        <div style="font-size:14px;font-weight:700;color:var(--g800)">{{ $ekspedisi->nama_ekspedisi }}</div>
+                                        onchange="calculateTotal()"
+                                        class="w-4 h-4 accent-primary shrink-0 rounded-full text-primary focus:ring-primary">
+                                    <div class="flex-1">
+                                        <div class="text-[14px] font-bold text-g800">{{ $ekspedisi->nama_ekspedisi }}</div>
                                     </div>
-                                    <div style="font-weight:800;color:var(--blue);font-family:var(--font-h)">
+                                    <div class="font-heading font-extrabold text-primary text-[15px]">
                                         Rp {{ number_format($ekspedisi->biaya_pengiriman, 0, ',', '.') }}
                                     </div>
                                 </label>
                             @endforeach
-                        </div>
+                            </div>
+                        </x-card>
+
                         <!-- Pembayaran & Upload -->
-                        <div class="checkout-card">
-                            <h3><i class="fi fi-rr-credit-card" style="margin-right: 8px;"></i> Metode & Bukti Pembayaran</h3>
+                        <x-card class="p-6">
+                            <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
+                                <i class="fi fi-rr-credit-card text-primary"></i> Metode & Bukti Pembayaran
+                            </h3>
                             
-                            <div class="pay-opt selected" onclick="selectPay(this, 'bank')">
-                                <input type="radio" name="metode_pembayaran" value="Transfer Bank" checked />
-                                <div style="font-size:28px; color:var(--blue)"><i class="fi fi-rr-bank"></i></div>
-                                <div>
-                                    <div style="font-weight:700;font-size:14px;color:var(--g800)">Transfer Bank</div>
-                                    <div style="font-size:12px;color:var(--g500)">BCA · BRI · BNI · Mandiri</div>
-                                </div>
-                            </div>
-                            <div class="pay-opt" onclick="selectPay(this, 'ewallet')">
-                                <input type="radio" name="metode_pembayaran" value="E-Wallet" />
-                                <div style="font-size:28px; color:#22c55e"><i class="fi fi-rr-wallet"></i></div>
-                                <div>
-                                    <div style="font-weight:700;font-size:14px;color:var(--g800)">E-Wallet</div>
-                                    <div style="font-size:12px;color:var(--g500)">GoPay · OVO · DANA · ShopeePay</div>
-                                </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="pay-opt flex items-center gap-3.5 p-4 bg-white rounded-xl cursor-pointer border-[1.5px] transition-all border-primary bg-primary-light shadow-[0_0_0_4px_rgba(26,92,255,0.1)]" onclick="selectPay(this, 'bank')">
+                                    <input type="radio" name="metode_pembayaran" value="Transfer Bank" checked class="w-4 h-4 accent-primary shrink-0" />
+                                    <div class="text-[28px] text-primary flex items-center justify-center bg-white w-12 h-12 rounded-full shadow-sm"><i class="fi fi-rr-bank"></i></div>
+                                    <div>
+                                        <div class="font-bold text-[14px] text-g800 mb-0.5">Transfer Bank</div>
+                                        <div class="text-[11px] font-medium text-g500 uppercase tracking-wider">BCA · BRI · BNI · Mandiri</div>
+                                    </div>
+                                </label>
+                                <label class="pay-opt flex items-center gap-3.5 p-4 bg-white rounded-xl cursor-pointer border-[1.5px] border-g200 transition-all hover:border-g300" onclick="selectPay(this, 'ewallet')">
+                                    <input type="radio" name="metode_pembayaran" value="E-Wallet" class="w-4 h-4 accent-primary shrink-0" />
+                                    <div class="text-[28px] text-green-500 flex items-center justify-center bg-green-50 w-12 h-12 rounded-full border border-green-100"><i class="fi fi-rr-wallet"></i></div>
+                                    <div>
+                                        <div class="font-bold text-[14px] text-g800 mb-0.5">E-Wallet</div>
+                                        <div class="text-[11px] font-medium text-g500 uppercase tracking-wider">DANA · ShopeePay · GoPay</div>
+                                    </div>
+                                </label>
                             </div>
                             
-                            <div class="bank-detail" id="bankDetail" style="display:block">
-                                <div style="font-weight:700;color:var(--blue);margin-bottom:6px"><i class="fi fi-rr-document" style="margin-right: 6px;"></i> Detail Transfer Bank:</div>
-                                <div style="font-size:14px;color:var(--g700)"><strong>Bank BCA</strong> – No. Rek: <strong>1234-5678-90</strong></div>
-                                <div style="font-size:13px;color:var(--g500)">a.n. Elektronik Modern Store</div>
+                            <div id="bankDetail" class="mt-4 bg-primary-light/50 border border-primary/20 rounded-xl p-5 border-l-4 border-l-primary">
+                                <div class="font-bold text-primary mb-2 flex items-center gap-2"><i class="fi fi-rr-document"></i> Detail Transfer Bank:</div>
+                                <div class="text-[14px] text-g800 mb-1"><strong>Bank BCA</strong> – No. Rek: <strong class="text-primary font-heading text-lg ml-1 tracking-wider">1234-5678-90</strong></div>
+                                <div class="text-[13px] font-medium text-g500">a.n. Elektronik Modern Store</div>
                             </div>
 
-                            <div style="margin-top:24px">
-                                <label style="display:block;font-weight:700;margin-bottom:12px;font-size:14px;color:var(--g800)">Upload Bukti Pembayaran</label>
-                                <div class="upload-zone" onclick="document.getElementById('bukti_bayar').click()">
-                                    <div style="font-size:36px;margin-bottom:10px;color:var(--g400)"><i class="fi fi-rr-camera"></i></div>
-                                    <div style="font-weight:700;font-size:15px;margin-bottom:4px">Klik atau seret file ke sini</div>
-                                    <div style="font-size:13px">Format: JPG, PNG, PDF · Maks. 5MB</div>
-                                    <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*,.pdf" style="display:none" onchange="handleUpload(this)" required />
+                            <div id="ewalletDetail" class="mt-4 bg-green-50 border border-green-200 rounded-xl p-5 border-l-4 border-l-green-500 hidden">
+                                <div class="font-bold text-green-700 mb-2 flex items-center gap-2"><i class="fi fi-rr-smartphone"></i> Detail E-Wallet:</div>
+                                <div class="text-[14px] text-g800 mb-1"><strong>DANA / ShopeePay</strong> – No. HP: <strong class="text-green-600 font-heading text-lg ml-1 tracking-wider">0812-3456-7890</strong></div>
+                                <div class="text-[13px] font-medium text-g500">a.n. Elektronik Modern Admin</div>
+                            </div>
+
+                            <div class="mt-8">
+                                <x-label class="mb-3">Upload Bukti Pembayaran</x-label>
+                                <div class="border-2 border-dashed border-g300 rounded-2xl p-8 text-center text-g500 cursor-pointer transition-all hover:border-primary hover:bg-primary-light group" onclick="document.getElementById('bukti_bayar').click()">
+                                    <div class="text-[40px] mb-3 text-g300 group-hover:text-primary transition-colors inline-flex"><i class="fi fi-rr-cloud-upload"></i></div>
+                                    <div class="font-bold text-[15px] mb-1.5 text-g700 group-hover:text-primary transition-colors">Klik atau seret file ke sini</div>
+                                    <div class="text-[12px] font-medium">Format: JPG, PNG, PDF · Maks. 5MB</div>
+                                    <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*,.pdf" class="hidden" onchange="handleUpload(this); validateCheckoutReady()" required />
                                 </div>
-                                <div id="uploadPreview" style="display:none;margin-top:12px;background:var(--sl);border-radius:10px;padding:12px;font-size:13px;color:var(--success);font-weight:600">
-                                    <i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> File berhasil dipilih!
+                                <div id="uploadPreview" class="hidden mt-4 bg-green-50 border border-green-200 rounded-xl p-3 text-[13px] text-green-700 font-bold flex items-center gap-2">
+                                    <i class="fi fi-rr-check-circle text-lg"></i> <span id="uploadPreviewMsg"></span>
                                 </div>
                             </div>
-                        </div>
+                        </x-card>
                     </div>
 
                     <!-- Summary -->
-                    <div class="summary-card">
-                        <h3><i class="fi fi-rr-receipt" style="margin-right: 8px;"></i> Ringkasan Pembayaran</h3>
-                        <div class="summary-row">
-                            <span style="color:var(--g500)">Subtotal ({{ count($items) }} produk)</span>
-                            <span style="font-weight:700">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                    <x-card class="w-full lg:w-[380px] shrink-0 p-6 lg:sticky lg:top-[84px]">
+                        <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
+                            <i class="fi fi-rr-receipt text-primary"></i> Ringkasan Pembayaran
+                        </h3>
+                        
+                        <div class="flex justify-between items-center mb-3 text-[13px]">
+                            <span class="text-g500">Subtotal ({{ count($items) }} produk)</span>
+                            <span class="font-bold text-g800">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                         </div>
+                        
                         @if ($appliedPromo)
-                            <div class="summary-row">
-                                <span style="color:var(--success);font-weight:700">Voucher {{ $appliedPromo->kode_voucher }}</span>
-                                <span style="font-weight:700;color:var(--success)">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
+                            <div class="flex justify-between items-center mb-3 text-[13px]">
+                                <span class="font-bold text-green-600 flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> Voucher {{ $appliedPromo->kode_voucher }}</span>
+                                <span class="font-bold text-green-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
                         @endif
-                        <div class="summary-row">
-                            <span style="color:var(--g500)">Ongkos Kirim</span>
-                            <span style="font-weight:700;color:var(--g600)">Sesuai ekspedisi</span>
+                        
+                        <div class="flex justify-between items-center mb-3 text-[13px]">
+                            <span class="text-g500">Ongkos Kirim</span>
+                            <span class="font-bold text-g800" id="shippingCost">Rp 0</span>
                         </div>
-                        <div class="summary-row total">
-                            <span>Estimasi Total</span>
-                            <span class="val">Rp {{ number_format(max(0, $subtotal - $discount), 0, ',', '.') }}+</span>
+                        
+                        <div class="flex justify-between items-center mt-5 pt-4 border-t-2 border-g100">
+                            <span class="text-sm font-bold text-g500">Total Pembayaran</span>
+                            <span class="font-heading text-[22px] font-extrabold text-primary" id="totalPayment">Rp {{ number_format(max(0, $subtotal - $discount), 0, ',', '.') }}</span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" {{ $alamats->isEmpty() ? 'disabled' : '' }} style="width:100%;justify-content:center;padding:14px;font-size:15px;margin-top:16px;{{ $alamats->isEmpty() ? 'opacity:.6;cursor:not-allowed' : '' }}">
-                            <i class="fi fi-rr-checkbox" style="margin-right: 6px;"></i> Buat Pesanan
-                        </button>
+                        <x-button type="submit" id="btnSubmitCheckout" class="w-full mt-6 opacity-60 cursor-not-allowed pointer-events-none">
+                            Buat Pesanan <i class="fi fi-rr-arrow-right"></i>
+                        </x-button>
 
-                        <div style="text-align:center;font-size:11px;color:var(--g400);margin-top:12px">
-                            <i class="fi fi-rr-lock" style="margin-right: 6px;"></i> Transaksi aman & terenkripsi
+                        <div class="text-center text-[11px] font-semibold text-g400 mt-4 flex items-center justify-center gap-1.5">
+                            <i class="fi fi-rr-lock"></i> Transaksi aman & terenkripsi
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </form>
         </div>
     </section>
-@endsection
 
-@section('footer')
-<script>
-    function selectPay(el, type) {
-        document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        el.querySelector('input').checked = true;
-        document.getElementById('bankDetail').style.display = type === 'bank' ? 'block' : 'none';
-    }
-    function handleUpload(inp) {
-        if (inp.files.length > 0) {
-            document.getElementById('uploadPreview').style.display = 'block';
-            document.getElementById('uploadPreview').innerHTML = '<i class="fi fi-rr-check-circle" style="margin-right: 6px;"></i> File terpilih: ' + inp.files[0].name;
+    @push('scripts')
+    <script>
+        const baseSubtotal = {{ max(0, $subtotal - $discount) }};
+        
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
-    }
-</script>
+
+        function calculateTotal() {
+            const selectedEkspedisi = document.querySelector('input[name="id_ekspedisi"]:checked');
+            if (selectedEkspedisi) {
+                const ongkir = parseInt(selectedEkspedisi.getAttribute('data-biaya')) || 0;
+                const total = baseSubtotal + ongkir;
+                
+                document.getElementById('shippingCost').textContent = formatRupiah(ongkir);
+                document.getElementById('totalPayment').textContent = formatRupiah(total);
+            }
+        }
+
+        function validateCheckoutReady() {
+            const btn = document.getElementById('btnSubmitCheckout');
+            const fileInput = document.getElementById('bukti_bayar');
+            const hasAlamat = {{ $alamats->isNotEmpty() ? 'true' : 'false' }};
+            
+            if (hasAlamat && fileInput && fileInput.files.length > 0) {
+                btn.classList.remove('opacity-60', 'cursor-not-allowed', 'pointer-events-none');
+            } else {
+                btn.classList.add('opacity-60', 'cursor-not-allowed', 'pointer-events-none');
+            }
+        }
+
+        // Initialize total on load
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateTotal();
+            validateCheckoutReady();
+        });
+    </script>
+    @endpush
 @endsection

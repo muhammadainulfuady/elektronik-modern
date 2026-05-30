@@ -33,6 +33,10 @@ class Pesanan extends Model
         'status_pesanan',
     ];
 
+    protected $casts = [
+        'tanggal_pesan' => 'datetime',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_users', 'id_users');

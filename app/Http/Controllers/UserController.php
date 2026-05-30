@@ -10,9 +10,53 @@ use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
+    /**
+     * Download report as PDF (Admin → Penjualan, Owner → Pendapatan).
+     */
+    public function downloadReport(Request $request)
+    {
+        $request->validate([
+            'bulan' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'tahun' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+        ]);
+
+        $bulan = $request->bulan ?? now()->month;
+        $tahun = $request->tahun ?? now()->year;
+
+        $pesanans = Pesanan::with(['user', 'pembayaran', 'ekspedisi', 'detailPesanans.produk'])
+            ->where('status_pesanan', 'selesai')
+            ->whereYear('tanggal_pesan', $tahun)
+            ->whereMonth('tanggal_pesan', $bulan)
+            ->latest('tanggal_pesan')
+            ->get();
+
+        $totalPendapatan = $pesanans->sum('total_bayar');
+        $totalOngkir     = $pesanans->sum('ongkos_kirim');
+        $totalDiskon     = $pesanans->sum('diskon');
+        $totalSubtotal   = $pesanans->sum('subtotal');
+        $namaBulan       = date('F', mktime(0, 0, 0, $bulan, 10));
+
+        $isOwner = auth()->user()->role === 'owner';
+
+        if ($isOwner) {
+            $view     = 'reports.revenue';
+            $filename = "Laporan_Pendapatan_{$namaBulan}_{$tahun}.pdf";
+        } else {
+            $view     = 'reports.sales';
+            $filename = "Laporan_Penjualan_{$namaBulan}_{$tahun}.pdf";
+        }
+
+        $pdf = Pdf::loadView($view, compact(
+            'pesanans', 'totalPendapatan', 'totalOngkir', 'totalDiskon', 'totalSubtotal',
+            'bulan', 'tahun', 'namaBulan'
+        ));
+
+        return $pdf->download($filename);
+    }
     /**
      * Admin dashboard.
      */

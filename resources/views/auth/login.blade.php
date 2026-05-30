@@ -2,62 +2,66 @@
 
 @section('title', 'Masuk - Elektronik Modern')
 
-@section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
-@endsection
-
 @section('header')
+    <!-- no header -->
 @endsection
 
 @section('content')
-    <div class="auth-bg">
-        <div class="auth-card">
-            <div class="auth-logo-mark"><i class="fi fi-rr-bolt" style="color:var(--blue)"></i></div>
-            <div class="auth-title">Selamat Datang!</div>
-            <div class="auth-sub">Masuk ke akun Elektronik Modern Anda</div>
+<div class="min-h-screen bg-g50 flex items-center justify-center p-5">
+    <x-card class="w-full max-w-[420px] relative">
+        <a href="{{ route('index') }}"
+            class="absolute top-5 left-5 w-10 h-10 rounded-full bg-g50 flex items-center justify-center text-g500 hover:text-primary hover:bg-primary-light transition-all">
+            <i class="fi fi-rr-angle-small-left text-xl"></i>
+        </a>
 
-            @if (session('status'))
-                <div
-                    style="background:var(--sl);color:#15803D;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px;text-align:center">
-                    {{ session('status') }}
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div
-                    style="background:var(--dl);color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com"
-                        required autofocus>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Masukkan password..." required>
-                </div>
-                <div style="text-align:right;margin:-8px 0 16px">
-                    <a href="{{ route('password.request') }}"
-                        style="font-size:13px;color:var(--blue);font-weight:700;text-decoration:none">
-                        Lupa password?
-                    </a>
-                </div>
-                <button class="btn btn-primary" type="submit"
-                    style="width:100%;justify-content:center;padding:13px;font-size:15px">
-                    Masuk ke Akun
-                </button>
-            </form>
-            <div class="auth-footer-link">Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a></div>
+        <div
+            class="w-14 h-14 bg-primary-light text-primary rounded-2xl flex items-center justify-center text-[28px] mx-auto mb-5 mt-4">
+            <i class="fi fi-rr-bolt"></i>
         </div>
-    </div>
+        <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Selamat Datang!</h1>
+        <p class="text-sm text-g500 text-center mb-8">Masuk ke akun Elektronik Modern Anda</p>
+
+        @if (session('status'))
+            <x-alert type="success" class="mb-5 text-center">
+                {{ session('status') }}
+            </x-alert>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <div class="mb-5">
+                <x-label for="email">Email</x-label>
+                <x-input type="email" id="email" name="email" :value="old('email')" placeholder="nama@email.com"
+                    :error="$errors->has('email')" required autofocus />
+                <x-error :messages="$errors->get('email')" />
+            </div>
+
+            <div class="mb-5">
+                <x-label for="password">Password</x-label>
+                <x-input type="password" id="password" name="password" placeholder="Masukkan password..."
+                    :error="$errors->has('password')" required />
+                <x-error :messages="$errors->get('password')" />
+            </div>
+
+            <div class="text-right -mt-2 mb-5">
+                <a href="{{ route('password.request') }}" class="text-[13px] text-primary font-bold hover:underline">
+                    Lupa password?
+                </a>
+            </div>
+
+            <x-button type="submit" class="w-full">
+                Masuk ke Akun <i class="fi fi-rr-arrow-right"></i>
+            </x-button>
+        </form>
+
+        <div class="mt-8 text-center text-[13px] font-semibold text-g500">
+            Belum punya akun? <a href="{{ route('register') }}"
+                class="text-primary font-extrabold hover:underline">Daftar sekarang</a>
+        </div>
+    </x-card>
+</div>
 @endsection
 
 @section('footer')
+    <!-- no footer -->
 @endsection

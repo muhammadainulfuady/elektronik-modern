@@ -3,188 +3,222 @@
 @section('title', 'Admin Dashboard – Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}" />
-    <style>
-        .chart-bars { display:flex;align-items:flex-end;gap:6px;height:160px;padding:0 4px }
-        .bar-wrap { display:flex;flex-direction:column;align-items:center;gap:4px;flex:1 }
-        .bar-fill { width:100%;border-radius:6px 6px 0 0;background:var(--blue);min-height:4px;transition:.3s }
-        .bar-label { font-size:10px;color:var(--g400);font-weight:600 }
-    </style>
 @endsection
 
 @section('header')
 @endsection
 
 @section('content')
-    <div class="admin-layout">
+    <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="admin-main">
-            <div class="admin-topbar">
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <div style="font-size:13px;color:var(--g500);margin-bottom:2px">Selamat datang kembali,</div>
-                    <div class="page-title">Dashboard Admin</div>
+                    <div class="text-[13px] text-g500 mb-0.5">Selamat datang kembali,</div>
+                    <h1 class="font-heading text-[24px] font-extrabold text-g900">Dashboard Admin</h1>
                 </div>
-                <div style="display:flex;gap:10px;align-items:center">
-                    <span class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:6px">
-                    <i class="fi fi-rr-calendar"></i> {{ now()->format('d M Y') }}
-                </span>
-                    <div style="width:40px;height:40px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px">
+                <div class="flex flex-wrap gap-3 items-center">
+                    <form action="{{ route('admin.report.download') }}" method="GET" class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-g200 shadow-sm">
+                        <select name="bulan" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
+                            @foreach(range(1, 12) as $m)
+                                <option value="{{ $m }}" @selected(now()->month == $m)>{{ date('F', mktime(0,0,0,$m,10)) }}</option>
+                            @endforeach
+                        </select>
+                        <select name="tahun" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
+                            @foreach(range(now()->year-2, now()->year) as $y)
+                                <option value="{{ $y }}" @selected(now()->year == $y)>{{ $y }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="bg-primary text-white p-2 rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5 text-[12px] font-bold">
+                            <i class="fi fi-rr-download"></i> Laporan PDF
+                        </button>
+                    </form>
+                    <span class="inline-flex items-center gap-2 py-2 px-4 bg-white border border-g200 rounded-xl text-[13px] font-bold text-g700 shadow-sm">
+                        <i class="fi fi-rr-calendar text-primary"></i> {{ now()->format('d M Y') }}
+                    </span>
+                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-extrabold text-[14px] shadow-[0_4px_12px_rgba(26,92,255,0.3)]">
                         {{ strtoupper(substr(auth()->user()->nama ?? 'A', 0, 2)) }}
                     </div>
                 </div>
             </div>
 
             <!-- Stats -->
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-ico blue"><i class="fi fi-rr-box"></i></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                <x-card class="p-6 flex items-center gap-4 hover:-translate-y-1 transition-all cursor-default">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-blue-50 text-blue-600"><i class="fi fi-rr-box"></i></div>
                     <div>
-                        <div class="stat-label">Total Produk</div>
-                        <div class="stat-val">{{ $jumlahProduk }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Total Produk</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahProduk }}</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-ico green"><i class="fi fi-rr-users"></i></div>
+                </x-card>
+                <x-card class="p-6 flex items-center gap-4 hover:-translate-y-1 transition-all cursor-default">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-green-50 text-green-600"><i class="fi fi-rr-users"></i></div>
                     <div>
-                        <div class="stat-label">Total Customer</div>
-                        <div class="stat-val">{{ $jumlahUser }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Total Customer</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahUser }}</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-ico warn"><i class="fi fi-rr-time-fast"></i></div>
+                </x-card>
+                <x-card class="p-6 flex items-center gap-4 hover:-translate-y-1 transition-all cursor-default">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-orange-50 text-orange-600"><i class="fi fi-rr-time-fast"></i></div>
                     <div>
-                        <div class="stat-label">Menunggu Konfirmasi</div>
-                        <div class="stat-val">{{ $jumlahMenungguKonfirmasi }}</div>
-                        <div class="stat-chg" style="color:var(--warn)">Perlu ditangani</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Perlu Konfirmasi</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahMenungguKonfirmasi }}</div>
+                        <div class="text-[11px] font-semibold text-orange-600 mt-1">Pesanan tertunda</div>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-ico teal"><i class="fi fi-rr-check-circle"></i></div>
+                </x-card>
+                <x-card class="p-6 flex items-center gap-4 hover:-translate-y-1 transition-all cursor-default">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-teal-50 text-teal-600"><i class="fi fi-rr-check-circle"></i></div>
                     <div>
-                        <div class="stat-label">Pesanan Selesai</div>
-                        <div class="stat-val">{{ $pesananSelesai }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Pesanan Selesai</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $pesananSelesai }}</div>
                     </div>
-                </div>
+                </x-card>
             </div>
 
             <!-- Charts -->
-            <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:24px">
-                <div class="data-card">
-                    <div class="data-card-head">
-                        <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-chart-line-up" style="color:var(--blue)"></i> Pesanan 7 Hari Terakhir</h3>
-                        <span class="badge badge-info">{{ $pesanan_tujuh_hari_terakhir }} pesanan</span>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <x-card class="lg:col-span-2 flex flex-col p-0 overflow-hidden">
+                    <div class="p-6 border-b border-g100 flex justify-between items-center bg-white">
+                        <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                            <i class="fi fi-rr-chart-line-up text-primary"></i> Pesanan 7 Hari Terakhir
+                        </h3>
+                        <x-badge variant="primary" class="uppercase tracking-widest text-[11px] py-1 px-2.5 bg-blue-50 border border-blue-100 text-blue-600">{{ $pesanan_tujuh_hari_terakhir }} pesanan</x-badge>
                     </div>
-                    <div style="padding:20px">
-                        <div class="chart-bars">
+                    <div class="p-6 flex-1 flex items-end bg-white">
+                        <div class="flex items-end gap-2 h-[160px] w-full px-1">
                             @php $days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min']; $heights = [55,72,48,83,91,65,38]; @endphp
                             @foreach($days as $i => $day)
-                                <div class="bar-wrap">
-                                    <div class="bar-fill" style="height:{{ $heights[$i] }}% {{ $i >= 5 ? ';background:var(--g300)' : '' }}"></div>
-                                    <div class="bar-label">{{ $day }}</div>
+                                <div class="flex flex-col items-center gap-2 flex-1 group">
+                                    <div class="w-full rounded-t-lg {{ $i >= 5 ? 'bg-g300' : 'bg-primary' }} min-h-[4px] transition-all duration-300 group-hover:opacity-80" style="height:{{ $heights[$i] }}%"></div>
+                                    <div class="text-[10px] font-bold text-g500">{{ $day }}</div>
                                 </div>
                             @endforeach
                         </div>
                     </div>
-                </div>
-                <div class="data-card">
-                    <div class="data-card-head"><h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-chart-histogram" style="color:var(--blue)"></i> Status Pesanan</h3></div>
-                    <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+                </x-card>
+                
+                <x-card class="flex flex-col p-0 overflow-hidden">
+                    <div class="p-6 border-b border-g100 bg-white">
+                        <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                            <i class="fi fi-rr-chart-histogram text-primary"></i> Status Pesanan
+                        </h3>
+                    </div>
+                    <div class="p-6 flex flex-col gap-4 bg-white">
                         @php
                             $total = max(1, ($statusPesanan->sum('total')));
                         @endphp
                         @foreach([
-                            ['Menunggu', 'menunggu', '--pend'],
-                            ['Diproses', 'diproses', '--blue'],
-                            ['Dikirim', 'dikirim', '--teal'],
-                            ['Selesai', 'selesai', '--success'],
-                        ] as [$label, $key, $color])
+                            ['Menunggu', 'menunggu', 'bg-orange-500'],
+                            ['Diproses', 'diproses', 'bg-blue-500'],
+                            ['Dikirim', 'dikirim', 'bg-purple-500'],
+                            ['Selesai', 'selesai', 'bg-green-500'],
+                        ] as [$label, $key, $colorClass])
                             @php $val = $statusPesanan->get($key, 0); @endphp
                             <div>
-                                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
-                                    <span>{{ $label }}</span><strong>{{ $val }}</strong>
+                                <div class="flex justify-between text-[13px] mb-1.5">
+                                    <span class="text-g600 font-semibold">{{ $label }}</span>
+                                    <strong class="text-g900">{{ $val }}</strong>
                                 </div>
-                                <div style="height:6px;background:var(--g100);border-radius:3px">
-                                    <div style="width:{{ round($val/$total*100) }}%;height:100%;background:var({{ $color }});border-radius:3px"></div>
+                                <div class="h-1.5 bg-g100 rounded-full overflow-hidden">
+                                    <div class="h-full {{ $colorClass }} rounded-full" style="width:{{ round($val/$total*100) }}%"></div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                </div>
+                </x-card>
             </div>
 
             <!-- Recent Orders -->
-            <div class="data-card">
-                <div class="data-card-head">
-                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Pesanan Terbaru</h3>
-                    <a href="{{ route('admin.orders.index') }}" class="btn btn-outline btn-sm">Lihat Semua →</a>
+            <x-card class="p-0 overflow-hidden">
+                <div class="p-6 border-b border-g100 flex justify-between items-center flex-wrap gap-4 bg-white">
+                    <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                        <i class="fi fi-rr-document text-primary"></i> Pesanan Terbaru
+                    </h3>
+                    <x-button variant="outline" onclick="window.location='{{ route('admin.orders.index') }}'" class="py-1.5 px-4 text-[12px]">
+                        Lihat Semua <i class="fi fi-rr-arrow-right"></i>
+                    </x-button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No. Resi</th>
-                            <th>Pelanggan</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($pesananTerbaru as $pesanan)
+                <div class="overflow-x-auto w-full bg-white">
+                    <table class="w-full min-w-[700px] text-left border-collapse">
+                        <thead>
                             <tr>
-                                <td style="font-weight:700">{{ $pesanan->no_resi }}</td>
-                                <td>{{ $pesanan->user->nama ?? '-' }}</td>
-                                <td style="font-weight:800;color:var(--blue);font-family:'Syne',sans-serif">
-                                    Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
-                                </td>
-                                <td>
-                                    @php
-                                        $badgeClass = match ($pesanan->status_pesanan) {
-                                            'menunggu' => 'badge-pend',
-                                            'diproses' => 'badge-warn',
-                                            'dikirim'  => 'badge-info',
-                                            'selesai'  => 'badge-success',
-                                            default    => 'badge-info',
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $badgeClass }}">
-                                        {{ ucfirst($pesanan->status_pesanan) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if ($pesanan->status_pesanan !== 'selesai')
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">No. Resi</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Pelanggan</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Total</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Status</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($pesananTerbaru as $pesanan)
+                                <tr class="group hover:bg-g50/50 transition-colors">
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-extrabold text-g900 text-[14px]">{{ $pesanan->no_resi }}</div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-semibold text-g700 text-[13px]">{{ $pesanan->user->nama ?? '-' }}</div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-heading font-extrabold text-primary text-[15px] whitespace-nowrap">
+                                            Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
                                         @php
-                                            $nextStatus = match ($pesanan->status_pesanan) {
-                                                'menunggu' => 'diproses',
-                                                'diproses' => 'dikirim',
-                                                'dikirim'  => 'selesai',
-                                                default    => null,
-                                            };
-                                            $nextLabel = match ($nextStatus) {
-                                                'diproses' => '→ Proses',
-                                                'dikirim'  => '→ Kirim',
-                                                'selesai'  => '→ Selesai',
-                                                default    => '',
+                                            $badgeClass = match ($pesanan->status_pesanan) {
+                                                'menunggu' => 'warn',
+                                                'diproses' => 'primary',
+                                                'dikirim'  => 'success', /* using success for dikirim as per existing logic */
+                                                'selesai'  => 'success',
+                                                default    => 'g700',
                                             };
                                         @endphp
-                                        @if ($nextStatus)
-                                            <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}">
-                                                @csrf @method('PATCH')
-                                                <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
-                                                <button class="btn-edit" type="submit">{{ $nextLabel }}</button>
-                                            </form>
+                                        <x-badge variant="{{ $badgeClass }}" class="py-1 px-2.5 uppercase tracking-widest text-[10px]">
+                                            {{ ucfirst($pesanan->status_pesanan) }}
+                                        </x-badge>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        @if ($pesanan->status_pesanan !== 'selesai')
+                                            @php
+                                                $nextStatus = match ($pesanan->status_pesanan) {
+                                                    'menunggu' => 'diproses',
+                                                    'diproses' => 'dikirim',
+                                                    'dikirim'  => 'selesai',
+                                                    default    => null,
+                                                };
+                                                $nextLabel = match ($nextStatus) {
+                                                    'diproses' => 'Proses',
+                                                    'dikirim'  => 'Kirim',
+                                                    'selesai'  => 'Selesai',
+                                                    default    => '',
+                                                };
+                                            @endphp
+                                            @if ($nextStatus)
+                                                <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}" class="m-0">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
+                                                    <x-button type="submit" variant="secondary" class="py-1.5 px-3 text-[11px] bg-primary-light text-primary hover:bg-primary hover:text-white border border-primary/20 hover:border-primary">
+                                                        {{ $nextLabel }} <i class="fi fi-rr-arrow-small-right"></i>
+                                                    </x-button>
+                                                </form>
+                                            @endif
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-green-600 bg-green-50 py-1.5 px-3 rounded-lg"><i class="fi fi-rr-check"></i> Selesai</span>
                                         @endif
-                                    @else
-                                        <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check"></i> Done</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" style="text-align:center;color:var(--g400);padding:18px">Belum ada pesanan.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="py-8 px-6 text-center text-g500 font-semibold text-[13px]">
+                                        Belum ada pesanan terbaru.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-card>
         </div>
     </div>
 @endsection

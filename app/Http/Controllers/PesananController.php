@@ -29,7 +29,7 @@ class PesananController extends Controller
     {
         $pesanans = Pesanan::with([
                 'user:id_users,nama,email',
-                'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi',
+                'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi,bukti_bayar',
                 'ekspedisi:id_ekspedisi,nama_ekspedisi,biaya_pengiriman',
                 'detailPesanans.produk:id_produk,nama_produk,gambar,harga',
             ])
@@ -64,25 +64,28 @@ class PesananController extends Controller
         $currentIndex = array_search($pesanan->status_pesanan, self::STATUS_FLOW);
         $newIndex = array_search($data['status_pesanan'], self::STATUS_FLOW);
 
-        if ($pesanan->status_pesanan === 'menunggu' && (int) ($pesanan->pembayaran?->status_konfirmasi ?? 0) !== 1) {
-            return redirect()
-                ->route('admin.orders.index')
-                ->with('error', 'Pembayaran harus diverifikasi sebelum pesanan diproses.');
-        }
-
-        // Hanya boleh maju satu langkah ke depan
+        // Validasi: Status hanya boleh maju satu langkah ke depan
         if ($newIndex !== $currentIndex + 1) {
             return redirect()
                 ->route('admin.orders.index')
                 ->with('error', 'Status hanya bisa diubah ke tahap berikutnya secara berurutan.');
         }
 
-        $pesanan->update($data);
-        $this->notifyCustomer(
-            $pesanan->id_users,
-            $this->statusNotificationTitle($pesanan->status_pesanan),
-            $this->statusNotificationMessage($pesanan)
-        );
+        // Validasi Ekstra: Wajib verifikasi pembayaran jika mau ke "diproses"
+        if ($data['status_pesanan'] === 'diproses' && (int) ($pesanan->pembayaran?->status_konfirmasi ?? 0) !== 1) {
+            return redirect()
+                ->route('admin.orders.index')
+                ->with('error', 'Pembayaran harus diverifikasi oleh admin sebelum pesanan dapat diproses.');
+        }
+
+        DB::transaction(function () use ($pesanan, $data) {
+            $pesanan->update($data);
+            $this->notifyCustomer(
+                $pesanan->id_users,
+                $this->statusNotificationTitle($pesanan->status_pesanan),
+                $this->statusNotificationMessage($pesanan)
+            );
+        });
 
         return redirect()
             ->route('admin.orders.index')
@@ -156,6 +159,13 @@ class PesananController extends Controller
             'id_ekspedisi' => ['required', 'exists:ekspedisis,id_ekspedisi'],
             'metode_pembayaran' => ['required', 'string'],
             'bukti_bayar' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ], [
+            'id_alamat.required' => 'Silakan pilih alamat pengiriman.',
+            'id_ekspedisi.required' => 'Silakan pilih ekspedisi pengiriman.',
+            'metode_pembayaran.required' => 'Silakan pilih metode pembayaran.',
+            'bukti_bayar.required' => 'Bukti pembayaran wajib diunggah.',
+            'bukti_bayar.mimes' => 'Format bukti bayar harus berupa JPG, PNG, atau PDF.',
+            'bukti_bayar.max' => 'Ukuran file bukti bayar maksimal 5MB.',
         ]);
 
         $alamatMilikUser = AlamatUser::where('id_users', Auth::id())
@@ -285,22 +295,24 @@ class PesananController extends Controller
                 ->with('error', 'Pembayaran yang sudah diverifikasi tidak dapat diubah kembali.');
         }
 
-        $pesanan->pembayaran->update($data);
+        DB::transaction(function () use ($pesanan, $data) {
+            $pesanan->pembayaran->update($data);
 
-        if ((int) $data['status_konfirmasi'] === 1 && $pesanan->status_pesanan === 'menunggu') {
-            $pesanan->update(['status_pesanan' => 'diproses']);
-            $this->notifyCustomer(
-                $pesanan->id_users,
-                'Pembayaran Terverifikasi',
-                'Pembayaran untuk pesanan ' . $pesanan->no_resi . ' sudah diverifikasi. Pesanan Anda sedang diproses.'
-            );
-        } elseif ((int) $data['status_konfirmasi'] === 2) {
-            $this->notifyCustomer(
-                $pesanan->id_users,
-                'Pembayaran Ditolak',
-                'Bukti pembayaran untuk pesanan ' . $pesanan->no_resi . ' ditolak. Silakan hubungi admin toko.'
-            );
-        }
+            if ((int) $data['status_konfirmasi'] === 1 && $pesanan->status_pesanan === 'menunggu') {
+                $pesanan->update(['status_pesanan' => 'diproses']);
+                $this->notifyCustomer(
+                    $pesanan->id_users,
+                    'Pembayaran Terverifikasi',
+                    'Pembayaran untuk pesanan ' . $pesanan->no_resi . ' sudah diverifikasi. Pesanan Anda sedang diproses.'
+                );
+            } elseif ((int) $data['status_konfirmasi'] === 2) {
+                $this->notifyCustomer(
+                    $pesanan->id_users,
+                    'Pembayaran Ditolak',
+                    'Bukti pembayaran untuk pesanan ' . $pesanan->no_resi . ' ditolak. <a href="https://wa.me/6281234567890" target="_blank" class="text-primary font-bold hover:underline">Hubungi Admin via WA</a>'
+                );
+            }
+        });
 
         return redirect()
             ->route('admin.orders.index')

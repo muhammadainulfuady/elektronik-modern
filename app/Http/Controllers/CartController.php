@@ -106,6 +106,7 @@ class CartController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
+                'status'    => true,
                 'message'   => 'Produk ditambahkan ke keranjang!',
                 'cartCount' => $cartCount,
             ]);
@@ -179,6 +180,8 @@ class CartController extends Controller
     {
         $data = $request->validate([
             'kode_voucher' => ['required', 'string', 'max:50'],
+        ], [
+            'kode_voucher.required' => 'Silakan masukkan kode voucher terlebih dahulu.',
         ]);
 
         $promo = Promo::where('kode_voucher', strtoupper($data['kode_voucher']))

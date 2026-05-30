@@ -23,16 +23,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSeeder::class,
             ProdukSeeder::class,
-            AlamatUserSeeder::class,
-            KeranjangSeeder::class,
-            DetailKeranjangSeeder::class,
             PromoSeeder::class,
             EkspedisiSeeder::class,
-            PesananSeeder::class,
-            DetailPesananSeeder::class,
-            PembayaranSeeder::class,
-            WishlistSeeder::class,
-            NotifikasiSeeder::class,
+            // Tabel yang dipicu oleh aktivitas user (seperti keranjang, pesanan, dsb) 
+            // sengaja tidak dipanggil agar database fresh.
         ]);
     }
 }

@@ -2,45 +2,50 @@
 
 @section('title', 'Lupa Password - Elektronik Modern')
 
-@section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
-@endsection
-
 @section('header')
 @endsection
 
 @section('content')
-    <div class="auth-bg">
-        <div class="auth-card">
-            <div class="auth-logo-mark">?</div>
-            <div class="auth-title">Lupa Password</div>
-            <div class="auth-sub">Masukkan email akun Anda untuk melanjutkan reset password</div>
+    <div class="min-h-screen bg-g50 flex items-center justify-center p-5">
+        <x-card class="w-full max-w-[420px] relative">
+            <a href="{{ route('index') }}" class="absolute top-5 left-5 w-10 h-10 rounded-full bg-g50 flex items-center justify-center text-g500 hover:text-primary hover:bg-primary-light transition-all">
+                <i class="fi fi-rr-angle-small-left text-xl"></i>
+            </a>
 
-            @if ($errors->any())
-                <div style="background:var(--dl);color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
+            <div class="w-14 h-14 bg-primary-light text-primary rounded-2xl flex items-center justify-center text-[28px] mx-auto mb-5 mt-4">
+                <i class="fi fi-rr-key"></i>
+            </div>
+            <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Lupa Password</h1>
+            <p class="text-sm text-g500 text-center mb-8">Masukkan email akun Anda untuk melanjutkan reset password</p>
+
+            @if (session('status'))
+                <x-alert type="success" class="mb-5 text-center">
+                    {{ session('status') }}
+                </x-alert>
             @endif
 
             <form method="POST" action="{{ route('password.email.verify') }}">
                 @csrf
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required autofocus>
+                <div class="mb-5">
+                    <x-label for="email">Email</x-label>
+                    <x-input type="email" id="email" name="email" :value="old('email')" placeholder="nama@email.com" 
+                        :error="$errors->has('email')" required autofocus />
+                    <x-error :messages="$errors->get('email')" />
                 </div>
-                <button class="btn btn-primary" type="submit"
-                    style="width:100%;justify-content:center;padding:13px;font-size:15px">
-                    Lanjutkan
-                </button>
+                <x-button type="submit" class="w-full">
+                    Lanjutkan <i class="fi fi-rr-arrow-right"></i>
+                </x-button>
             </form>
 
-            <div class="divider">atau</div>
-            <div class="auth-footer-link">Ingat password? <a href="{{ route('login') }}">Masuk di sini</a></div>
-        </div>
+            <div class="flex items-center my-6 gap-3 before:flex-1 before:h-px before:bg-g200 after:flex-1 after:h-px after:bg-g200 text-xs font-bold text-g400 uppercase tracking-widest text-center">atau</div>
+            
+            <div class="text-center text-[13px] font-semibold text-g500">
+                Ingat password? <a href="{{ route('login') }}" class="text-primary font-extrabold hover:underline">Masuk di sini</a>
+            </div>
+        </x-card>
     </div>
 @endsection
 
 @section('footer')
 @endsection
+

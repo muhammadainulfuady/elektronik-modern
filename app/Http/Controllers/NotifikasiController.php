@@ -42,17 +42,25 @@ class NotifikasiController extends Controller
         $title = strtolower($title);
 
         if (str_contains($title, 'promo') || str_contains($title, 'diskon')) {
-            return '🎟️';
+            return '<i class="fi fi-rr-ticket text-blue-500"></i>';
         }
 
         if (str_contains($title, 'kirim') || str_contains($title, 'resi')) {
-            return '🚚';
+            return '<i class="fi fi-rr-truck-side text-teal-500"></i>';
+        }
+        
+        if (str_contains($title, 'selesai')) {
+            return '<i class="fi fi-rr-check-circle text-green-500"></i>';
+        }
+        
+        if (str_contains($title, 'proses')) {
+            return '<i class="fi fi-rr-settings text-purple-500"></i>';
         }
 
         if (str_contains($title, 'bayar')) {
-            return '💳';
+            return '<i class="fi fi-rr-credit-card text-primary"></i>';
         }
 
-        return '🔔';
+        return '<i class="fi fi-rr-bell text-orange-500"></i>';
     }
 }

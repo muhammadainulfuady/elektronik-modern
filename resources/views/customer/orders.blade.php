@@ -3,56 +3,6 @@
 @section('title', 'Pesanan Saya – Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}" />
-    <style>
-        .orders-section { padding: 32px 0 72px }
-        .orders-section h1 { font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 8px }
-
-        .order-card {
-            background: #fff; border-radius: var(--rlg); box-shadow: var(--sh);
-            margin-bottom: 16px; overflow: hidden; transition: .2s
-        }
-        .order-card:hover { box-shadow: var(--sh-md) }
-
-        .order-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 24px; border-bottom: 1px solid var(--g100);
-            flex-wrap: wrap; gap: 12px
-        }
-        .order-id { font-weight: 800; font-size: 15px; color: var(--g900) }
-        .order-date { font-size: 12px; color: var(--g500); margin-left: 12px }
-
-        .order-items { padding: 16px 24px }
-        .order-item {
-            display: flex; align-items: center; gap: 14px;
-            padding: 10px 0; border-bottom: 1px solid var(--g100)
-        }
-        .order-item:last-child { border-bottom: none }
-        .order-item img {
-            width: 56px; height: 56px; border-radius: 10px;
-            object-fit: cover; background: var(--g100)
-        }
-        .order-item-name { font-size: 13px; font-weight: 700; color: var(--g800) }
-        .order-item-qty { font-size: 12px; color: var(--g500) }
-        .order-item-price {
-            margin-left: auto; font-family: var(--font-h);
-            font-weight: 800; color: var(--blue); font-size: 14px
-        }
-
-        .order-footer {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 24px; background: var(--g50);
-            border-top: 1px solid var(--g100); flex-wrap: wrap; gap: 12px
-        }
-        .order-total-label { font-size: 13px; color: var(--g500) }
-        .order-total-val {
-            font-family: var(--font-h); font-size: 20px;
-            font-weight: 800; color: var(--blue)
-        }
-
-        .empty-orders { text-align: center; padding: 60px 20px }
-        .empty-orders .empty-icon { font-size: 64px; margin-bottom: 16px }
-    </style>
 @endsection
 
 @section('header')
@@ -60,34 +10,49 @@
 @endsection
 
 @section('content')
-    <section class="orders-section">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="{{ route('index') }}">Beranda</a> <span>›</span> <span>Pesanan Saya</span>
+    <section class="py-8 md:py-[72px] bg-g50 min-h-screen px-4 md:px-8">
+        <div class="max-w-[1024px] mx-auto">
+            <div class="flex items-center gap-1.5 mb-6 text-[13px]">
+                <a href="{{ route('index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Beranda</a> 
+                <i class="fi fi-rr-angle-small-right text-g400"></i> 
+                <span class="text-g800 font-semibold">Pesanan Saya</span>
             </div>
-            <h1 style="display:flex;align-items:center;gap:10px"><i class="fi fi-rr-box" style="color:var(--blue)"></i> Pesanan Saya</h1>
-            <p style="color:var(--g500);margin-bottom:28px">Riwayat dan status pesanan Anda</p>
+            
+            <div class="mb-8">
+                <h1 class="font-heading text-[28px] md:text-[32px] font-extrabold text-g900 mb-2 flex items-center gap-3">
+                    <i class="fi fi-rr-box text-primary"></i> Pesanan Saya
+                </h1>
+                <p class="text-g500 text-[15px]">Riwayat dan status pesanan Anda</p>
+            </div>
 
             @if (session('status'))
-                <div style="background:var(--sl);color:#15803D;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    <i class="fi fi-rr-check-circle"></i> {{ session('status') }}
+                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
+                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div style="background:var(--dl);color:#991B1B;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:20px">
-                    <i class="fi fi-rr-cross-circle"></i> {{ session('error') }}
+                <div class="bg-red-50 text-red-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-red-200">
+                    <i class="fi fi-rr-cross-circle text-lg"></i> {{ session('error') }}
                 </div>
             @endif
 
+            <div class="space-y-4">
             @forelse ($pesanans as $pesanan)
                 @php
                     $statusClass = match ($pesanan->status_pesanan) {
-                        'menunggu' => 'badge-pend',
-                        'diproses' => 'badge-warn',
-                        'dikirim'  => 'badge-info',
-                        'selesai'  => 'badge-success',
-                        default    => 'badge-info',
+                        'menunggu' => 'bg-orange-50 text-orange-600 border-orange-200',
+                        'diproses' => 'bg-blue-50 text-blue-600 border-blue-200',
+                        'dikirim'  => 'bg-purple-50 text-purple-600 border-purple-200',
+                        'selesai'  => 'bg-green-50 text-green-600 border-green-200',
+                        default    => 'bg-g100 text-g600 border-g200',
+                    };
+                    $statusIcon = match ($pesanan->status_pesanan) {
+                        'menunggu' => 'fi-rr-time-clock',
+                        'diproses' => 'fi-rr-settings',
+                        'dikirim'  => 'fi-rr-truck-side',
+                        'selesai'  => 'fi-rr-check-circle',
+                        default    => 'fi-rr-info',
                     };
                     $statusLabel = match ($pesanan->status_pesanan) {
                         'menunggu' => 'Menunggu',
@@ -97,65 +62,78 @@
                         default    => ucfirst($pesanan->status_pesanan),
                     };
                 @endphp
-                <div class="order-card">
-                    <div class="order-header">
+                <div class="bg-white rounded-2xl shadow-sm border border-g100 overflow-hidden transition-all hover:shadow-card group">
+                    <div class="flex items-center justify-between py-4 px-6 border-b border-g100 flex-wrap gap-3 bg-white">
                         <div>
-                            <span class="order-id">{{ $pesanan->no_resi }}</span>
-                            <span class="order-date">{{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y, H:i') }}</span>
+                            <span class="font-extrabold text-[15px] text-g900">{{ $pesanan->no_resi }}</span>
+                            <span class="text-xs font-semibold text-g500 ml-3">{{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y, H:i') }}</span>
                         </div>
-                        <div style="display:flex;align-items:center;gap:10px">
-                            <span class="badge {{ $statusClass }}">{{ $statusLabel }}</span>
+                        <div class="flex items-center gap-2.5">
+                            <span class="inline-flex items-center gap-1.5 {{ $statusClass }} border py-1.5 px-3 rounded-full text-xs font-bold tracking-wide uppercase">
+                                <i class="fi {{ $statusIcon }}"></i> {{ $statusLabel }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="order-items">
+                    <div class="py-2 px-6">
                         @foreach ($pesanan->detailPesanans as $detail)
-                            <div class="order-item">
+                            <div class="flex items-center gap-4 py-3 border-b border-g100 last:border-none">
                                 @if ($detail->produk)
-                                    <img src="{{ asset('storage/products/' . $detail->produk->gambar) }}" alt="{{ $detail->produk->nama_produk }}" loading="lazy" decoding="async">
-                                    <div>
-                                        <div class="order-item-name">{{ $detail->produk->nama_produk }}</div>
-                                        <div class="order-item-qty">{{ $detail->qty }} × Rp {{ number_format($detail->harga_beli, 0, ',', '.') }}</div>
+                                    <div class="w-14 h-14 rounded-xl bg-g50 border border-g100 p-1 flex items-center justify-center shrink-0">
+                                        @if($detail->produk->gambar)
+                                            <img src="{{ asset('storage/products/' . $detail->produk->gambar) }}" alt="{{ $detail->produk->nama_produk }}" loading="lazy" decoding="async" class="w-full h-full object-contain mix-blend-multiply">
+                                        @else
+                                            <i class="fi fi-rr-picture text-xl text-g300"></i>
+                                        @endif
                                     </div>
-                                    <div class="order-item-price">Rp {{ number_format($detail->harga_beli * $detail->qty, 0, ',', '.') }}</div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[13px] font-bold text-g800 line-clamp-1 mb-0.5">{{ $detail->produk->nama_produk }}</div>
+                                        <div class="text-xs font-semibold text-g500">{{ $detail->qty }} × Rp {{ number_format($detail->harga_beli, 0, ',', '.') }}</div>
+                                    </div>
+                                    <div class="font-heading font-extrabold text-primary text-[14px] whitespace-nowrap pl-4">
+                                        Rp {{ number_format($detail->harga_beli * $detail->qty, 0, ',', '.') }}
+                                    </div>
                                 @else
-                                    <div>
-                                        <div class="order-item-name">Produk tidak tersedia</div>
-                                        <div class="order-item-qty">{{ $detail->qty }} item</div>
+                                    <div class="w-14 h-14 rounded-xl bg-g50 border border-g100 p-1 flex items-center justify-center shrink-0 text-g300 text-xl"><i class="fi fi-rr-ban"></i></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[13px] font-bold text-g500 italic mb-0.5">Produk tidak tersedia</div>
+                                        <div class="text-xs font-semibold text-g400">{{ $detail->qty }} item</div>
                                     </div>
                                 @endif
                             </div>
                         @endforeach
                     </div>
 
-                    <div class="order-footer">
-                        <div>
-                            <div class="order-total-label">
-                                Ekspedisi: {{ $pesanan->ekspedisi->nama_ekspedisi ?? '-' }}
-                                • Ongkir: Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}
-                            </div>
+                    <div class="flex items-center justify-between py-4 px-6 bg-g50 border-t border-g100 flex-wrap gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-g500 uppercase tracking-widest mb-1">Pengiriman</span>
+                            <span class="text-[13px] font-semibold text-g800 flex items-center gap-1.5"><i class="fi fi-rr-truck-side text-g400"></i> {{ $pesanan->ekspedisi->nama_ekspedisi ?? '-' }} <span class="text-g400 mx-1">•</span> Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}</span>
                         </div>
-                        <div>
-                            <div class="order-total-label">Total Bayar</div>
-                            <div class="order-total-val">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</div>
+                        <div class="text-right">
+                            <div class="text-xs font-bold text-g500 uppercase tracking-widest mb-1">Total Bayar</div>
+                            <div class="font-heading text-xl font-extrabold text-primary">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</div>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="empty-orders">
-                    <div class="empty-icon"><i class="fi fi-rr-box" style="font-size: 64px;"></i></div>
-                    <div style="font-weight:700;font-size:18px;color:var(--g700);margin-bottom:6px">
-                        Belum Ada Pesanan
-                    </div>
-                    <div style="font-size:14px;color:var(--g400);margin-bottom:24px">
-                        Yuk mulai belanja produk elektronik berkualitas!
-                    </div>
-                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg"><i class="fi fi-rr-shopping-bag" style="margin-right: 6px;"></i> Belanja Sekarang</a>
+                <div class="bg-white rounded-2xl shadow-sm border border-g100 p-12 text-center mt-5">
+                    <div class="text-[64px] text-g300 mb-4 inline-flex justify-center"><i class="fi fi-rr-box"></i></div>
+                    <h3 class="font-heading text-xl font-extrabold text-g800 mb-2">Belum Ada Pesanan</h3>
+                    <p class="text-g500 text-sm mb-6 max-w-sm mx-auto">Yuk mulai belanja produk elektronik berkualitas di Elektronik Modern!</p>
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 py-3 px-6 rounded-full font-bold text-[15px] bg-primary text-white shadow-[0_4px_12px_rgba(26,92,255,0.3)] hover:bg-primary-dark hover:-translate-y-px transition-all">
+                        <i class="fi fi-rr-shopping-bag"></i> Belanja Sekarang
+                    </a>
                 </div>
             @endforelse
-            <div style="margin-top:24px">
-                {{ $pesanans->links() }}
             </div>
+            
+            @if($pesanans->hasPages())
+            <div class="mt-8 flex justify-center w-full overflow-hidden">
+                <div class="inline-flex max-w-full bg-white rounded-xl shadow-sm border border-g200 p-1">
+                    {{ $pesanans->links('pagination::tailwind') }}
+                </div>
+            </div>
+            @endif
         </div>
     </section>
 @endsection

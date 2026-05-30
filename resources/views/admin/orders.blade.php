@@ -3,203 +3,219 @@
 @section('title', 'Kelola Pesanan – Admin Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
-@endsection
-
-@section('header')
 @endsection
 
 @section('content')
-    <div class="admin-layout">
+    <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="admin-main">
-            <div class="admin-topbar">
-                <div class="page-title">Kelola Pesanan</div>
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Pesanan</h1>
             </div>
 
             @if (session('status'))
-                <div class="data-card" style="padding:12px 16px;margin-bottom:16px;background:var(--sl);color:#15803D">
-                    <strong><i class="fi fi-rr-check-circle" style="color:var(--success);margin-right:6px"></i> {{ session('status') }}</strong>
+                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
+                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="data-card" style="padding:12px 16px;margin-bottom:16px;background:var(--dl);color:#991B1B">
-                    <strong><i class="fi fi-rr-cross-circle" style="color:var(--danger);margin-right:6px"></i> {{ session('error') }}</strong>
+                <div class="bg-red-50 text-red-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-red-200">
+                    <i class="fi fi-rr-cross-circle text-lg"></i> {{ session('error') }}
                 </div>
             @endif
 
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-ico blue"><i class="fi fi-rr-time-fast"></i></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-g100 flex items-center gap-4 hover:shadow-card transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-blue-50 text-blue-600"><i class="fi fi-rr-time-fast"></i></div>
                     <div>
-                        <div class="stat-label">Menunggu</div>
-                        <div class="stat-val">{{ $jumlahMenunggu }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Menunggu</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahMenunggu }}</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-ico blue"><i class="fi fi-rr-settings"></i></div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-g100 flex items-center gap-4 hover:shadow-card transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-blue-50 text-blue-600"><i class="fi fi-rr-settings"></i></div>
                     <div>
-                        <div class="stat-label">Diproses</div>
-                        <div class="stat-val">{{ $jumlahDiproses }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Diproses</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahDiproses }}</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-ico teal"><i class="fi fi-rr-truck-side"></i></div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-g100 flex items-center gap-4 hover:shadow-card transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-teal-50 text-teal-600"><i class="fi fi-rr-truck-side"></i></div>
                     <div>
-                        <div class="stat-label">Dikirim</div>
-                        <div class="stat-val">{{ $jumlahDikirim }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Dikirim</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahDikirim }}</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-ico green"><i class="fi fi-rr-check-circle"></i></div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-g100 flex items-center gap-4 hover:shadow-card transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-green-50 text-green-600"><i class="fi fi-rr-check-circle"></i></div>
                     <div>
-                        <div class="stat-label">Selesai</div>
-                        <div class="stat-val">{{ $jumlahSelesai }}</div>
+                        <div class="text-[12px] font-bold text-g500 uppercase tracking-wider mb-1">Selesai</div>
+                        <div class="font-heading text-2xl font-extrabold text-g900">{{ $jumlahSelesai }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="data-card">
-                <div class="data-card-head">
-                    <h3 style="display:flex;align-items:center;gap:8px"><i class="fi fi-rr-document" style="color:var(--blue)"></i> Daftar Pesanan</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-g100">
+                <div class="p-6 border-b border-g100 flex justify-between items-center">
+                    <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
+                        <i class="fi fi-rr-document text-primary"></i> Daftar Pesanan
+                    </h3>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No. Pesanan</th>
-                            <th>Pelanggan</th>
-                            <th>Total</th>
-                            <th>Bukti Bayar</th>
-                            <th>Status</th>
-                            <th>Update Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($pesanans as $pesanan)
-                            @php
-                                $statusLabel = match ($pesanan->status_pesanan) {
-                                    'diproses' => 'Diproses',
-                                    'dikirim'  => 'Dikirim',
-                                    'selesai'  => 'Selesai',
-                                    default    => 'Menunggu',
-                                };
-                                $statusClass = match ($pesanan->status_pesanan) {
-                                    'diproses' => 'badge-warn',
-                                    'dikirim'  => 'badge-info',
-                                    'selesai'  => 'badge-success',
-                                    default    => 'badge-pend',
-                                };
-                                $buktiAda = !empty($pesanan->pembayaran?->bukti_bayar);
-                                $paymentStatus = (int) ($pesanan->pembayaran?->status_konfirmasi ?? 0);
-                                $paymentLabel = match ($paymentStatus) {
-                                    1 => 'Terverifikasi',
-                                    2 => 'Ditolak',
-                                    default => 'Menunggu',
-                                };
-                                $paymentClass = match ($paymentStatus) {
-                                    1 => 'badge-success',
-                                    2 => 'badge-danger',
-                                    default => 'badge-pend',
-                                };
-                                $buktiExt = $buktiAda ? strtolower(pathinfo($pesanan->pembayaran->bukti_bayar, PATHINFO_EXTENSION)) : '';
-                            @endphp
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full min-w-[1000px] text-left border-collapse">
+                        <thead>
                             <tr>
-                                <td style="font-weight:700">
-                                    {{ $pesanan->no_resi }}
-                                </td>
-                                <td>
-                                    <div style="font-weight:700;font-size:13px">{{ $pesanan->user->nama ?? '-' }}</div>
-                                    <div style="font-size:11px;color:var(--g400)">
-                                        {{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y') }}
-                                    </div>
-                                    <div style="margin-top:8px;font-size:11px;color:var(--g500)">
-                                        @foreach($pesanan->detailPesanans as $detail)
-                                            <div>- {{ $detail->produk->nama_produk ?? 'Produk Dihapus' }} (x{{ $detail->qty }})</div>
-                                        @endforeach
-                                    </div>
-                                </td>
-                                <td style="font-weight:800;color:var(--blue);font-family:'Syne',sans-serif">
-                                    Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
-                                </td>
-                                <td>
-                                    @if ($buktiAda)
-                                        @if ($buktiExt === 'pdf')
-                                            <a class="badge badge-info" href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank">PDF</a>
-                                        @else
-                                            <a href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank" title="Lihat Bukti Bayar">
-                                                <img src="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" alt="Bukti Bayar" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:1.5px solid #bbf7d0" loading="lazy" decoding="async">
-                                            </a>
-                                        @endif
-                                        <div style="margin-top:8px">
-                                            <span class="badge {{ $paymentClass }}">{{ $paymentLabel }}</span>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">No. Pesanan</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Pelanggan</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Total</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Bukti Bayar</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Status</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Update Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($pesanans as $pesanan)
+                                @php
+                                    $statusLabel = match ($pesanan->status_pesanan) {
+                                        'diproses' => 'Diproses',
+                                        'dikirim'  => 'Dikirim',
+                                        'selesai'  => 'Selesai',
+                                        default    => 'Menunggu',
+                                    };
+                                    $statusClass = match ($pesanan->status_pesanan) {
+                                        'diproses' => 'bg-blue-50 text-blue-600 border-blue-200',
+                                        'dikirim'  => 'bg-purple-50 text-purple-600 border-purple-200',
+                                        'selesai'  => 'bg-green-50 text-green-600 border-green-200',
+                                        default    => 'bg-orange-50 text-orange-600 border-orange-200',
+                                    };
+                                    $buktiAda = !empty($pesanan->pembayaran?->bukti_bayar);
+                                    $paymentStatus = (int) ($pesanan->pembayaran?->status_konfirmasi ?? 0);
+                                    $paymentLabel = match ($paymentStatus) {
+                                        1 => 'Terverifikasi',
+                                        2 => 'Ditolak',
+                                        default => 'Menunggu',
+                                    };
+                                    $paymentClass = match ($paymentStatus) {
+                                        1 => 'bg-green-50 text-green-600 border-green-200',
+                                        2 => 'bg-red-50 text-red-600 border-red-200',
+                                        default => 'bg-orange-50 text-orange-600 border-orange-200',
+                                    };
+                                    $buktiExt = $buktiAda ? strtolower(pathinfo($pesanan->pembayaran->bukti_bayar, PATHINFO_EXTENSION)) : '';
+                                @endphp
+                                <tr class="group hover:bg-g50/50 transition-colors">
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-extrabold text-g900 text-[14px]">{{ $pesanan->no_resi }}</div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-bold text-g800 text-[13px] mb-1">{{ $pesanan->user->nama ?? '-' }}</div>
+                                        <div class="font-semibold text-g400 text-[11px] mb-2">
+                                            {{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y') }}
                                         </div>
-                                        @if ($paymentStatus === 1)
-                                            <div style="font-size:11px;color:var(--g500);margin-top:6px">Final</div>
-                                        @else
-                                            <form method="POST" action="{{ route('admin.orders.updatePayment', $pesanan) }}" style="display:flex;gap:6px;margin-top:8px">
-                                                @csrf @method('PATCH')
-                                                <input type="hidden" name="status_konfirmasi" value="1">
-                                                <button class="btn-edit" type="submit">Verifikasi</button>
-                                            </form>
-                                            <form method="POST" action="{{ route('admin.orders.updatePayment', $pesanan) }}" style="display:flex;gap:6px;margin-top:6px">
-                                                @csrf @method('PATCH')
-                                                <input type="hidden" name="status_konfirmasi" value="2">
-                                                <button class="btn-del" type="submit">Tolak</button>
-                                            </form>
-                                        @endif
-                                    @else
-                                        <div style="width:44px;height:44px;border-radius:8px;background:var(--wl);border:1.5px solid #fde68a;display:flex;align-items:center;justify-content:center;font-size:20px" title="Belum Dibayar">
-                                            404
+                                        <div class="text-[11px] font-medium text-g500 space-y-0.5">
+                                            @foreach($pesanan->detailPesanans as $detail)
+                                                <div class="flex items-center gap-1.5"><i class="fi fi-rr-minus-small"></i> {{ $detail->produk->nama_produk ?? 'Produk Dihapus' }} (x{{ $detail->qty }})</div>
+                                            @endforeach
                                         </div>
-                                    @endif
-                                </td>
-                                <td><span class="badge {{ $statusClass }}">{{ $statusLabel }}</span></td>
-                                <td>
-                                    @if ($pesanan->status_pesanan !== 'selesai')
-                                        <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}">
-                                            @csrf @method('PATCH')
-                                            <div style="display:flex;gap:6px;align-items:center">
-                                                @php
-                                                    $nextStatus = match ($pesanan->status_pesanan) {
-                                                        'menunggu' => 'diproses',
-                                                        'diproses' => 'dikirim',
-                                                        'dikirim'  => 'selesai',
-                                                        default    => null,
-                                                    };
-                                                    $nextLabel = match ($nextStatus) {
-                                                        'diproses' => '<i class="fi fi-rr-settings" style="margin-right:4px"></i> Proses',
-                                                        'dikirim'  => '<i class="fi fi-rr-truck-side" style="margin-right:4px"></i> Kirim',
-                                                        'selesai'  => '<i class="fi fi-rr-check-circle" style="margin-right:4px"></i> Selesai',
-                                                        default    => '',
-                                                    };
-                                                @endphp
-                                                @if ($nextStatus)
-                                                    <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
-                                                    <button type="submit" class="btn-edit">{!! $nextLabel !!}</button>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <div class="font-heading font-extrabold text-primary text-[15px] whitespace-nowrap">
+                                            Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        @if ($buktiAda)
+                                            <div class="flex flex-col gap-2 items-start">
+                                                @if ($buktiExt === 'pdf')
+                                                    <a href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank" class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 border border-blue-200 py-1 px-2.5 rounded-lg text-[11px] font-extrabold tracking-widest uppercase hover:bg-blue-100 transition-colors">
+                                                        <i class="fi fi-rr-document"></i> PDF
+                                                    </a>
+                                                @else
+                                                    <a href="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" target="_blank" title="Lihat Bukti Bayar" class="block overflow-hidden rounded-lg border-2 border-green-200 hover:border-green-400 transition-colors">
+                                                        <img src="{{ asset('storage/payments/' . $pesanan->pembayaran->bukti_bayar) }}" alt="Bukti Bayar" class="w-12 h-12 object-cover" loading="lazy" decoding="async">
+                                                    </a>
+                                                @endif
+                                                <span class="inline-flex items-center {{ $paymentClass }} border py-1 px-2 rounded text-[10px] font-bold tracking-wider">{{ $paymentLabel }}</span>
+                                                
+                                                @if ($paymentStatus === 1)
+                                                    <div class="text-[10px] font-bold text-g500 uppercase tracking-widest flex items-center gap-1 mt-1"><i class="fi fi-rr-check"></i> Final</div>
+                                                @else
+                                                    <div class="flex gap-2 mt-1">
+                                                        <form method="POST" action="{{ route('admin.orders.updatePayment', $pesanan) }}" class="m-0">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status_konfirmasi" value="1">
+                                                            <button type="submit" class="inline-flex py-1 px-2 bg-green-50 text-green-600 border border-green-200 rounded text-[11px] font-bold hover:bg-green-600 hover:text-white transition-colors">Verifikasi</button>
+                                                        </form>
+                                                        <form method="POST" action="{{ route('admin.orders.updatePayment', $pesanan) }}" class="m-0">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status_konfirmasi" value="2">
+                                                            <button type="submit" class="inline-flex py-1 px-2 bg-red-50 text-red-600 border border-red-200 rounded text-[11px] font-bold hover:bg-red-600 hover:text-white transition-colors">Tolak</button>
+                                                        </form>
+                                                    </div>
                                                 @endif
                                             </div>
-                                        </form>
-                                    @else
-                                        <span class="badge badge-success" style="display:inline-flex;align-items:center;gap:4px"><i class="fi fi-rr-check"></i> Selesai</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" style="text-align:center;color:var(--g400);padding:18px">Belum ada pesanan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                <div style="padding:16px">
-                    {{ $pesanans->links() }}
+                                        @else
+                                            <div class="w-12 h-12 rounded-lg bg-orange-50 border-2 border-orange-200 flex items-center justify-center text-orange-400 text-sm font-extrabold" title="Belum Dibayar">
+                                                404
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        <span class="inline-flex items-center {{ $statusClass }} border py-1 px-2.5 rounded text-[11px] font-extrabold tracking-widest uppercase">
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 border-b border-g100 group-last:border-none">
+                                        @if ($pesanan->status_pesanan !== 'selesai')
+                                            <form method="POST" action="{{ route('admin.orders.updateStatus', $pesanan) }}" class="m-0">
+                                                @csrf @method('PATCH')
+                                                <div class="flex gap-2 items-center">
+                                                    @php
+                                                        $nextStatus = match ($pesanan->status_pesanan) {
+                                                            'menunggu' => 'diproses',
+                                                            'diproses' => 'dikirim',
+                                                            'dikirim'  => 'selesai',
+                                                            default    => null,
+                                                        };
+                                                        $nextLabel = match ($nextStatus) {
+                                                            'diproses' => '<i class="fi fi-rr-settings mt-0.5"></i> Proses',
+                                                            'dikirim'  => '<i class="fi fi-rr-truck-side mt-0.5"></i> Kirim',
+                                                            'selesai'  => '<i class="fi fi-rr-check-circle mt-0.5"></i> Selesai',
+                                                            default    => '',
+                                                        };
+                                                    @endphp
+                                                    @if ($nextStatus)
+                                                        <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
+                                                        <button type="submit" class="inline-flex py-1.5 px-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg font-bold text-[12px] hover:bg-blue-600 hover:text-white transition-colors items-center gap-1.5">
+                                                            {!! $nextLabel !!}
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </form>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 text-[12px] font-bold text-green-600 bg-green-50 py-1.5 px-3 rounded-lg"><i class="fi fi-rr-check"></i> Selesai</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-8 px-6 text-center text-g500 font-semibold text-[13px]">
+                                        Belum ada pesanan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
+                @if($pesanans->hasPages())
+                <div class="p-6 border-t border-g100 flex justify-center w-full overflow-hidden">
+                    <div class="inline-flex max-w-full bg-white rounded-xl shadow-sm border border-g200 p-1">
+                        {{ $pesanans->links('pagination::tailwind') }}
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>
-@endsection
-
-@section('footer')
 @endsection

@@ -133,6 +133,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/orders', [PesananController::class, 'index'])->name('orders.index');
     Route::patch('/orders/{pesanan}/status', [PesananController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::patch('/orders/{pesanan}/payment', [PesananController::class, 'updatePayment'])->name('orders.updatePayment');
+    Route::get('/report/download', [UserController::class, 'downloadReport'])->name('report.download');
 
     // Kelola User (customer saja)
     Route::get('/users', [UserController::class, 'userList'])->name('users.index');
@@ -150,4 +151,5 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/', [UserController::class, 'ownerDashboard'])->name('index');
+    Route::get('/report/download', [UserController::class, 'downloadReport'])->name('report.download');
 });

@@ -1,30 +1,34 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Customer – Admin')
+@section('title', 'Edit Customer – Admin Elektronik Modern')
 
 @section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
 @endsection
 
 @section('header')
 @endsection
 
 @section('content')
-    <div class="admin-layout">
+    <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="admin-main">
-            <div class="admin-topbar">
-                <div class="page-title">
-                    <a href="{{ route('admin.users.index') }}" style="color:var(--g500);text-decoration:none">Kelola Customer</a> 
-                    <span style="color:var(--g300);margin:0 8px">›</span> Edit
-                </div>
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
+            <div class="flex items-center gap-1.5 mb-6 text-[13px]">
+                <a href="{{ route('admin.index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-apps"></i> Dashboard</a> 
+                <i class="fi fi-rr-angle-small-right text-g400"></i> 
+                <a href="{{ route('admin.users.index') }}" class="text-g500 hover:text-primary transition-colors">Kelola Customer</a>
+                <i class="fi fi-rr-angle-small-right text-g400"></i>
+                <span class="text-g800 font-semibold">Edit</span>
+            </div>
+
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="font-heading text-[24px] font-extrabold text-g900">Edit Customer</h1>
             </div>
 
             @if ($errors->any())
-                <div class="data-card" style="padding:12px 16px;margin-bottom:16px;color:#ef4444">
-                    <strong>Gagal menyimpan data:</strong>
-                    <ul style="margin:8px 0 0 16px;font-size:12px">
+                <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
+                    <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal menyimpan data.</div>
+                    <ul class="list-disc pl-5 text-[12px] font-semibold space-y-1 mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -32,30 +36,51 @@
                 </div>
             @endif
 
-            <div class="data-card">
-                <div class="data-card-head">
-                    <h3>Edit Customer: {{ $user->nama }}</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-g100 max-w-2xl">
+                <div class="p-6 border-b border-g100 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center font-extrabold text-[15px] text-blue-600 border border-blue-100 shrink-0">
+                        {{ strtoupper(substr($user->nama, 0, 2)) }}
+                    </div>
+                    <div>
+                        <h3 class="font-heading text-[16px] font-extrabold text-g900">{{ $user->nama }}</h3>
+                        <div class="text-[13px] text-g500 font-medium">{{ $user->email }}</div>
+                    </div>
                 </div>
-                <form method="POST" action="{{ route('admin.users.update', $user) }}" style="padding:20px;display:grid;gap:16px;max-width:500px">
+                <form method="POST" action="{{ route('admin.users.update', $user) }}" class="p-6">
                     @csrf @method('PUT')
-                    <div>
-                        <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700">Nama</label>
-                        <input name="nama" value="{{ old('nama', $user->nama) }}" required style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Nama</label>
+                            <input name="nama" value="{{ old('nama', $user->nama) }}" required 
+                                class="w-full py-2.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Email</label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required 
+                                class="w-full py-2.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Password Baru (Opsional)</label>
+                            <input type="password" name="password" 
+                                class="w-full py-2.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
+                            <div class="text-[11px] text-g500 mt-1.5 font-medium flex items-center gap-1"><i class="fi fi-rr-info text-primary"></i> Kosongkan jika tidak ingin mengubah password.</div>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700">Email</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
-                    </div>
-                    <div>
-                        <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:700">Password Baru (Opsional)</label>
-                        <input type="password" name="password" style="width:100%;padding:10px;border:1px solid var(--g200);border-radius:8px">
-                        <div style="font-size:11px;color:var(--g400);margin-top:4px">Kosongkan jika tidak ingin mengubah password.</div>
-                    </div>
-                    <div style="margin-top:10px">
-                        <button class="btn btn-primary" type="submit" style="display:inline-flex;align-items:center;gap:8px"><i class="fi fi-rr-disk"></i> Simpan Perubahan</button>
+                    
+                    <div class="flex gap-3">
+                        <button type="submit" class="inline-flex py-2.5 px-5 bg-primary text-white rounded-lg font-bold text-[13px] shadow-sm hover:bg-primary-dark hover:-translate-y-px transition-all items-center gap-2">
+                            <i class="fi fi-rr-disk"></i> Simpan Perubahan
+                        </button>
+                        <a href="{{ route('admin.users.index') }}" class="inline-flex py-2.5 px-5 bg-white text-g700 border-[1.5px] border-g200 rounded-lg font-bold text-[13px] hover:border-primary hover:text-primary transition-all items-center gap-2">
+                            Batal
+                        </a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+@endsection
+
+@section('footer')
 @endsection

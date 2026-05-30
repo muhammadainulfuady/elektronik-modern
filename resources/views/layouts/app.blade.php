@@ -19,46 +19,32 @@
     <link rel='stylesheet'
         href='https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-brands/css/uicons-brands.css'>
-    <style>
-        /* Flaticon icon sizing helpers */
-        .fi {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-            line-height: 1;
-            margin-bottom: 2px;
-        }
-
-        .fi-sm {
-            font-size: 14px;
-        }
-
-        .fi-md {
-            font-size: 18px;
-        }
-
-        .fi-lg {
-            font-size: 22px;
-        }
-
-        .fi-xl {
-            font-size: 28px;
-        }
-
-        .si {
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-            line-height: 1;
-        }
-    </style>
     @yield('head')
 </head>
 
-<body>
+<body class="antialiased bg-g50 text-g900">
+    <script>
+        window.AppConfig = {
+            csrfToken: '{{ csrf_token() }}',
+            routes: {
+                login: '{{ route('login') }}',
+                cartCount: '{{ route('cart.count') ?? '' }}',
+                wishlistCount: '{{ route('wishlist.count') ?? '' }}',
+                wishlistToggle: '{{ route('wishlist.toggle') ?? '' }}',
+                cartAdd: '{{ route('cart.add') ?? '' }}',
+                cartRemove: '{{ route('cart.remove') ?? '' }}',
+                cartUpdate: '{{ route('cart.update') ?? '' }}',
+                notifications: '{{ route('customer.notifications.index') ?? '' }}',
+                notificationsReadAll: '{{ route('customer.notifications.readAll') ?? '' }}'
+            },
+            auth: {
+                check: {{ auth()->check() ? 'true' : 'false' }},
+                role: '{{ auth()->check() ? auth()->user()->role : '' }}',
+                cartQty: {{ auth()->check() && auth()->user()->keranjang ? auth()->user()->keranjang->detailKeranjangs()->sum('qty') : 0 }},
+                wishlistCount: {{ auth()->check() ? auth()->user()->wishlists()->count() : 0 }}
+            }
+        };
+    </script>
     @hasSection('header')
         @yield('header')
     @else

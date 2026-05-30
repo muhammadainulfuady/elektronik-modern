@@ -2,46 +2,43 @@
 
 @section('title', 'Reset Password - Elektronik Modern')
 
-@section('head')
-    <link rel="stylesheet" href="{{ asset('shared.css') }}">
-@endsection
-
 @section('header')
 @endsection
 
 @section('content')
-    <div class="auth-bg">
-        <div class="auth-card">
-            <div class="auth-logo-mark">*</div>
-            <div class="auth-title">Password Baru</div>
-            <div class="auth-sub">Buat password baru untuk akun {{ $email }}</div>
+    <div class="min-h-screen bg-g50 flex items-center justify-center p-5">
+        <x-card class="w-full max-w-[420px] relative">
+            <a href="{{ route('index') }}" class="absolute top-5 left-5 w-10 h-10 rounded-full bg-g50 flex items-center justify-center text-g500 hover:text-primary hover:bg-primary-light transition-all">
+                <i class="fi fi-rr-angle-small-left text-xl"></i>
+            </a>
 
-            @if ($errors->any())
-                <div style="background:var(--dl);color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
+            <div class="w-14 h-14 bg-primary-light text-primary rounded-2xl flex items-center justify-center text-[28px] mx-auto mb-5 mt-4">
+                <i class="fi fi-rr-unlock"></i>
+            </div>
+            <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Password Baru</h1>
+            <p class="text-sm text-g500 text-center mb-8">Buat password baru untuk akun {{ $email }}</p>
 
             <form method="POST" action="{{ route('password.update') }}">
                 @csrf
-                <div class="form-group">
-                    <label for="password">Password Baru</label>
-                    <input type="password" id="password" name="password" placeholder="Min. 8 karakter" required autofocus>
+                <div class="mb-5">
+                    <x-label for="password">Password Baru</x-label>
+                    <x-input type="password" id="password" name="password" placeholder="Min. 8 karakter" 
+                        :error="$errors->has('password')" required autofocus />
+                    <x-error :messages="$errors->get('password')" />
                 </div>
-                <div class="form-group">
-                    <label for="password_confirmation">Konfirmasi Password Baru</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password baru..." required>
+                <div class="mb-6">
+                    <x-label for="password_confirmation">Konfirmasi Password Baru</x-label>
+                    <x-input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password baru..." 
+                        required />
                 </div>
-                <button class="btn btn-primary" type="submit"
-                    style="width:100%;justify-content:center;padding:13px;font-size:15px">
-                    Simpan Password Baru
-                </button>
+                <x-button type="submit" class="w-full">
+                    Simpan Password Baru <i class="fi fi-rr-check"></i>
+                </x-button>
             </form>
-        </div>
+        </x-card>
     </div>
 @endsection
 
 @section('footer')
 @endsection
+
