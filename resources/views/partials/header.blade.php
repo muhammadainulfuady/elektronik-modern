@@ -46,8 +46,10 @@
             </div>
 
             {{-- Mobile Search Bar (Toggleable) --}}
-            <div id="mobileSearchBar" class="absolute inset-x-0 top-0 h-full bg-white z-[950] flex items-center px-4 gap-3 translate-y-[-100%] transition-transform duration-300 lg:hidden">
-                <button onclick="toggleMobileSearch()" class="text-g500 text-xl"><i class="fi fi-rr-angle-small-left"></i></button>
+            <div id="mobileSearchBar"
+                class="absolute inset-x-0 top-0 h-full bg-white z-[950] flex items-center px-4 gap-3 translate-y-[-100%] transition-transform duration-300 lg:hidden">
+                <button onclick="toggleMobileSearch()" class="text-g500 text-xl"><i
+                        class="fi fi-rr-angle-small-left"></i></button>
                 <div class="flex-1 relative">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-g400"><i class="fi fi-rr-search"></i></span>
                     <input type="text" placeholder="Cari produk..." id="mobileSearchInput"
@@ -78,23 +80,28 @@
                             class="absolute top-0 right-0 bg-primary text-white rounded-full w-[15px] h-[15px] md:w-[18px] md:h-[18px] text-[8px] md:text-[10px] font-bold hidden items-center justify-center border-2 border-white"
                             id="notifBadgeNav">0</span>
                     </button>
-                    
+
                     {{-- Notification Dropdown --}}
-                    <div id="notifPanel" class="absolute top-[calc(100%+12px)] right-[-10px] md:right-0 w-[320px] md:w-[400px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 opacity-0 pointer-events-none translate-y-4 scale-95 transition-all duration-300 z-[1002] overflow-hidden origin-top-right">
-                        <div class="p-5 border-b border-slate-50 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-20">
+                    <div id="notifPanel"
+                        class="absolute top-[calc(100%+12px)] right-[-10px] md:right-0 w-[320px] md:w-[400px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 opacity-0 pointer-events-none translate-y-4 scale-95 transition-all duration-300 z-[1002] overflow-hidden origin-top-right">
+                        <div
+                            class="p-5 border-b border-slate-50 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-20">
                             <div>
                                 <h4 class="font-heading font-extrabold text-slate-800 text-[16px]">Notifikasi</h4>
                                 <p class="text-[11px] text-slate-400 font-medium">Info terbaru akun Anda</p>
                             </div>
-                            <button onclick="markNotificationsRead()" class="py-1.5 px-3 rounded-full bg-primary/5 text-[10px] font-bold text-primary hover:bg-primary hover:text-white transition-all uppercase tracking-wider">Tandai Dibaca</button>
+                            <button onclick="markNotificationsRead()"
+                                class="py-1.5 px-3 rounded-full bg-primary/5 text-[10px] font-bold text-primary hover:bg-primary hover:text-white transition-all uppercase tracking-wider">Tandai
+                                Dibaca</button>
                         </div>
-                        <div id="notifList" class="max-h-[400px] overflow-y-auto custom-scrollbar bg-white divide-y divide-slate-50">
+                        <div id="notifList"
+                            class="max-h-[400px] overflow-y-auto custom-scrollbar bg-white divide-y divide-slate-50">
                             {{-- JS will populate this --}}
                         </div>
                     </div>
                 </div>
 
-                <div id="notifOverlay" class="fixed inset-0 bg-black/5 z-[1001] hidden" onclick="closeNotifPanel()"></div>
+                <div id="notifOverlay" class="fixed inset-0 bg-transparent z-[1001] hidden" onclick="closeNotifPanel()"></div>
 
                 <a href="{{ route('cart.index') }}"
                     class="w-9 h-9 md:w-[42px] md:h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-base relative hover:bg-g200"
@@ -237,7 +244,7 @@
             // Handled by sidebar specific scripts
             return;
         @else
-                            const menu = document.getElementById('mobileMenu');
+                                const menu = document.getElementById('mobileMenu');
             const overlay = document.getElementById('mobileMenuOverlay');
             const icon = document.getElementById('mobileMenuIcon');
             if (!menu || !overlay) return;

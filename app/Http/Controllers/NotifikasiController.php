@@ -14,12 +14,31 @@ class NotifikasiController extends Controller
             ->latest('id_notifikasi')
             ->get()
             ->map(function (Notifikasi $notifikasi) {
+                $timeString = 'Baru saja';
+                if ($notifikasi->created_at) {
+                    $diffInMinutes = $notifikasi->created_at->diffInMinutes(now());
+                    $diffInHours = $notifikasi->created_at->diffInHours(now());
+                    $diffInDays = $notifikasi->created_at->diffInDays(now());
+
+                    if ($diffInMinutes < 10) {
+                        $timeString = 'Baru saja';
+                    } elseif ($diffInMinutes < 60) {
+                        $roundedMinutes = floor($diffInMinutes / 10) * 10;
+                        $timeString = $roundedMinutes . ' menit yang lalu';
+                    } elseif ($diffInHours < 24) {
+                        $timeString = $diffInHours . ' jam yang lalu';
+                    } else {
+                        $timeString = $diffInDays . ' hari yang lalu';
+                    }
+                }
+
                 return [
                     'id' => $notifikasi->id_notifikasi,
                     'judul' => $notifikasi->judul,
                     'pesan' => $notifikasi->pesan,
                     'is_read' => (bool) $notifikasi->is_read,
                     'ikon' => $this->iconFor($notifikasi->judul),
+                    'created_at' => $timeString,
                 ];
             });
 
