@@ -145,7 +145,7 @@ class PesananController extends Controller
             ->with(['dusun.desa.kecamatan.kota.provinsi'])
             ->get();
         $ekspedisis = Ekspedisi::select('id_ekspedisi','nama_ekspedisi','biaya_pengiriman')->get();
-
+        
         return view('customer.checkout', compact('items', 'subtotal', 'discount', 'appliedPromo', 'alamats', 'ekspedisis'));
     }
 

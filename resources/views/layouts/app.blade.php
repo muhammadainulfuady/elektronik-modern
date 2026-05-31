@@ -61,6 +61,7 @@
             csrfToken: '{{ csrf_token() }}',
             routes: {
                 login: '{{ route('login') }}',
+                products: '{{ route('products.index') }}',
                 cartCount: '{{ route('cart.count') ?? '' }}',
                 wishlistCount: '{{ route('wishlist.count') ?? '' }}',
                 wishlistToggle: '{{ route('wishlist.toggle') ?? '' }}',
@@ -68,6 +69,7 @@
                 cartRemove: '{{ route('cart.remove') ?? '' }}',
                 cartUpdate: '{{ route('cart.update') ?? '' }}',
                 notifications: '{{ route('customer.notifications.index') ?? '' }}',
+                notificationsRead: '{{ route('customer.notifications.read', ':id') ?? '' }}',
                 notificationsReadAll: '{{ route('customer.notifications.readAll') ?? '' }}',
                 notificationsDestroy: '{{ route('customer.notifications.destroy', ':id') ?? '' }}'
             },

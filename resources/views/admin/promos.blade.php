@@ -147,7 +147,7 @@
                                             <button type="submit" form="promo-{{ $promo->id_promo }}" class="inline-flex py-1.5 px-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg font-bold text-[12px] hover:bg-blue-600 hover:text-white transition-colors items-center gap-1.5">
                                                 <i class="fi fi-rr-disk"></i> Simpan
                                             </button>
-                                            <form method="POST" action="{{ route('admin.promos.destroy', $promo) }}" onsubmit="return confirm('Hapus promo ini?')" class="m-0">
+                                            <form method="POST" action="{{ route('admin.promos.destroy', $promo) }}" class="m-0" onsubmit="event.preventDefault(); window.confirmDelete(this, 'Promo {{ $promo->kode_voucher }} akan dihapus secara permanen.');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="inline-flex py-1.5 px-3 bg-red-50 text-red-600 border border-red-100 rounded-lg font-bold text-[12px] hover:bg-red-600 hover:text-white transition-colors items-center gap-1.5">
                                                     <i class="fi fi-rr-trash"></i> Hapus

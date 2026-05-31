@@ -15,20 +15,20 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu untuk mengakses halaman ini.');
         }
 
         $user = Auth::user();
 
         if (!in_array($user->role, $roles)) {
             // Redirect based on role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.index');
-            } elseif ($user->role === 'owner') {
-                return redirect()->route('owner.index');
-            } else {
-                return redirect()->route('index');
-            }
+            $redirect = match($user->role) {
+                'admin' => redirect()->route('admin.index'),
+                'owner' => redirect()->route('owner.index'),
+                default => redirect()->route('index'),
+            };
+
+            return $redirect->with('error', 'Anda tidak memiliki hak akses untuk membuka halaman tersebut.');
         }
 
         return $next($request);

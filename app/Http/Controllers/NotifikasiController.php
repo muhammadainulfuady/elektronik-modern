@@ -12,7 +12,6 @@ class NotifikasiController extends Controller
     {
         $notifications = Notifikasi::where('id_users', Auth::id())
             ->latest('id_notifikasi')
-            ->take(8)
             ->get()
             ->map(function (Notifikasi $notifikasi) {
                 return [
@@ -27,6 +26,20 @@ class NotifikasiController extends Controller
         return response()->json([
             'unreadCount' => Notifikasi::where('id_users', Auth::id())->where('is_read', 0)->count(),
             'notifications' => $notifications,
+        ]);
+    }
+
+    public function markRead(Notifikasi $notifikasi)
+    {
+        if ($notifikasi->id_users !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $notifikasi->update(['is_read' => 1]);
+
+        return response()->json([
+            'status' => true,
+            'unreadCount' => Notifikasi::where('id_users', Auth::id())->where('is_read', 0)->count()
         ]);
     }
 

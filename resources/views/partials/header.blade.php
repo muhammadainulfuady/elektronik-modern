@@ -7,7 +7,7 @@
 @endphp
 
 <nav
-    class="sticky top-0 z-[900] bg-white/95 backdrop-blur-[20px] border-b border-g200 px-3 md:px-8 h-[68px] flex items-center justify-between gap-1.5 md:gap-5 overflow-hidden">
+    class="sticky top-0 z-[900] bg-white/95 backdrop-blur-[20px] border-b border-g200 px-3 md:px-8 h-[68px] flex items-center justify-between gap-1.5 md:gap-5">
     <div class="flex items-center gap-1.5 sm:gap-3 min-w-0">
         {{-- Burger Menu Trigger --}}
         <button type="button"
@@ -36,12 +36,24 @@
             $isSearchPage = request()->routeIs('index') || request()->routeIs('products.index');
         @endphp
         @if ($isSearchPage)
+            {{-- Desktop Search --}}
             <div class="flex-1 max-w-[480px] relative hidden lg:block mx-4">
                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-g400 text-base"><i
                         class="fi fi-rr-search"></i></span>
                 <input type="text" placeholder="Cari produk elektronik..." id="navSearchInput"
                     class="w-full py-2.5 pr-4 pl-11 rounded-full bg-g100 border-[1.5px] border-g200 font-sans text-sm text-g800 outline-none transition-all focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10"
-                    onkeydown="handleSearch(this)" value="{{ request('q') }}" />
+                    onkeydown="handleSearch(this, event)" value="{{ request('q') }}" />
+            </div>
+
+            {{-- Mobile Search Bar (Toggleable) --}}
+            <div id="mobileSearchBar" class="absolute inset-x-0 top-0 h-full bg-white z-[950] flex items-center px-4 gap-3 translate-y-[-100%] transition-transform duration-300 lg:hidden">
+                <button onclick="toggleMobileSearch()" class="text-g500 text-xl"><i class="fi fi-rr-angle-small-left"></i></button>
+                <div class="flex-1 relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-g400"><i class="fi fi-rr-search"></i></span>
+                    <input type="text" placeholder="Cari produk..." id="mobileSearchInput"
+                        class="w-full py-2 pl-10 pr-4 bg-g50 border border-g200 rounded-full text-sm outline-none focus:border-primary"
+                        onkeydown="handleSearch(this, event)" value="{{ request('q') }}">
+                </div>
             </div>
         @endif
     @endif
@@ -57,14 +69,32 @@
                     </button>
                 @endif
 
-                <button type="button"
-                    class="w-9 h-9 md:w-[42px] md:h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-base relative hover:bg-g200"
-                    title="Notifikasi" onclick="toggleNotifPanel()">
-                    <i class="fi fi-rr-bell"></i>
-                    <span
-                        class="absolute top-0 right-0 bg-primary text-white rounded-full w-[15px] h-[15px] md:w-[18px] md:h-[18px] text-[8px] md:text-[10px] font-bold hidden items-center justify-center border-2 border-white"
-                        id="notifBadgeNav">0</span>
-                </button>
+                <div class="relative inline-block">
+                    <button type="button"
+                        class="w-9 h-9 md:w-[42px] md:h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-base relative hover:bg-g200"
+                        title="Notifikasi" onclick="toggleNotifPanel()">
+                        <i class="fi fi-rr-bell"></i>
+                        <span
+                            class="absolute top-0 right-0 bg-primary text-white rounded-full w-[15px] h-[15px] md:w-[18px] md:h-[18px] text-[8px] md:text-[10px] font-bold hidden items-center justify-center border-2 border-white"
+                            id="notifBadgeNav">0</span>
+                    </button>
+                    
+                    {{-- Notification Dropdown --}}
+                    <div id="notifPanel" class="absolute top-[calc(100%+12px)] right-[-10px] md:right-0 w-[320px] md:w-[400px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 opacity-0 pointer-events-none translate-y-4 scale-95 transition-all duration-300 z-[1002] overflow-hidden origin-top-right">
+                        <div class="p-5 border-b border-slate-50 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-20">
+                            <div>
+                                <h4 class="font-heading font-extrabold text-slate-800 text-[16px]">Notifikasi</h4>
+                                <p class="text-[11px] text-slate-400 font-medium">Info terbaru akun Anda</p>
+                            </div>
+                            <button onclick="markNotificationsRead()" class="py-1.5 px-3 rounded-full bg-primary/5 text-[10px] font-bold text-primary hover:bg-primary hover:text-white transition-all uppercase tracking-wider">Tandai Dibaca</button>
+                        </div>
+                        <div id="notifList" class="max-h-[400px] overflow-y-auto custom-scrollbar bg-white divide-y divide-slate-50">
+                            {{-- JS will populate this --}}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="notifOverlay" class="fixed inset-0 bg-black/5 z-[1001] hidden" onclick="closeNotifPanel()"></div>
 
                 <a href="{{ route('cart.index') }}"
                     class="w-9 h-9 md:w-[42px] md:h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-base relative hover:bg-g200"
@@ -157,14 +187,7 @@
                     class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('products.index') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
                     <i class="fi fi-rr-shopping-bag"></i> Katalog Produk
                 </a>
-                <a href="{{ route('customer.orders') }}"
-                    class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('customer.orders') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
-                    <i class="fi fi-rr-box"></i> Pesanan Saya
-                </a>
-                <a href="{{ route('customer.wishlist') }}"
-                    class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('customer.wishlist') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
-                    <i class="fi fi-rr-heart"></i> Wishlist
-                </a>
+
             </div>
 
             @auth
@@ -174,7 +197,14 @@
                         class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('customer.profile') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
                         <i class="fi fi-rr-user"></i> Profil Saya
                     </a>
-
+                    <a href="{{ route('customer.orders') }}"
+                        class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('customer.orders') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
+                        <i class="fi fi-rr-box"></i> Pesanan Saya
+                    </a>
+                    <a href="{{ route('customer.wishlist') }}"
+                        class="flex items-center gap-3 p-3 rounded-xl {{ request()->routeIs('customer.wishlist') ? 'bg-primary-light text-primary font-bold' : 'text-g700 hover:bg-g100' }}">
+                        <i class="fi fi-rr-heart"></i> Wishlist
+                    </a>
                 </div>
                 <form method="POST" action="{{ route('logout') }}" class="m-0 border-t border-g100 pt-6">
                     @csrf
@@ -207,7 +237,7 @@
             // Handled by sidebar specific scripts
             return;
         @else
-                    const menu = document.getElementById('mobileMenu');
+                            const menu = document.getElementById('mobileMenu');
             const overlay = document.getElementById('mobileMenuOverlay');
             const icon = document.getElementById('mobileMenuIcon');
             if (!menu || !overlay) return;

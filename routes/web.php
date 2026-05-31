@@ -92,6 +92,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/checkout', [PesananController::class, 'checkout'])->name('customer.checkout');
     Route::post('/checkout', [PesananController::class, 'placeOrder'])->name('customer.placeOrder');
     Route::get('/notifications', [NotifikasiController::class, 'index'])->name('customer.notifications.index');
+    Route::patch('/notifications/{notifikasi}/read', [NotifikasiController::class, 'markRead'])->name('customer.notifications.read');
     Route::patch('/notifications/read-all', [NotifikasiController::class, 'markAllRead'])->name('customer.notifications.readAll');
     Route::delete('/notifications/{notifikasi}', [NotifikasiController::class, 'destroy'])->name('customer.notifications.destroy');
 

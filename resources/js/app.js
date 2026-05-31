@@ -9,6 +9,27 @@ window.setBadge = function(el, count) {
 };
 
 // Wishlist Logic
+window.promptLogin = function() {
+    if (typeof Swal === 'undefined') {
+        window.location = window.AppConfig.routes.login;
+        return;
+    }
+
+    Swal.fire({
+        icon: 'info',
+        title: 'Masuk Terlebih Dahulu',
+        text: 'Silakan masuk ke akun Anda untuk dapat menggunakan fitur ini.',
+        showCancelButton: true,
+        confirmButtonText: 'Masuk Sekarang',
+        cancelButtonText: 'Nanti',
+        confirmButtonColor: '#1A5CFF',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location = window.AppConfig.routes.login;
+        }
+    });
+};
+
 window.toggleWishlist = function(btn, id_produk, event) {
     if (event) {
         event.preventDefault();
@@ -16,7 +37,7 @@ window.toggleWishlist = function(btn, id_produk, event) {
     }
 
     if (!window.AppConfig.auth.check) {
-        window.location = window.AppConfig.routes.login;
+        window.promptLogin();
         return;
     }
 
@@ -31,7 +52,7 @@ window.toggleWishlist = function(btn, id_produk, event) {
     })
     .then(response => {
         if (response.status === 401) {
-            window.location = window.AppConfig.routes.login;
+            window.promptLogin();
             return;
         }
         return response.json();
@@ -83,7 +104,7 @@ window.addToCart = function(btn, id_produk, qty = 1, event) {
     }
     
     if (!window.AppConfig.auth.check) {
-        window.location = window.AppConfig.routes.login;
+        window.promptLogin();
         return;
     }
 
@@ -140,24 +161,81 @@ window.loadNotifications = function() {
                 return;
             }
 
-            notifList.innerHTML = data.notifications.map(item => `
-                <div id="notif-${item.id}" class="flex gap-3 p-4 cursor-pointer transition-colors border-b border-slate-100 hover:bg-slate-50 relative group ${item.is_read ? '' : 'bg-blue-50'}">
-                    ${!item.is_read ? '<div class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-600"></div>' : ''}
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg shrink-0 text-slate-600">${item.ikon}</div>
-                    <div class="flex-1">
-                        <div class="text-sm font-bold text-slate-800 mb-0.5">${item.judul}</div>
-                        <div class="text-xs text-slate-500 leading-relaxed">${item.pesan}</div>
-                        <div class="text-[11px] text-slate-400 mt-1">${item.created_at || 'Baru saja'}</div>
+            notifList.innerHTML = data.notifications.map(item => {
+                const safePesan = item.pesan.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeJudul = item.judul.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const isRead = item.is_read;
+                
+                return `
+                    <div id="notif-${item.id}" 
+                        onclick="window.openNotification(${item.id}, '${safeJudul}', '${safePesan}', event)"
+                        class="flex gap-4 p-5 cursor-pointer transition-all duration-300 relative group ${isRead ? 'hover:bg-slate-50' : 'bg-blue-50/40 hover:bg-blue-50'}">
+                        
+                        <div class="w-11 h-11 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-xl shrink-0 transition-transform group-hover:scale-110 duration-300">
+                            ${item.ikon}
+                        </div>
+                        
+                        <div class="flex-1 min-w-0 pr-6">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[13px] font-extrabold text-slate-800 truncate">${item.judul}</span>
+                                ${!isRead ? '<span class="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></span>' : ''}
+                            </div>
+                            <p class="text-[12px] text-slate-500 leading-relaxed line-clamp-2 mb-2 group-hover:text-slate-700 transition-colors">${item.pesan}</p>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-1.5">
+                                <i class="fi fi-rr-clock-three text-[12px]"></i> ${item.created_at || 'Baru saja'}
+                            </span>
+                        </div>
+                        
+                        <button onclick="window.deleteNotification(${item.id}, event)" 
+                            class="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-white border border-slate-100 text-slate-400 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 shadow-sm translate-x-2 group-hover:translate-x-0">
+                            <i class="fi fi-rr-trash text-xs"></i>
+                        </button>
                     </div>
-                    <button onclick="deleteNotification(${item.id}, event)" class="absolute right-3 top-3 w-8 h-8 rounded-full bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-500 hover:text-white">
-                        <i class="fi fi-rr-trash text-xs"></i>
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         })
         .catch(() => {
             notifList.innerHTML = '<div class="p-5 text-red-500 text-sm text-center">Gagal memuat notifikasi.</div>';
         });
+};
+
+window.openNotification = function(id, title, message, event) {
+    if (event) {
+        // If we clicked the delete button, don't open the modal
+        if (event.target.closest('button')) return;
+    }
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: 'info',
+            confirmButtonColor: '#1A5CFF',
+            confirmButtonText: 'Tutup'
+        });
+    }
+
+    const url = window.AppConfig.routes.notificationsRead.replace(':id', id);
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': window.AppConfig.csrfToken,
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const el = document.getElementById(`notif-${id}`);
+            if (el) {
+                el.classList.remove('bg-blue-50');
+                const dot = el.querySelector('.bg-blue-600');
+                if (dot) dot.remove();
+            }
+            setBadge(document.getElementById('notifBadgeNav'), data.unreadCount);
+        }
+    })
+    .catch(() => {});
 };
 
 window.deleteNotification = function(id, event) {
@@ -231,9 +309,25 @@ window.markNotificationsRead = function() {
 };
 
 // Search handling
-window.handleSearch = function(input) {
+window.handleSearch = function(input, event) {
     if(event.key === 'Enter') {
         window.location = '/products?q=' + encodeURIComponent(input.value);
+    }
+};
+
+window.toggleMobileSearch = function() {
+    const bar = document.getElementById('mobileSearchBar');
+    if (!bar) return;
+    
+    const isHidden = bar.classList.contains('translate-y-[-100%]');
+    if (isHidden) {
+        bar.classList.remove('translate-y-[-100%]');
+        bar.classList.add('translate-y-0');
+        const input = document.getElementById('mobileSearchInput');
+        if (input) setTimeout(() => input.focus(), 300);
+    } else {
+        bar.classList.add('translate-y-[-100%]');
+        bar.classList.remove('translate-y-0');
     }
 };
 
@@ -250,7 +344,7 @@ window.changeQty = function(delta) {
 
 window.toggleWishlistDetail = function(btn, id_produk) {
     if (!window.AppConfig.auth.check) {
-        window.location = window.AppConfig.routes.login;
+        window.promptLogin();
         return;
     }
 
@@ -265,7 +359,7 @@ window.toggleWishlistDetail = function(btn, id_produk) {
     })
     .then(response => {
         if (response.status === 401) {
-            window.location = window.AppConfig.routes.login;
+            window.promptLogin();
             return;
         }
         return response.json();
@@ -341,6 +435,11 @@ window.switchTab = function(tabId, el, event) {
 };
 
 window.removeFromWishlist = function(id_produk) {
+    if (!window.AppConfig.auth.check) {
+        window.promptLogin();
+        return;
+    }
+
     fetch(window.AppConfig.routes.wishlistToggle, {
         method: 'POST',
         headers: {
@@ -380,6 +479,30 @@ window.removeFromWishlist = function(id_produk) {
         }
     })
     .catch(() => {});
+};
+
+window.confirmDelete = function(form, message = 'Data yang dihapus tidak dapat dikembalikan!') {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+            form.submit();
+        }
+        return;
+    }
+
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
