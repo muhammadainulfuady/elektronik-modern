@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Flaticon UIcons -->
     <link rel='stylesheet'
@@ -21,6 +21,38 @@
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-brands/css/uicons-brands.css'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('head')
+    <style>
+        /* Reveal Animation Styles */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered delay for child elements */
+        .reveal-group > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        .reveal-group.active > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @php
+            for($i = 1; $i <= 10; $i++) {
+                echo ".reveal-group.active > *:nth-child($i) { transition-delay: " . ($i * 0.1) . "s; }\n";
+            }
+        @endphp
+    </style>
 </head>
 
 <body class="antialiased bg-g50 text-g900">
@@ -48,6 +80,25 @@
         };
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Scroll Reveal Implementation
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal, .reveal-group');
+            revealElements.forEach(el => observer.observe(el));
+
+            // SweetAlert Config
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -74,6 +125,15 @@
                     icon: 'error',
                     title: 'Gagal!',
                     text: "{{ session('error') }}",
+                    confirmButtonColor: '#1A5CFF',
+                });
+            @endif
+
+            @if ($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ups!',
+                    html: "{!! implode('<br>', $errors->all()) !!}",
                     confirmButtonColor: '#1A5CFF',
                 });
             @endif

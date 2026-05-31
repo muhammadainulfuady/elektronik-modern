@@ -49,7 +49,7 @@
                                         @endif
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="text-[13px] font-bold text-g800 line-clamp-2 mb-1">{{ $item->produk->nama_produk }}</div>
+                                        <div class="text-[13px] font-bold text-g800 mb-1 leading-snug">{{ $item->produk->nama_produk }}</div>
                                         <div class="text-xs text-g500">{{ $item->qty }} × Rp {{ number_format($item->produk->harga, 0, ',', '.') }}</div>
                                     </div>
                                     <div class="font-heading font-extrabold text-primary text-[15px] whitespace-nowrap pl-4">
@@ -179,9 +179,20 @@
                         
                         @if ($appliedPromo)
                             <div class="flex justify-between items-center mb-3 text-[13px]">
-                                <span class="font-bold text-green-600 flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> Voucher {{ $appliedPromo->kode_voucher }}</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-green-600 flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> Voucher {{ $appliedPromo->kode_voucher }}</span>
+                                    <button type="button" onclick="document.getElementById('formRemoveVoucher').submit()" class="text-[10px] text-left text-red-500 font-bold hover:underline uppercase">Hapus Voucher</button>
+                                </div>
                                 <span class="font-bold text-green-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
                             </div>
+                        @else
+                            <form method="POST" action="{{ route('cart.voucher.apply') }}" class="relative mb-5">
+                                @csrf
+                                <input name="kode_voucher" value="{{ old('kode_voucher') }}"
+                                    placeholder="KODE VOUCHER" required
+                                    class="w-full py-2.5 pr-20 pl-4 border-[1.5px] border-g200 rounded-xl outline-none text-[11px] font-bold text-g900 uppercase focus:border-primary transition-all bg-g50/50">
+                                <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg bg-g900 text-white text-[10px] font-bold uppercase hover:bg-primary transition-colors">Pakai</button>
+                            </form>
                         @endif
                         
                         <div class="flex justify-between items-center mb-3 text-[13px]">
@@ -206,6 +217,11 @@
             </form>
         </div>
     </section>
+
+    {{-- Hidden form for voucher removal --}}
+    <form id="formRemoveVoucher" method="POST" action="{{ route('cart.voucher.remove') }}" class="hidden">
+        @csrf @method('DELETE')
+    </form>
 
     @push('scripts')
     <script>

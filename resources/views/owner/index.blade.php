@@ -12,33 +12,32 @@
     <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.owner-sidebar')
 
-        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <div class="text-[13px] text-g500 mb-0.5">Selamat datang,</div>
-                    <h1 class="font-heading text-[24px] font-extrabold text-g900">Dashboard Owner</h1>
-                </div>
-                <div class="flex flex-wrap gap-3 items-center">
-                    <form action="{{ route('owner.report.download') }}" method="GET" class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-g200 shadow-sm">
-                        <select name="bulan" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
-                            @foreach(range(1, 12) as $m)
-                                <option value="{{ $m }}" @selected(now()->month == $m)>{{ date('F', mktime(0,0,0,$m,10)) }}</option>
-                            @endforeach
-                        </select>
-                        <select name="tahun" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
-                            @foreach(range(now()->year-2, now()->year) as $y)
-                                <option value="{{ $y }}" @selected(now()->year == $y)>{{ $y }}</option>
-                            @endforeach
-                        </select>
-                        <button type="submit" class="bg-primary text-white p-2 rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5 text-[12px] font-bold">
-                            <i class="fi fi-rr-download"></i> Laporan PDF
-                        </button>
-                    </form>
-                    <span class="inline-flex items-center gap-2 py-2 px-4 bg-white border border-g200 rounded-xl text-[13px] font-bold text-g700 shadow-sm">
-                        <i class="fi fi-rr-calendar text-primary"></i> {{ now()->format('d M Y') }}
-                    </span>
-                    <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center text-white font-extrabold text-[14px] shadow-[0_4px_12px_rgba(245,158,11,0.3)]">
-                        {{ strtoupper(substr(auth()->user()->nama ?? 'O', 0, 2)) }}
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen relative">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8 pt-12 md:pt-0">
+                <div class="flex flex-col md:flex-row md:items-center gap-4 w-full justify-between">
+                    <div>
+                        <div class="text-[13px] text-g500 mb-0.5">Selamat datang,</div>
+                        <h1 class="font-heading text-[24px] font-extrabold text-g900">Dashboard Owner</h1>
+                    </div>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <form action="{{ route('owner.report.download') }}" method="GET" class="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-g200 shadow-sm">
+                            <select name="bulan" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
+                                @foreach(range(1, 12) as $m)
+                                    <option value="{{ $m }}" @selected(now()->month == $m)>{{ date('F', mktime(0,0,0,$m,10)) }}</option>
+                                @endforeach
+                            </select>
+                            <select name="tahun" class="bg-transparent border-none text-[12px] font-bold text-g700 outline-none pr-6">
+                                @foreach(range(now()->year-2, now()->year) as $y)
+                                    <option value="{{ $y }}" @selected(now()->year == $y)>{{ $y }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="bg-primary text-white p-2 rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-1.5 text-[12px] font-bold">
+                                <i class="fi fi-rr-download"></i> Laporan PDF
+                            </button>
+                        </form>
+                        <span class="inline-flex items-center gap-2 py-2 px-4 bg-white border border-g200 rounded-xl text-[13px] font-bold text-g700 shadow-sm">
+                            <i class="fi fi-rr-calendar text-primary"></i> {{ now()->format('d M Y') }}
+                        </span>
                     </div>
                 </div>
             </div>

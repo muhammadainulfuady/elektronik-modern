@@ -93,11 +93,23 @@ class CartController extends Controller
         $id  = (int) $request->id_produk;
         $qty = (int) ($request->qty ?? 1);
 
+        $produk = \App\Models\Produk::findOrFail($id);
+        
         $keranjang = $this->getOrCreateKeranjang();
         $detail    = $keranjang->detailKeranjangs()->where('id_produk', $id)->first();
 
+        $currentQty = $detail ? $detail->qty : 0;
+        $newQty = $currentQty + $qty;
+
+        if ($produk->stok < $newQty) {
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Stok tidak mencukupi. Tersisa: ' . $produk->stok], 422);
+            }
+            return back()->with('error', 'Stok tidak mencukupi.');
+        }
+
         if ($detail) {
-            $detail->increment('qty', $qty);
+            $detail->update(['qty' => $newQty]);
         } else {
             $keranjang->detailKeranjangs()->create(['id_produk' => $id, 'qty' => $qty]);
         }
@@ -121,7 +133,7 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'id_produk' => ['required', 'integer'],
+            'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
             'qty'       => ['required', 'integer', 'min:0'],
         ]);
 
@@ -135,6 +147,13 @@ class CartController extends Controller
                 if ($qty <= 0) {
                     $detail->delete();
                 } else {
+                    $produk = \App\Models\Produk::findOrFail($id);
+                    if ($produk->stok < $qty) {
+                        if ($request->ajax()) {
+                            return response()->json(['message' => 'Stok tidak mencukupi. Tersisa: ' . $produk->stok], 422);
+                        }
+                        return back()->with('error', 'Stok tidak mencukupi.');
+                    }
                     $detail->update(['qty' => $qty]);
                 }
             }

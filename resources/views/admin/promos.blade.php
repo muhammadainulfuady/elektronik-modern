@@ -5,25 +5,17 @@
 @section('head')
 @endsection
 
+@section('header')
+@endsection
+
 @section('content')
     <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
-            <div class="flex justify-between items-center mb-8">
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen relative">
+            <div class="flex justify-between items-center mb-8 pt-12 md:pt-0">
                 <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Promo</h1>
             </div>
-
-            @if ($errors->any())
-                <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
-                    <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal menyimpan promo.</div>
-                    <ul class="list-disc pl-5 text-[12px] font-semibold space-y-1 mt-2">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
 
             <div class="bg-white rounded-2xl shadow-sm border border-g100 mb-8">
                 <div class="p-6 border-b border-g100">
@@ -62,12 +54,13 @@
                         <div>
                             <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Tanggal Mulai</label>
                             <input type="datetime-local" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required
+                                min="{{ now()->format('Y-m-d\TH:i') }}"
                                 class="w-full py-2.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
                         </div>
                         <div>
                             <label class="block text-[11px] font-extrabold text-g700 tracking-widest uppercase mb-1.5">Tanggal Berakhir</label>
                             <input type="datetime-local" name="tanggal_berakhir" value="{{ old('tanggal_berakhir') }}"
-                                required
+                                required min="{{ now()->format('Y-m-d\TH:i') }}"
                                 class="w-full py-2.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[13px] font-semibold text-g800 bg-g50 transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
                         </div>
                         <button type="submit" class="inline-flex py-2.5 px-5 bg-primary text-white rounded-lg font-bold text-[13px] shadow-sm hover:bg-primary-dark hover:-translate-y-px transition-all items-center justify-center gap-2 h-[42px]">
@@ -130,9 +123,11 @@
                                         <div class="flex flex-col gap-2">
                                             <input type="datetime-local" name="tanggal_mulai" form="promo-{{ $promo->id_promo }}"
                                                 value="{{ old('tanggal_mulai', $mulai->format('Y-m-d\TH:i')) }}" required
+                                                min="{{ now()->format('Y-m-d\TH:i') }}"
                                                 class="w-full py-1.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[11px] font-semibold text-g800 bg-white focus:border-primary focus:ring-2 focus:ring-primary/10">
                                             <input type="datetime-local" name="tanggal_berakhir" form="promo-{{ $promo->id_promo }}"
                                                 value="{{ old('tanggal_berakhir', $akhir->format('Y-m-d\TH:i')) }}" required
+                                                min="{{ now()->format('Y-m-d\TH:i') }}"
                                                 class="w-full py-1.5 px-3 border-[1.5px] border-g200 rounded-lg outline-none text-[11px] font-semibold text-g800 bg-white focus:border-primary focus:ring-2 focus:ring-primary/10">
                                         </div>
                                     </td>

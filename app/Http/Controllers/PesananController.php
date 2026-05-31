@@ -157,12 +157,13 @@ class PesananController extends Controller
         $request->validate([
             'id_alamat' => ['required', 'exists:alamat_users,id_alamat'],
             'id_ekspedisi' => ['required', 'exists:ekspedisis,id_ekspedisi'],
-            'metode_pembayaran' => ['required', 'string'],
+            'metode_pembayaran' => ['required', 'string', 'in:Transfer Bank,E-Wallet'],
             'bukti_bayar' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'id_alamat.required' => 'Silakan pilih alamat pengiriman.',
             'id_ekspedisi.required' => 'Silakan pilih ekspedisi pengiriman.',
             'metode_pembayaran.required' => 'Silakan pilih metode pembayaran.',
+            'metode_pembayaran.in' => 'Metode pembayaran tidak valid.',
             'bukti_bayar.required' => 'Bukti pembayaran wajib diunggah.',
             'bukti_bayar.mimes' => 'Format bukti bayar harus berupa JPG, PNG, atau PDF.',
             'bukti_bayar.max' => 'Ukuran file bukti bayar maksimal 5MB.',

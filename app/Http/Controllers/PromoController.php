@@ -70,8 +70,11 @@ class PromoController extends Controller
             'tipe_diskon' => ['required', 'in:persen,nominal'],
             'nilai_diskon' => ['required', 'integer', 'min:1'],
             'kuota' => ['required', 'integer', 'min:0'],
-            'tanggal_mulai' => ['required', 'date'],
+            'tanggal_mulai' => ['required', 'date', 'after_or_equal:today'],
             'tanggal_berakhir' => ['required', 'date', 'after_or_equal:tanggal_mulai'],
+        ], [
+            'tanggal_mulai.after_or_equal' => 'Tanggal mulai tidak boleh di masa lalu.',
+            'tanggal_berakhir.after_or_equal' => 'Tanggal berakhir harus setelah atau sama dengan tanggal mulai.',
         ]);
     }
 

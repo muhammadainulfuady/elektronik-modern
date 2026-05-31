@@ -12,8 +12,8 @@
     <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
-            <div class="flex justify-between items-center mb-8">
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen relative">
+            <div class="flex justify-between items-center mb-8 pt-12 md:pt-0">
                 <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Customer</h1>
             </div>
 

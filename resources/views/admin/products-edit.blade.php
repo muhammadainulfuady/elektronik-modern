@@ -12,8 +12,8 @@
     <div class="flex flex-col md:flex-row min-h-screen bg-g50">
         @include('partials.admin-sidebar')
 
-        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen">
-            <div class="flex items-center gap-1.5 mb-6 text-[13px]">
+        <div class="flex-1 w-full min-w-0 flex flex-col p-6 md:p-8 overflow-y-auto h-screen relative">
+            <div class="flex items-center gap-1.5 mb-6 text-[13px] pt-12 md:pt-0">
                 <a href="{{ route('admin.index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-apps"></i> Dashboard</a> 
                 <i class="fi fi-rr-angle-small-right text-g400"></i> 
                 <a href="{{ route('admin.products.index') }}" class="text-g500 hover:text-primary transition-colors">Kelola Produk</a>
@@ -24,18 +24,6 @@
             <div class="flex justify-between items-center mb-8">
                 <h1 class="font-heading text-[24px] font-extrabold text-g900">Edit Produk</h1>
             </div>
-
-            @if ($errors->any())
-                <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
-                    <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal memperbarui produk.</div>
-                    <div class="text-[12px] font-medium text-red-600 mb-2">Cek kembali input yang wajib diisi.</div>
-                    <ul class="list-disc pl-5 text-[12px] font-semibold space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
 
             <div class="bg-white rounded-2xl shadow-sm border border-g100 max-w-4xl">
                 <div class="p-6 border-b border-g100">

@@ -14,10 +14,7 @@
             <i class="fi fi-rr-angle-small-left text-xl"></i>
         </a>
 
-        <div
-            class="w-14 h-14 bg-primary-light text-primary rounded-2xl flex items-center justify-center text-[28px] mx-auto mb-5 mt-4">
-            <i class="fi fi-rr-bolt"></i>
-        </div>
+        @include('partials.robot-mascot')
         <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Selamat Datang!</h1>
         <p class="text-sm text-g500 text-center mb-8">Masuk ke akun Elektronik Modern Anda</p>
 
@@ -32,8 +29,14 @@
 
             <div class="mb-5">
                 <x-label for="password">Password</x-label>
-                <x-input type="password" id="password" name="password" placeholder="Masukkan password..."
-                    :error="$errors->has('password')" required />
+                <div class="relative">
+                    <x-input type="password" id="password" name="password" placeholder="Masukkan password..."
+                        :error="$errors->has('password')" required class="pr-12" />
+                    <button type="button" onclick="togglePassword('password', this)" 
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-g400 hover:text-primary transition-colors focus:outline-none">
+                        <i class="fi fi-rr-eye-crossed text-lg"></i>
+                    </button>
+                </div>
                 <x-error :messages="$errors->get('password')" />
             </div>
 
@@ -54,6 +57,23 @@
         </div>
     </x-card>
 </div>
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fi-rr-eye-crossed');
+            icon.classList.add('fi-rr-eye');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fi-rr-eye');
+            icon.classList.add('fi-rr-eye-crossed');
+        }
+    }
+</script>
 @endsection
 
 @section('footer')
