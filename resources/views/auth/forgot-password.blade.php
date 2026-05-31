@@ -18,12 +18,6 @@
             <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Lupa Password</h1>
             <p class="text-sm text-g500 text-center mb-8">Masukkan email akun Anda untuk melanjutkan reset password</p>
 
-            @if (session('status'))
-                <x-alert type="success" class="mb-5 text-center">
-                    {{ session('status') }}
-                </x-alert>
-            @endif
-
             <form method="POST" action="{{ route('password.email.verify') }}">
                 @csrf
                 <div class="mb-5">

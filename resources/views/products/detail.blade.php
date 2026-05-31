@@ -112,29 +112,5 @@
             @endif
         </div>
     </section>
-
-    <!-- Toast Component -->
-    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 bg-dark text-white py-3 px-6 rounded-full text-sm font-semibold flex items-center gap-2.5 z-[2000] shadow-card-lg transition-all duration-300 whitespace-nowrap" id="cartToast">
-        <i class="fi fi-rr-check-circle text-green-400 text-lg"></i> <span id="cartToastMsg">Berhasil!</span>
-    </div>
 @endsection
 
-@push('scripts')
-    <script>
-        @if(session('status') || session('error'))
-            document.addEventListener('DOMContentLoaded', () => {
-                const toast = document.getElementById('cartToast');
-                const msg = document.getElementById('cartToastMsg');
-                if(toast && msg) {
-                    msg.textContent = "{{ session('status') ?: session('error') }}";
-                    toast.classList.remove('translate-y-24', 'opacity-0');
-                    toast.classList.add('translate-y-0', 'opacity-100');
-                    setTimeout(() => {
-                        toast.classList.add('translate-y-24', 'opacity-0');
-                        toast.classList.remove('translate-y-0', 'opacity-100');
-                    }, 3000);
-                }
-            });
-        @endif
-    </script>
-@endpush

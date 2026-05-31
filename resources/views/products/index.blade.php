@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Produk – Elektronik Modern')
+@section('title', 'Katalog Produk - Elektronik Modern')
 
 @section('header')
     @include('partials.header')

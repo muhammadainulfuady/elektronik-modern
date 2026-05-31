@@ -14,16 +14,6 @@
                 <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Promo</h1>
             </div>
 
-            @if (session('status'))
-                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
-                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="bg-red-50 text-red-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-red-200">
-                    <i class="fi fi-rr-triangle-warning text-lg"></i> {{ session('error') }}
-                </div>
-            @endif
             @if ($errors->any())
                 <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
                     <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal menyimpan promo.</div>

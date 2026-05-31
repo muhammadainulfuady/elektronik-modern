@@ -93,11 +93,18 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/checkout', [PesananController::class, 'placeOrder'])->name('customer.placeOrder');
     Route::get('/notifications', [NotifikasiController::class, 'index'])->name('customer.notifications.index');
     Route::patch('/notifications/read-all', [NotifikasiController::class, 'markAllRead'])->name('customer.notifications.readAll');
+    Route::delete('/notifications/{notifikasi}', [NotifikasiController::class, 'destroy'])->name('customer.notifications.destroy');
 
     // Wishlist
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('customer.wishlist');
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+
+    // Lokasi (AJAX)
+    Route::get('/locations/kotas/{id_provinsi}', [\App\Http\Controllers\LocationController::class, 'getKotas']);
+    Route::get('/locations/kecamatans/{id_kota}', [\App\Http\Controllers\LocationController::class, 'getKecamatans']);
+    Route::get('/locations/desas/{id_kecamatan}', [\App\Http\Controllers\LocationController::class, 'getDesas']);
+    Route::get('/locations/dusuns/{id_desa}', [\App\Http\Controllers\LocationController::class, 'getDusuns']);
 
 });
 

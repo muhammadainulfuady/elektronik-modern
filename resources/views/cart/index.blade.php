@@ -25,18 +25,6 @@
                 <p class="text-g500 text-[15px]">{{ count($items) }} produk di keranjang Anda</p>
             </div>
 
-            @if (session('status'))
-                <x-alert type="success" class="mb-6">
-                    {{ session('status') }}
-                </x-alert>
-            @endif
-
-            @if (session('error'))
-                <x-alert type="danger" class="mb-6">
-                    {{ session('error') }}
-                </x-alert>
-            @endif
-
             @if ($errors->any())
                 <x-alert type="danger" class="mb-6">
                     <ul class="list-disc list-inside">
@@ -239,7 +227,6 @@ document.addEventListener('submit', async function(e) {
         }
     } catch (error) {
         console.error(error);
-        alert('Gagal memproses permintaan. Silakan periksa koneksi Anda.');
     } finally {
         container.style.opacity = '1';
         container.style.pointerEvents = 'auto';

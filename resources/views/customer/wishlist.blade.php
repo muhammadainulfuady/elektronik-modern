@@ -25,12 +25,6 @@
                 <p class="text-g500 text-[15px]">Daftar produk elektronik favorit Anda</p>
             </div>
 
-            @if (session('status'))
-                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
-                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
-                </div>
-            @endif
-
             <div id="wishlistContainer">
                 @if ($wishlists->count())
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">

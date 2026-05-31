@@ -104,7 +104,7 @@ class CartController extends Controller
 
         $cartCount = $keranjang->detailKeranjangs()->sum('qty');
 
-        if ($request->ajax()) {
+        if ($request->expectsJson()) {
             return response()->json([
                 'status'    => true,
                 'message'   => 'Produk ditambahkan ke keranjang!',
@@ -142,7 +142,7 @@ class CartController extends Controller
 
         $cartCount = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
 
-        if ($request->ajax()) {
+        if ($request->expectsJson()) {
             return response()->json([
                 'message'   => 'Keranjang diperbarui.',
                 'cartCount' => $cartCount,
@@ -166,7 +166,7 @@ class CartController extends Controller
 
         $cartCount = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
 
-        if ($request->ajax()) {
+        if ($request->expectsJson()) {
             return response()->json([
                 'message'   => 'Produk dihapus dari keranjang.',
                 'cartCount' => $cartCount,

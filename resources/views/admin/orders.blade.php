@@ -14,18 +14,6 @@
                 <h1 class="font-heading text-[24px] font-extrabold text-g900">Kelola Pesanan</h1>
             </div>
 
-            @if (session('status'))
-                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
-                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="bg-red-50 text-red-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-red-200">
-                    <i class="fi fi-rr-cross-circle text-lg"></i> {{ session('error') }}
-                </div>
-            @endif
-
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-g100 flex items-center gap-4 hover:shadow-card transition-shadow">
                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 bg-blue-50 text-blue-600"><i class="fi fi-rr-time-fast"></i></div>

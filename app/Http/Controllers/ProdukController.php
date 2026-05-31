@@ -46,12 +46,13 @@ class ProdukController extends Controller
         $jumlahProduk = Produk::count();
         $jumlahUser   = User::count();
 
-        // Produk terlaris: eager load kolom minimal
+        // Produk terlaris: minimal terjual 5 dan status dikirim/selesai
         $produkTerlaris = DetailPesanan::query()
             ->select('id_produk')
             ->selectRaw('SUM(qty) as total_terjual')
-            ->whereHas('pesanan', fn($q) => $q->where('status_pesanan', 'dikirim'))
+            ->whereHas('pesanan', fn($q) => $q->whereIn('status_pesanan', ['dikirim', 'selesai']))
             ->groupBy('id_produk')
+            ->having('total_terjual', '>', 5)
             ->orderByDesc('total_terjual')
             ->with(['produk' => fn($q) => $q->select('id_produk', 'id_kategori', 'gambar', 'nama_produk', 'harga', 'stok')
                 ->with(['kategori' => fn($q) => $q->select('id_kategori', 'nama_kategori')])])

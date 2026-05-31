@@ -27,12 +27,6 @@
                 <p class="text-g500 text-[15px]">Periksa pesanan Anda sebelum melanjutkan pembayaran</p>
             </div>
 
-            @if (session('error'))
-                <x-alert type="danger" class="mb-6">
-                    {{ session('error') }}
-                </x-alert>
-            @endif
-
             <x-error :messages="$errors->all()" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl" />
 
             <form method="POST" action="{{ route('customer.placeOrder') }}" enctype="multipart/form-data">

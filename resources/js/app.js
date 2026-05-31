@@ -110,30 +110,19 @@ window.addToCart = function(btn, id_produk, qty = 1, event) {
             } else {
                 refreshCartBadge();
             }
-            showToast(data.message || 'Berhasil ditambahkan ke keranjang');
+            if (typeof window.showToast === 'function') {
+                window.showToast('success', data.message || 'Berhasil ditambahkan');
+            }
         } else {
-            alert(data.error || 'Terjadi kesalahan');
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('error', 'Gagal', data.message || 'Gagal menambahkan ke keranjang');
+            }
         }
     })
     .catch(() => {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
     });
-};
-
-window.showToast = function(msg) {
-    const toast = document.getElementById('cartToast');
-    if (toast) {
-        toast.innerHTML = `<i class="fi fi-rr-check-circle mr-2"></i> ${msg}`;
-        toast.classList.remove('translate-y-20', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-        setTimeout(() => {
-            toast.classList.add('translate-y-20', 'opacity-0');
-            toast.classList.remove('translate-y-0', 'opacity-100');
-        }, 3000);
-    } else {
-        alert(msg);
-    }
 };
 
 // Notifications
@@ -152,7 +141,7 @@ window.loadNotifications = function() {
             }
 
             notifList.innerHTML = data.notifications.map(item => `
-                <div class="flex gap-3 p-4 cursor-pointer transition-colors border-b border-slate-100 hover:bg-slate-50 relative ${item.is_read ? '' : 'bg-blue-50'}">
+                <div id="notif-${item.id}" class="flex gap-3 p-4 cursor-pointer transition-colors border-b border-slate-100 hover:bg-slate-50 relative group ${item.is_read ? '' : 'bg-blue-50'}">
                     ${!item.is_read ? '<div class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-600"></div>' : ''}
                     <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg shrink-0 text-slate-600">${item.ikon}</div>
                     <div class="flex-1">
@@ -160,12 +149,49 @@ window.loadNotifications = function() {
                         <div class="text-xs text-slate-500 leading-relaxed">${item.pesan}</div>
                         <div class="text-[11px] text-slate-400 mt-1">${item.created_at || 'Baru saja'}</div>
                     </div>
+                    <button onclick="deleteNotification(${item.id}, event)" class="absolute right-3 top-3 w-8 h-8 rounded-full bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-500 hover:text-white">
+                        <i class="fi fi-rr-trash text-xs"></i>
+                    </button>
                 </div>
             `).join('');
         })
         .catch(() => {
             notifList.innerHTML = '<div class="p-5 text-red-500 text-sm text-center">Gagal memuat notifikasi.</div>';
         });
+};
+
+window.deleteNotification = function(id, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const url = window.AppConfig.routes.notificationsDestroy.replace(':id', id);
+
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': window.AppConfig.csrfToken,
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const el = document.getElementById(`notif-${id}`);
+            if (el) {
+                el.classList.add('opacity-0', '-translate-x-5');
+                setTimeout(() => {
+                    el.remove();
+                    setBadge(document.getElementById('notifBadgeNav'), data.unreadCount);
+                    if (document.querySelectorAll('#notifList > div').length === 0) {
+                        loadNotifications();
+                    }
+                }, 300);
+            }
+        }
+    })
+    .catch(() => {});
 };
 
 window.toggleNotifPanel = function() {

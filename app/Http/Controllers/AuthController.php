@@ -23,7 +23,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -36,7 +36,7 @@ class AuthController extends Controller
             return match ($user->role) {
                 'admin' => redirect()->route('admin.index'),
                 'owner' => redirect()->route('owner.index'),
-                default => redirect()->route('index'),
+                default => redirect()->route('index')->with('status', 'Selamat datang, ' . $user->nama . '!'),
             };
         }
 
@@ -111,16 +111,16 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'nama'                  => ['required', 'string', 'max:50'],
-            'email'                 => ['required', 'email', 'max:50', 'unique:users,email'],
-            'password'              => ['required', 'string', 'min:8', 'confirmed'],
+            'nama' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:50', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         User::create([
-            'nama'     => $data['nama'],
-            'email'    => $data['email'],
+            'nama' => $data['nama'],
+            'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role'     => 'customer',
+            'role' => 'customer',
         ]);
 
         return redirect()->route('login')->with('status', 'Registrasi berhasil! Silakan login untuk melanjutkan.');

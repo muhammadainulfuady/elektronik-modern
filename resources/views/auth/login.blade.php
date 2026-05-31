@@ -21,12 +21,6 @@
         <h1 class="font-heading text-2xl font-extrabold text-g900 text-center mb-1.5">Selamat Datang!</h1>
         <p class="text-sm text-g500 text-center mb-8">Masuk ke akun Elektronik Modern Anda</p>
 
-        @if (session('status'))
-            <x-alert type="success" class="mb-5 text-center">
-                {{ session('status') }}
-            </x-alert>
-        @endif
-
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <div class="mb-5">

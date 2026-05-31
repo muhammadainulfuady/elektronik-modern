@@ -19,6 +19,7 @@
     <link rel='stylesheet'
         href='https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-brands/css/uicons-brands.css'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('head')
 </head>
 
@@ -35,7 +36,8 @@
                 cartRemove: '{{ route('cart.remove') ?? '' }}',
                 cartUpdate: '{{ route('cart.update') ?? '' }}',
                 notifications: '{{ route('customer.notifications.index') ?? '' }}',
-                notificationsReadAll: '{{ route('customer.notifications.readAll') ?? '' }}'
+                notificationsReadAll: '{{ route('customer.notifications.readAll') ?? '' }}',
+                notificationsDestroy: '{{ route('customer.notifications.destroy', ':id') ?? '' }}'
             },
             auth: {
                 check: {{ auth()->check() ? 'true' : 'false' }},
@@ -44,6 +46,54 @@
                 wishlistCount: {{ auth()->check() ? auth()->user()->wishlists()->count() : 0 }}
             }
         };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            @if (session('status'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('status') }}",
+                    confirmButtonColor: '#1A5CFF',
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#1A5CFF',
+                });
+            @endif
+            
+            window.showAlert = (icon, title, text) => {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    confirmButtonColor: '#1A5CFF',
+                });
+            };
+
+            window.showToast = (icon, title) => {
+                Toast.fire({
+                    icon: icon,
+                    title: title
+                });
+            };
+        });
     </script>
     @hasSection('header')
         @yield('header')

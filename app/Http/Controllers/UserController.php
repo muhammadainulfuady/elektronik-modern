@@ -35,24 +35,30 @@ class UserController extends Controller
             ->get();
 
         $totalPendapatan = $pesanans->sum('total_bayar');
-        $totalOngkir     = $pesanans->sum('ongkos_kirim');
-        $totalDiskon     = $pesanans->sum('diskon');
-        $totalSubtotal   = $pesanans->sum('subtotal');
-        $namaBulan       = date('F', mktime(0, 0, 0, $bulan, 10));
+        $totalOngkir = $pesanans->sum('ongkos_kirim');
+        $totalDiskon = $pesanans->sum('diskon');
+        $totalSubtotal = $pesanans->sum('subtotal');
+        $namaBulan = date('F', mktime(0, 0, 0, $bulan, 10));
 
         $isOwner = auth()->user()->role === 'owner';
 
         if ($isOwner) {
-            $view     = 'reports.revenue';
+            $view = 'reports.revenue';
             $filename = "Laporan_Pendapatan_{$namaBulan}_{$tahun}.pdf";
         } else {
-            $view     = 'reports.sales';
+            $view = 'reports.sales';
             $filename = "Laporan_Penjualan_{$namaBulan}_{$tahun}.pdf";
         }
 
         $pdf = Pdf::loadView($view, compact(
-            'pesanans', 'totalPendapatan', 'totalOngkir', 'totalDiskon', 'totalSubtotal',
-            'bulan', 'tahun', 'namaBulan'
+            'pesanans',
+            'totalPendapatan',
+            'totalOngkir',
+            'totalDiskon',
+            'totalSubtotal',
+            'bulan',
+            'tahun',
+            'namaBulan'
         ));
 
         return $pdf->download($filename);
@@ -68,17 +74,17 @@ class UserController extends Controller
             ->pluck('total', 'status_pesanan');
 
         $jumlahMenungguKonfirmasi = $statusCounts->get('menunggu', 0);
-        $pesananDiproses          = $statusCounts->get('diproses', 0);
-        $pesananDikirim           = $statusCounts->get('dikirim', 0);
-        $pesananSelesai           = $statusCounts->get('selesai', 0);
+        $pesananDiproses = $statusCounts->get('diproses', 0);
+        $pesananDikirim = $statusCounts->get('dikirim', 0);
+        $pesananSelesai = $statusCounts->get('selesai', 0);
 
-        $jumlahUser   = User::where('role', 'customer')->count();
+        $jumlahUser = User::where('role', 'customer')->count();
         $jumlahProduk = Produk::count();
 
         $statusPesanan = $statusCounts;
 
         $pesananTerbaru = Pesanan::with('user:id_users,nama,email')
-            ->select('id_pesanan','id_users','no_resi','tanggal_pesan','status_pesanan','total_bayar')
+            ->select('id_pesanan', 'id_users', 'no_resi', 'tanggal_pesan', 'status_pesanan', 'total_bayar')
             ->latest('tanggal_pesan')
             ->take(5)
             ->get();
@@ -165,8 +171,8 @@ class UserController extends Controller
     public function ownerDashboard()
     {
         $jumlahCustomer = User::where('role', 'customer')->count();
-        $jumlahAdmin    = User::where('role', 'admin')->count();
-        $jumlahProduk   = Produk::count();
+        $jumlahAdmin = User::where('role', 'admin')->count();
+        $jumlahProduk = Produk::count();
 
         // Gabungkan status count dalam 1 query
         $statusCounts = Pesanan::selectRaw('status_pesanan, count(*) as total')
@@ -175,10 +181,10 @@ class UserController extends Controller
 
         $jumlahMenunggu = $statusCounts->get('menunggu', 0);
         $jumlahDiproses = $statusCounts->get('diproses', 0);
-        $jumlahDikirim  = $statusCounts->get('dikirim', 0);
-        $jumlahSelesai  = $statusCounts->get('selesai', 0);
-        $totalPesanan   = $statusCounts->sum();
-        $statusPesanan  = $statusCounts;
+        $jumlahDikirim = $statusCounts->get('dikirim', 0);
+        $jumlahSelesai = $statusCounts->get('selesai', 0);
+        $totalPesanan = $statusCounts->sum();
+        $statusPesanan = $statusCounts;
 
         $totalPendapatan = Pesanan::where('status_pesanan', 'selesai')->sum('total_bayar');
 
@@ -230,7 +236,7 @@ class UserController extends Controller
             ->get();
 
         $pesananTerbaru = Pesanan::with('user:id_users,nama,email')
-            ->select('id_pesanan','id_users','no_resi','tanggal_pesan','status_pesanan','total_bayar')
+            ->select('id_pesanan', 'id_users', 'no_resi', 'tanggal_pesan', 'status_pesanan', 'total_bayar')
             ->latest('tanggal_pesan')
             ->take(10)
             ->get();
@@ -263,18 +269,15 @@ class UserController extends Controller
      */
     public function profile()
     {
+        /** @var User $user */
         $user = Auth::user();
         $user->load('alamatUsers.dusun.desa.kecamatan.kota.provinsi');
 
-        // Load hanya provinsi (level teratas) — kota/kecamatan/desa/dusun
-        // dimuat secara dinamis via AJAX atau hanya yang terkait user
-        $provinsis  = \App\Models\Provinsi::select('id_provinsi', 'nama_provinsi')->orderBy('nama_provinsi')->get();
-        $kotas      = \App\Models\Kota::select('id_kota', 'id_provinsi', 'nama_kota')->get();
-        $kecamatans = \App\Models\Kecamatan::select('id_kecamatan', 'id_kota', 'nama_kecamatan')->get();
-        $desas      = \App\Models\Desa::select('id_desa', 'id_kecamatan', 'nama_desa')->get();
-        $dusuns     = \App\Models\Dusun::select('id_dusun', 'id_desa', 'nama_dusun')->get();
+        $provinsis = \App\Models\Provinsi::select('id_provinsi', 'nama_provinsi')
+            ->orderBy('nama_provinsi')
+            ->get();
 
-        return view('customer.profile', compact('user', 'provinsis', 'kotas', 'kecamatans', 'desas', 'dusuns'));
+        return view('customer.profile', compact('user', 'provinsis'));
     }
 
     /**
@@ -288,7 +291,7 @@ class UserController extends Controller
             'detail_alamat' => ['required', 'string'],
             'id_dusun' => ['required', 'exists:dusuns,id_dusun'],
         ]);
-        
+
         $data['id_users'] = Auth::id();
         $data['is_utama'] = $request->has('is_utama') ? 1 : 0;
 

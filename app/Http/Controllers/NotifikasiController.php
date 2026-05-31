@@ -37,6 +37,21 @@ class NotifikasiController extends Controller
         return response()->json(['unreadCount' => 0]);
     }
 
+    public function destroy(Notifikasi $notifikasi)
+    {
+        if ($notifikasi->id_users !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $notifikasi->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Notifikasi dihapus',
+            'unreadCount' => Notifikasi::where('id_users', Auth::id())->where('is_read', 0)->count()
+        ]);
+    }
+
     private function iconFor(string $title): string
     {
         $title = strtolower($title);

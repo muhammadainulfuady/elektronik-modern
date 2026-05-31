@@ -25,18 +25,6 @@
                 <p class="text-g500 text-[15px]">Riwayat dan status pesanan Anda</p>
             </div>
 
-            @if (session('status'))
-                <div class="bg-green-50 text-green-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-green-200">
-                    <i class="fi fi-rr-check-circle text-lg"></i> {{ session('status') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="bg-red-50 text-red-700 py-3 px-4 rounded-xl text-[13px] font-bold mb-6 flex items-center gap-2 border border-red-200">
-                    <i class="fi fi-rr-cross-circle text-lg"></i> {{ session('error') }}
-                </div>
-            @endif
-
             <div class="space-y-4">
             @forelse ($pesanans as $pesanan)
                 @php

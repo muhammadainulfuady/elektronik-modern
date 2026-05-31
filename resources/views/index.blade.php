@@ -62,7 +62,8 @@
                     class="absolute -bottom-5 -left-5 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 px-4 shadow-[0_16px_40px_rgba(0,0,0,0.2)] flex items-center gap-3 animate-[floatSlow_6s_ease-in-out_infinite]">
                     <div
                         class="w-10 h-10 rounded-xl bg-green-100/50 flex items-center justify-center text-xl text-green-600">
-                        <i class="fi fi-rr-shield-check"></i></div>
+                        <i class="fi fi-rr-shield-check"></i>
+                    </div>
                     <div>
                         <div class="text-[11px] text-slate-500 font-semibold">Garansi Resmi</div>
                         <div class="text-sm font-extrabold text-slate-900 font-heading">100% Aman</div>
@@ -72,7 +73,8 @@
                 <div
                     class="absolute -top-4 -right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 px-4 shadow-[0_16px_40px_rgba(0,0,0,0.2)] flex items-center gap-3 animate-[floatSlow_6s_ease-in-out_infinite_0.5s]">
                     <div class="w-10 h-10 rounded-xl bg-blue-100/50 flex items-center justify-center text-xl text-primary">
-                        <i class="fi fi-rr-truck-fast"></i></div>
+                        <i class="fi fi-rr-truck-fast"></i>
+                    </div>
                     <div>
                         <div class="text-[11px] text-slate-500 font-semibold">Pengiriman</div>
                         <div class="text-sm font-extrabold text-slate-900 font-heading">Super Cepat</div>
@@ -91,7 +93,8 @@
                 @foreach (['SAMSUNG', 'LG', 'SONY', 'DAIKIN', 'PANASONIC', 'SHARP', 'PHILIPS'] as $brand)
                     <div
                         class="font-heading text-[22px] font-extrabold text-g300 hover:text-primary transition-colors cursor-default uppercase">
-                        {{ $brand }}</div>
+                        {{ $brand }}
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -119,7 +122,8 @@
                 @foreach ($kategoris as $k)
                     <a href="{{ route('products.index', ['kategori' => $k->nama_kategori]) }}"
                         class="bg-white rounded-xl p-5 shadow-card hover:shadow-card-md hover:-translate-y-1 hover:border-primary border-2 border-transparent text-center transition-all group">
-                        <div class="text-[32px] mb-2 text-primary transition-transform group-hover:scale-110 flex justify-center items-center h-[40px]">
+                        <div
+                            class="text-[32px] mb-2 text-primary transition-transform group-hover:scale-110 flex justify-center items-center h-[40px]">
                             {!! $k->ikonHtml() !!}
                         </div>
                         <div class="text-[13px] font-bold text-g800 mb-0.5">{{ $k->nama_kategori }}</div>
@@ -130,69 +134,104 @@
             <div class="mt-8 text-center md:hidden">
                 <x-button variant="outline" onclick="window.location='{{ route('products.index') }}'"
                     class="inline-flex py-2.5 px-5 text-sm">
-                    Lihat Semua Kategori
+                    Lihat Semua →
                 </x-button>
             </div>
         </div>
     </section>
 
     <!-- FEATURED PRODUCTS -->
-    <section class="py-[72px] bg-g50 px-4 md:px-8">
-        <div class="max-w-[1280px] mx-auto">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-                <div>
-                    <x-badge variant="primary" class="mb-3 tracking-wide gap-1.5 py-1.5 px-3.5">
-                        <i class="fi fi-rr-star"></i> Unggulan
-                    </x-badge>
-                    <h2 class="font-heading text-[32px] font-extrabold text-g900 leading-[1.2] mb-2">Produk Terlaris</h2>
-                    <p class="text-g500 text-[15px] m-0">Pilihan terpopuler minggu ini!</p>
-                </div>
-                <x-button variant="outline" onclick="window.location='{{ route('products.index') }}'"
-                    class="hidden md:inline-flex py-2.5 px-5 text-sm">
-                    Lihat Semua →
-                </x-button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4.5">
-                @foreach ($produkTerlaris as $item)
-                    @if ($item->produk)
-                        <x-product-card :produk="$item->produk" :wishlistIds="$wishlistIds ?? []" />
-                    @endif
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <!-- DEALS -->
-    @if ($produkTerlaris->count() >= 2)
-        <section class="pb-[72px] bg-g50 px-4 md:px-8">
-            <div class="max-w-[1280px] mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    @foreach ($produkTerlaris->take(2) as $item)
-                        <div class="group relative min-h-[280px] rounded-3xl overflow-hidden cursor-pointer shadow-card transition-all hover:shadow-card-lg"
-                            onclick="window.location='{{ route('products.show', $item->produk) }}'">
-                            <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
-                                alt="{{ $item->produk->nama_produk }}"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div
-                                class="absolute inset-0 bg-gradient-to-r from-g900/90 via-g900/40 to-transparent p-8 flex flex-col justify-center">
-                                <div
-                                    class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white py-1 px-3 rounded-full text-[11px] font-bold mb-3 w-fit backdrop-blur-md">
-                                    <i class="fi fi-rr-flame"></i> Penawaran Terlaris
-                                </div>
-                                <h3 class="font-heading text-2xl font-extrabold text-white mb-2 leading-tight max-w-[240px]">
-                                    {{ $item->produk->nama_produk }}</h3>
-                                <p class="text-white/60 text-sm mb-5">{{ $item->produk->kategori->nama_kategori ?? 'Kategori' }} —
-                                    Terjual {{ $item->total_terjual }} item</p>
-                                <div
-                                    class="bg-gradient-to-br from-[#FF6B35] to-[#FF3366] text-white py-2 px-5 rounded-full font-extrabold text-sm w-fit shadow-lg">
-                                    Rp {{ number_format($item->produk->harga, 0, ',', '.') }}
-                                </div>
-                            </div>
+    <!-- BEST SELLING -->
+    @if($produkTerlaris->count() > 0)
+        <section class="py-[80px] bg-g50 px-4 md:px-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+            <div class="max-w-[1280px] mx-auto relative">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                    <div class="max-w-xl">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-light text-primary text-xs font-bold uppercase tracking-wider mb-4">
+                            <span class="relative flex h-2 w-2">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                            Hot Item
                         </div>
+                        <h2 class="font-heading text-[32px] font-extrabold text-g900 leading-[1.2] mb-2">Paling Banyak Dibeli
+                        </h2>
+                        <p class="text-g500 text-lg leading-relaxed">Produk favorit pilihan ribuan pelanggan yang sudah terbukti
+                            kualitasnya.</p>
+                    </div>
+                    <x-button variant="primary" onclick="window.location='{{ route('products.index') }}'"
+                        class="py-3 px-8 text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 group">
+                        Eksplor Semua <i class="fi fi-rr-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </x-button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach ($produkTerlaris as $item)
+                        @if ($item->produk)
+                            <div class="relative group">
+                                <div
+                                    class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-teal/20 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-500">
+                                </div>
+                                <x-product-card :produk="$item->produk" :wishlistIds="$wishlistIds ?? []" />
+                            </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
         </section>
+
+        <!-- DEALS / HIGHLIGHT -->
+        @if ($produkTerlaris->count() >= 2)
+            <section class="pb-[80px] bg-g50 px-4 md:px-8">
+                <div class="max-w-[1280px] mx-auto">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        @foreach ($produkTerlaris->take(2) as $item)
+                            <div class="group relative min-h-[340px] rounded-[2.5rem] overflow-hidden cursor-pointer border border-white/50 shadow-card transition-all duration-500 hover:shadow-card-lg hover:-translate-y-1"
+                                onclick="window.location='{{ route('products.show', $item->produk) }}'">
+                                <img src="{{ asset('storage/products/' . $item->produk->gambar) }}"
+                                    alt="{{ $item->produk->nama_produk }}"
+                                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-g900/95 via-g900/60 to-transparent p-10 flex flex-col justify-end">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="flex -space-x-2">
+                                            <div
+                                                class="w-8 h-8 rounded-full border-2 border-white bg-g200 flex items-center justify-center text-[10px] font-bold">
+                                                JD</div>
+                                            <div
+                                                class="w-8 h-8 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold">
+                                                AS</div>
+                                            <div
+                                                class="w-8 h-8 rounded-full border-2 border-white bg-teal text-white flex items-center justify-center text-[10px] font-bold">
+                                                +50</div>
+                                        </div>
+                                        <span class="text-white/80 text-xs font-medium">Banyak orang telah membeli ini</span>
+                                    </div>
+                                    <h3 class="font-heading text-3xl font-extrabold text-white mb-3 leading-tight tracking-tight">
+                                        {{ $item->produk->nama_produk }}
+                                    </h3>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-white/50 text-[11px] uppercase tracking-widest font-bold mb-1">Harga
+                                                Spesial</span>
+                                            <div class="text-2xl font-extrabold text-white">
+                                                Rp {{ number_format($item->produk->harga, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-2xl group-hover:bg-primary transition-colors duration-300">
+                                            <i class="fi fi-rr-arrow-right text-white text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+        @endif
     @endif
 
     <!-- NEW ARRIVALS -->
@@ -235,7 +274,8 @@
                 <div class="text-center p-8">
                     <div
                         class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[28px] mx-auto mb-4 border border-white/10 text-white">
-                        <i class="fi fi-rr-shield-check"></i></div>
+                        <i class="fi fi-rr-shield-check"></i>
+                    </div>
                     <h3 class="font-heading text-[17px] font-extrabold text-white mb-2">Produk 100% Original</h3>
                     <p class="text-[13px] text-white/50 leading-[1.7]">Semua produk bersumber langsung dari distributor
                         resmi dengan garansi pabrik.</p>
@@ -243,7 +283,8 @@
                 <div class="text-center p-8">
                     <div
                         class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[28px] mx-auto mb-4 border border-white/10 text-white">
-                        <i class="fi fi-rr-truck-side"></i></div>
+                        <i class="fi fi-rr-truck-side"></i>
+                    </div>
                     <h3 class="font-heading text-[17px] font-extrabold text-white mb-2">Pengiriman Cepat</h3>
                     <p class="text-[13px] text-white/50 leading-[1.7]">Pengiriman ke seluruh Indonesia dengan estimasi 1–5
                         hari kerja.</p>
@@ -251,7 +292,8 @@
                 <div class="text-center p-8">
                     <div
                         class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[28px] mx-auto mb-4 border border-white/10 text-white">
-                        <i class="fi fi-rr-credit-card"></i></div>
+                        <i class="fi fi-rr-credit-card"></i>
+                    </div>
                     <h3 class="font-heading text-[17px] font-extrabold text-white mb-2">Pembayaran Aman</h3>
                     <p class="text-[13px] text-white/50 leading-[1.7]">Transfer bank & e-wallet dengan konfirmasi manual
                         oleh tim admin kami.</p>
