@@ -16,9 +16,9 @@ class CartController extends Controller
     public function index()
     {
         $keranjang = $this->getUserKeranjang();
-        $details   = $keranjang ? $keranjang->detailKeranjangs()->with('produk.kategori')->get() : collect();
+        $details = $keranjang ? $keranjang->detailKeranjangs()->with('produk.kategori')->get() : collect();
 
-        $items    = [];
+        $items = [];
         $subtotal = 0;
 
         foreach ($details as $detail) {
@@ -26,16 +26,16 @@ class CartController extends Controller
                 $lineTotal = $detail->produk->harga * $detail->qty;
                 $subtotal += $lineTotal;
                 $items[] = (object) [
-                    'produk'    => $detail->produk,
-                    'qty'       => $detail->qty,
+                    'produk' => $detail->produk,
+                    'qty' => $detail->qty,
                     'lineTotal' => $lineTotal,
                 ];
             }
         }
 
         $appliedPromo = $this->appliedPromo();
-        $discount     = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
-        $total        = max(0, $subtotal - $discount);
+        $discount = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
+        $total = max(0, $subtotal - $discount);
 
         $promos = Promo::where('tanggal_mulai', '<=', now())
             ->where('tanggal_berakhir', '>=', now())
@@ -61,7 +61,8 @@ class CartController extends Controller
      */
     private function getUserKeranjang(): ?Keranjang
     {
-        if (!Auth::check()) return null;
+        if (!Auth::check())
+            return null;
         return Keranjang::where('id_users', Auth::id())->first();
     }
 
@@ -87,16 +88,16 @@ class CartController extends Controller
 
         $request->validate([
             'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
-            'qty'       => ['nullable', 'integer', 'min:1'],
+            'qty' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $id  = (int) $request->id_produk;
+        $id = (int) $request->id_produk;
         $qty = (int) ($request->qty ?? 1);
 
         $produk = \App\Models\Produk::findOrFail($id);
-        
+
         $keranjang = $this->getOrCreateKeranjang();
-        $detail    = $keranjang->detailKeranjangs()->where('id_produk', $id)->first();
+        $detail = $keranjang->detailKeranjangs()->where('id_produk', $id)->first();
 
         $currentQty = $detail ? $detail->qty : 0;
         $newQty = $currentQty + $qty;
@@ -118,8 +119,8 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'status'    => true,
-                'message'   => 'Produk ditambahkan ke keranjang!',
+                'status' => true,
+                'message' => 'Produk ditambahkan ke keranjang!',
                 'cartCount' => $cartCount,
             ]);
         }
@@ -138,11 +139,11 @@ class CartController extends Controller
     {
         $request->validate([
             'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
-            'qty'       => ['required', 'integer', 'min:0'],
+            'qty' => ['required', 'integer', 'min:0'],
         ]);
 
-        $id        = (int) $request->id_produk;
-        $qty       = (int) $request->qty;
+        $id = (int) $request->id_produk;
+        $qty = (int) $request->qty;
         $keranjang = $this->getUserKeranjang();
 
         if ($keranjang) {
@@ -167,7 +168,7 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message'   => 'Keranjang diperbarui.',
+                'message' => 'Keranjang diperbarui.',
                 'cartCount' => $cartCount,
             ]);
         }
@@ -180,7 +181,7 @@ class CartController extends Controller
      */
     public function remove(Request $request)
     {
-        $id        = (int) $request->id_produk;
+        $id = (int) $request->id_produk;
         $keranjang = $this->getUserKeranjang();
 
         if ($keranjang) {
@@ -191,7 +192,7 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message'   => 'Produk dihapus dari keranjang.',
+                'message' => 'Produk dihapus dari keranjang.',
                 'cartCount' => $cartCount,
             ]);
         }
@@ -222,11 +223,26 @@ class CartController extends Controller
         return back()->with('status', 'Voucher ' . $promo->kode_voucher . ' berhasil digunakan.');
     }
 
-    public function removeVoucher()
+    public function removeVoucher(Request $request)
     {
+        $promoId = session('applied_promo_id');
+        $promoCode = '';
+
+        if ($promoId) {
+            $promo = Promo::find($promoId);
+            if ($promo) {
+                $promoCode = $promo->kode_voucher;
+            }
+        }
+
         session()->forget('applied_promo_id');
 
-        return back()->with('status', 'Voucher dihapus dari keranjang.');
+        // Cek darimana request ini berasal agar pesannya relevan
+        $referer = $request->headers->get('referer');
+        $context = str_contains($referer, 'checkout') ? 'checkout' : 'keranjang';
+
+        $message = $promoCode ? 'Voucher ' . $promoCode . ' berhasil dihapus dari ' . $context . '.' : 'Voucher dihapus dari ' . $context . '.';
+        return back()->with('status', $message);
     }
 
     /**
@@ -237,7 +253,7 @@ class CartController extends Controller
         $count = 0;
         if (Auth::check()) {
             $keranjang = $this->getUserKeranjang();
-            $count     = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
+            $count = $keranjang ? $keranjang->detailKeranjangs()->sum('qty') : 0;
         }
 
         return response()->json(['cartCount' => $count]);
@@ -246,7 +262,8 @@ class CartController extends Controller
     public function appliedPromo(): ?Promo
     {
         $promoId = session('applied_promo_id');
-        if (!$promoId) return null;
+        if (!$promoId)
+            return null;
 
         return Promo::where('id_promo', $promoId)
             ->where('kuota', '>', 0)
@@ -257,7 +274,8 @@ class CartController extends Controller
 
     public function calculateDiscount(Promo $promo, int $subtotal): int
     {
-        if ($subtotal <= 0) return 0;
+        if ($subtotal <= 0)
+            return 0;
 
         if ($promo->tipe_diskon === 'persen') {
             return min($subtotal, (int) floor($subtotal * $promo->nilai_diskon / 100));
