@@ -124,6 +124,10 @@ class CartController extends Controller
             ]);
         }
 
+        if ($request->has('buy_now')) {
+            return redirect()->route('customer.checkout');
+        }
+
         return back()->with('status', 'Produk ditambahkan ke keranjang!');
     }
 

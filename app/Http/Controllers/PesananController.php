@@ -71,6 +71,13 @@ class PesananController extends Controller
                 ->with('error', 'Status hanya bisa diubah ke tahap berikutnya secara berurutan.');
         }
 
+        // Admin tidak boleh mengubah status ke 'selesai', itu hak customer
+        if ($data['status_pesanan'] === 'selesai') {
+            return redirect()
+                ->route('admin.orders.index')
+                ->with('error', 'Hanya pelanggan yang dapat menandai pesanan sebagai selesai.');
+        }
+
         // Validasi Ekstra: Wajib verifikasi pembayaran jika mau ke "diproses"
         if ($data['status_pesanan'] === 'diproses' && (int) ($pesanan->pembayaran?->status_konfirmasi ?? 0) !== 1) {
             return redirect()
@@ -89,7 +96,37 @@ class PesananController extends Controller
 
         return redirect()
             ->route('admin.orders.index')
-            ->with('status', 'Status pesanan #' . $pesanan->id_pesanan . ' berhasil diperbarui.');
+            ->with('status', 'Status pesanan ' . $pesanan->no_resi . ' berhasil diperbarui.');
+    }
+
+    /**
+     * Customer: tandai pesanan sebagai selesai.
+     */
+    public function completeOrder(Pesanan $pesanan)
+    {
+        // Pastikan pesanan milik user yang sedang login
+        if ($pesanan->id_users !== Auth::id()) {
+            return back()->with('error', 'Akses ditolak.');
+        }
+
+        // Hanya bisa diselesaikan jika statusnya 'dikirim'
+        if ($pesanan->status_pesanan !== 'dikirim') {
+            return back()->with('error', 'Pesanan hanya dapat diselesaikan jika sudah dalam pengiriman.');
+        }
+
+        DB::transaction(function () use ($pesanan) {
+            $pesanan->update(['status_pesanan' => 'selesai']);
+            
+            $this->notifyCustomer(
+                $pesanan->id_users,
+                'Pesanan Selesai',
+                'Terima kasih! Pesanan ' . $pesanan->no_resi . ' telah Anda selesaikan.'
+            );
+        });
+
+        return redirect()
+            ->route('customer.orders')
+            ->with('status', 'Pesanan ' . $pesanan->no_resi . ' telah diselesaikan. Terima kasih telah berbelanja!');
     }
 
     /**
@@ -146,7 +183,12 @@ class PesananController extends Controller
             ->get();
         $ekspedisis = Ekspedisi::select('id_ekspedisi','nama_ekspedisi','biaya_pengiriman')->get();
         
-        return view('customer.checkout', compact('items', 'subtotal', 'discount', 'appliedPromo', 'alamats', 'ekspedisis'));
+        $promos = Promo::where('tanggal_mulai', '<=', now())
+            ->where('tanggal_berakhir', '>=', now())
+            ->where('kuota', '>', 0)
+            ->get();
+        
+        return view('customer.checkout', compact('items', 'subtotal', 'discount', 'appliedPromo', 'alamats', 'ekspedisis', 'promos'));
     }
 
     /**
@@ -317,7 +359,7 @@ class PesananController extends Controller
 
         return redirect()
             ->route('admin.orders.index')
-            ->with('status', 'Status pembayaran pesanan #' . $pesanan->id_pesanan . ' berhasil diperbarui.');
+            ->with('status', 'Status pembayaran pesanan ' . $pesanan->no_resi . ' berhasil diperbarui.');
     }
 
     private function appliedPromo(): ?Promo

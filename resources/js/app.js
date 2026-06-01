@@ -505,6 +505,30 @@ window.confirmDelete = function(form, message = 'Data yang dihapus tidak dapat d
     });
 };
 
+window.confirmCompleteOrder = function(form) {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Apakah Anda yakin pesanan sudah diterima dan ingin menyelesaikan pesanan ini?')) {
+            form.submit();
+        }
+        return;
+    }
+
+    Swal.fire({
+        title: 'Selesaikan Pesanan?',
+        text: 'Pastikan Anda telah menerima produk dengan baik. Pesanan yang sudah selesai tidak dapat diubah kembali.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#1A5CFF', // primary color matching theme
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Selesaikan',
+        cancelButtonText: 'Batal',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initial badges
     if (window.AppConfig.auth.check) {

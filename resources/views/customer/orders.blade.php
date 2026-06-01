@@ -99,7 +99,16 @@
                         </div>
                         <div class="text-right">
                             <div class="text-xs font-bold text-g500 uppercase tracking-widest mb-1">Total Bayar</div>
-                            <div class="font-heading text-xl font-extrabold text-primary">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</div>
+                            <div class="font-heading text-xl font-extrabold text-primary mb-2">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</div>
+                            
+                            @if ($pesanan->status_pesanan === 'dikirim')
+                                <form action="{{ route('customer.orders.complete', $pesanan) }}" method="POST" onsubmit="event.preventDefault(); window.confirmCompleteOrder(this);">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-2 py-2 px-4 rounded-xl font-bold text-[13px] bg-green-500 text-white shadow-sm hover:bg-green-600 transition-all">
+                                        <i class="fi fi-rr-check-circle"></i> Pesanan Selesai
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>

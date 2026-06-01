@@ -177,10 +177,16 @@
                                                         };
                                                     @endphp
                                                     @if ($nextStatus)
-                                                        <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
-                                                        <button type="submit" class="inline-flex py-1.5 px-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg font-bold text-[12px] hover:bg-blue-600 hover:text-white transition-colors items-center gap-1.5">
-                                                            {!! $nextLabel !!}
-                                                        </button>
+                                                        @if ($nextStatus === 'selesai')
+                                                            <button type="button" disabled class="inline-flex py-1.5 px-3 bg-g100 text-g400 border border-g200 rounded-lg font-bold text-[12px] cursor-not-allowed items-center gap-1.5" title="Hanya customer yang dapat menyelesaikan pesanan">
+                                                                {!! $nextLabel !!}
+                                                            </button>
+                                                        @else
+                                                            <input type="hidden" name="status_pesanan" value="{{ $nextStatus }}">
+                                                            <button type="submit" class="inline-flex py-1.5 px-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg font-bold text-[12px] hover:bg-blue-600 hover:text-white transition-colors items-center gap-1.5">
+                                                                {!! $nextLabel !!}
+                                                            </button>
+                                                        @endif
                                                     @endif
                                                 </div>
                                             </form>

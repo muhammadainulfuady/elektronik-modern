@@ -196,7 +196,7 @@
                                 </div>
                             @endif
 
-                            @if ($promos->isNotEmpty())
+                            @if (!$appliedPromo && $promos->isNotEmpty())
                                 <div class="mt-6 pt-6 border-t border-g100">
                                     <h4 class="text-[11px] font-extrabold text-g400 uppercase tracking-widest mb-3">Voucher Tersedia</h4>
                                     <div class="space-y-2">
@@ -298,6 +298,18 @@ document.addEventListener('submit', async function(e) {
             if (newBadge && oldBadge) {
                 oldBadge.innerHTML = newBadge.innerHTML;
                 oldBadge.style.display = newBadge.style.display;
+            }
+
+            // Trigger SweetAlert based on redirected session data in the new HTML
+            const flash = doc.getElementById('flash-messages');
+            if (flash) {
+                const status = flash.getAttribute('data-status');
+                const error = flash.getAttribute('data-error');
+                const errors = flash.getAttribute('data-errors');
+                
+                if (status) window.showAlert('success', 'Berhasil!', status);
+                if (error) window.showAlert('error', 'Gagal!', error);
+                if (errors) window.showAlert('error', 'Ups!', errors.replace(/\\n/g, '<br>'));
             }
         }
     } catch (error) {

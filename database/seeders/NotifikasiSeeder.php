@@ -14,8 +14,8 @@ class NotifikasiSeeder extends Seeder
             $rows[] = [
                 'id_notifikasi' => $i,
                 'id_users' => $i,
-                'judul' => 'Update Pesanan #' . $i,
-                'pesan' => 'Pesanan #' . $i . ' sedang diproses dan akan segera dikirim.',
+                'judul' => 'Update Pesanan RESI-' . $i,
+                'pesan' => 'Pesanan RESI-' . $i . ' sedang diproses dan akan segera dikirim.',
                 'is_read' => $i % 2,
             ];
         }

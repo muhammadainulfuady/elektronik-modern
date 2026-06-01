@@ -163,6 +163,12 @@
         @include('partials.header')
     @endif
 
+    <div id="flash-messages" class="hidden" 
+        data-status="{{ session('status') }}" 
+        data-error="{{ session('error') }}"
+        data-errors="{{ $errors->any() ? implode('\n', $errors->all()) : '' }}">
+    </div>
+
     @yield('content')
 
     @hasSection('footer')

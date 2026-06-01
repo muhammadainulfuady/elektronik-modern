@@ -89,6 +89,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::put('/profile/alamat/{alamatUser}', [UserController::class, 'updateAlamat'])->name('customer.alamat.update');
     Route::delete('/profile/alamat/{alamatUser}', [UserController::class, 'destroyAlamat'])->name('customer.alamat.destroy');
     Route::get('/my-orders', [PesananController::class, 'customerOrders'])->name('customer.orders');
+    Route::post('/my-orders/{pesanan}/complete', [PesananController::class, 'completeOrder'])->name('customer.orders.complete');
     Route::get('/checkout', [PesananController::class, 'checkout'])->name('customer.checkout');
     Route::post('/checkout', [PesananController::class, 'placeOrder'])->name('customer.placeOrder');
     Route::get('/notifications', [NotifikasiController::class, 'index'])->name('customer.notifications.index');

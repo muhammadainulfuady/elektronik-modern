@@ -72,6 +72,17 @@
                                             <i class="fi fi-rr-shopping-cart-add"></i> Tambah ke Keranjang
                                         </x-button>
                                     </form>
+
+                                    <form method="POST" action="{{ route('cart.add') }}" class="m-0">
+                                        @csrf
+                                        <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
+                                        <input type="hidden" name="qty" class="qtyHidden" value="1">
+                                        <input type="hidden" name="buy_now" value="1">
+                                        <x-button type="submit" variant="secondary" class="py-3.5 px-7 bg-teal-500 text-white hover:bg-teal-600 border-none shadow-[0_4px_12px_rgba(20,184,166,0.3)]">
+                                            <i class="fi fi-rr-shopping-bag"></i> Beli Sekarang
+                                        </x-button>
+                                    </form>
+
                                     <x-button variant="{{ in_array($produk->id_produk, $wishlistIds) ? 'danger' : 'outline' }}" 
                                         class="py-3.5 px-7 {{ in_array($produk->id_produk, $wishlistIds) ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100 shadow-none' : 'bg-white border-g300 text-g700 hover:border-primary hover:text-primary hover:bg-primary-light' }}"
                                         onclick="toggleWishlistDetail(this, {{ $produk->id_produk }})">
@@ -113,4 +124,23 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+    function changeQty(delta) {
+        const input = document.getElementById('qtyInput');
+        if (!input) return;
+        
+        let val = parseInt(input.value) + delta;
+        val = Math.max(1, Math.min(val, parseInt(input.max) || Infinity));
+        input.value = val;
+        
+        // Update all hidden quantity inputs
+        const qtyHidden1 = document.getElementById('qtyHidden');
+        if (qtyHidden1) qtyHidden1.value = val;
+        
+        document.querySelectorAll('.qtyHidden').forEach(el => el.value = val);
+    }
+</script>
+@endpush
 

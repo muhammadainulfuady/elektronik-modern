@@ -11,7 +11,7 @@
 
 @section('content')
     <section class="py-8 md:py-[72px] bg-g50 min-h-screen px-4 md:px-8">
-        <div class="max-w-[1280px] mx-auto">
+        <div class="max-w-[1280px] mx-auto" id="checkoutPageContainer">
             <div class="flex items-center gap-1.5 mb-6 text-[13px]">
                 <a href="{{ route('index') }}" class="text-g500 hover:text-primary transition-colors flex items-center gap-1.5"><i class="fi fi-rr-home"></i> Beranda</a> 
                 <i class="fi fi-rr-angle-small-right text-g400"></i> 
@@ -27,14 +27,13 @@
                 <p class="text-g500 text-[15px]">Periksa pesanan Anda sebelum melanjutkan pembayaran</p>
             </div>
 
-            <x-error :messages="$errors->all()" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl" />
-
-            <form method="POST" action="{{ route('customer.placeOrder') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="flex flex-col lg:flex-row gap-8 items-start">
-                    <div class="flex-1 w-full space-y-5">
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <!-- Main Form Section -->
+                <div class="flex-1 w-full space-y-5">
+                    <form id="checkoutForm" method="POST" action="{{ route('customer.placeOrder') }}" enctype="multipart/form-data">
+                        @csrf
                         <!-- Items -->
-                        <x-card class="p-6">
+                        <x-card class="p-6 mb-5">
                             <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
                                 <i class="fi fi-rr-box text-primary"></i> Produk Dipesan
                             </h3>
@@ -61,7 +60,7 @@
                         </x-card>
 
                         <!-- Alamat Pengiriman -->
-                        <x-card class="p-6">
+                        <x-card class="p-6 mb-5">
                             <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
                                 <i class="fi fi-rr-map-marker text-primary"></i> Alamat Pengiriman
                             </h3>
@@ -91,7 +90,7 @@
                         </x-card>
 
                         <!-- Ekspedisi -->
-                        <x-card class="p-6">
+                        <x-card class="p-6 mb-5">
                             <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
                                 <i class="fi fi-rr-truck-side text-primary"></i> Pilih Ekspedisi
                             </h3>
@@ -164,64 +163,93 @@
                                 </div>
                             </div>
                         </x-card>
-                    </div>
-
-                    <!-- Summary -->
-                    <x-card class="w-full lg:w-[380px] shrink-0 p-6 lg:sticky lg:top-[84px]">
-                        <h3 class="font-heading text-lg font-extrabold text-g900 mb-5 flex items-center gap-2">
-                            <i class="fi fi-rr-receipt text-primary"></i> Ringkasan Pembayaran
-                        </h3>
-                        
-                        <div class="flex justify-between items-center mb-3 text-[13px]">
-                            <span class="text-g500">Subtotal ({{ count($items) }} produk)</span>
-                            <span class="font-bold text-g800">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
-                        </div>
-                        
-                        @if ($appliedPromo)
-                            <div class="flex justify-between items-center mb-3 text-[13px]">
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-green-600 flex items-center gap-1.5"><i class="fi fi-rr-ticket"></i> Voucher {{ $appliedPromo->kode_voucher }}</span>
-                                    <button type="button" onclick="document.getElementById('formRemoveVoucher').submit()" class="text-[10px] text-left text-red-500 font-bold hover:underline uppercase">Hapus Voucher</button>
-                                </div>
-                                <span class="font-bold text-green-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
-                            </div>
-                        @else
-                            <form method="POST" action="{{ route('cart.voucher.apply') }}" class="relative mb-5">
-                                @csrf
-                                <input name="kode_voucher" value="{{ old('kode_voucher') }}"
-                                    placeholder="KODE VOUCHER" required
-                                    class="w-full py-2.5 pr-20 pl-4 border-[1.5px] border-g200 rounded-xl outline-none text-[11px] font-bold text-g900 uppercase focus:border-primary transition-all bg-g50/50">
-                                <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-3 rounded-lg bg-g900 text-white text-[10px] font-bold uppercase hover:bg-primary transition-colors">Pakai</button>
-                            </form>
-                        @endif
-                        
-                        <div class="flex justify-between items-center mb-3 text-[13px]">
-                            <span class="text-g500">Ongkos Kirim</span>
-                            <span class="font-bold text-g800" id="shippingCost">Rp 0</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center mt-5 pt-4 border-t-2 border-g100">
-                            <span class="text-sm font-bold text-g500">Total Pembayaran</span>
-                            <span class="font-heading text-[22px] font-extrabold text-primary" id="totalPayment">Rp {{ number_format(max(0, $subtotal - $discount), 0, ',', '.') }}</span>
-                        </div>
-
-                        <x-button type="submit" id="btnSubmitCheckout" class="w-full mt-6 opacity-60 cursor-not-allowed pointer-events-none">
-                            Buat Pesanan <i class="fi fi-rr-arrow-right"></i>
-                        </x-button>
-
-                        <div class="text-center text-[11px] font-semibold text-g400 mt-4 flex items-center justify-center gap-1.5">
-                            <i class="fi fi-rr-lock"></i> Transaksi aman & terenkripsi
-                        </div>
-                    </x-card>
+                    </form>
                 </div>
-            </form>
+
+                <!-- Summary Section (Outside checkout form to enable smooth voucher logic) -->
+                <div class="w-full lg:w-[380px] shrink-0 lg:sticky lg:top-[84px]">
+                    <div class="bg-white rounded-[2.5rem] shadow-card p-6 md:p-8 border border-g100">
+                        <h3 class="font-heading text-xl font-extrabold text-g900 mb-6">Ringkasan Belanja</h3>
+
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-g500 font-medium">Subtotal ({{ count($items) }} produk)</span>
+                                <span class="font-bold text-g900">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                            </div>
+
+                            @if ($appliedPromo)
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-green-600 font-bold flex items-center gap-2">
+                                        <i class="fi fi-rr-ticket"></i> Voucher ({{ $appliedPromo->kode_voucher }})
+                                    </span>
+                                    <span class="font-bold text-green-600">- Rp {{ number_format($discount, 0, ',', '.') }}</span>
+                                </div>
+                            @endif
+
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-g500 font-medium">Ongkos Kirim</span>
+                                <span class="font-bold text-g800" id="shippingCost">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <!-- Voucher Form -->
+                        <form method="POST" action="{{ route('cart.voucher.apply') }}" class="relative mt-6 voucher-form-ajax">
+                            @csrf
+                            <input name="kode_voucher" id="checkout_voucher_input" value="{{ $appliedPromo->kode_voucher ?? old('kode_voucher') }}"
+                                placeholder="KODE VOUCHER" required
+                                class="w-full py-3.5 pr-20 pl-4 border-2 border-g100 rounded-2xl outline-none text-xs font-bold text-g900 uppercase focus:border-primary transition-all">
+                            <button type="submit" class="absolute right-2 top-2 bottom-2 px-4 rounded-xl bg-g900 text-white text-[10px] font-bold uppercase hover:bg-primary transition-colors">Pakai</button>
+                        </form>
+
+                        @if ($appliedPromo)
+                            <div class="flex justify-between items-center mt-3 bg-green-50 py-2 px-4 rounded-xl border border-green-100">
+                                <span class="text-[11px] font-bold text-green-700 flex items-center gap-2"><i class="fi fi-rr-ticket"></i> {{ $appliedPromo->kode_voucher }}</span>
+                                <form method="POST" action="{{ route('cart.voucher.remove') }}" class="m-0 voucher-form-ajax">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Hapus</button>
+                                </form>
+                            </div>
+                        @endif
+
+                        @if (!$appliedPromo && $promos->isNotEmpty())
+                            <div class="mt-6 pt-6 border-t border-g100">
+                                <h4 class="text-[11px] font-extrabold text-g400 uppercase tracking-widest mb-3">Voucher Tersedia</h4>
+                                <div class="space-y-2">
+                                    @foreach ($promos as $p)
+                                        <div class="flex items-center justify-between p-3 bg-g50 rounded-xl border border-g100 group hover:border-primary transition-colors">
+                                            <div class="min-w-0">
+                                                <div class="text-[12px] font-bold text-g800 uppercase">{{ $p->kode_voucher }}</div>
+                                                <div class="text-[10px] text-g500 font-medium">
+                                                    Diskon {{ $p->tipe_diskon === 'persen' ? $p->nilai_diskon . '%' : 'Rp ' . number_format($p->nilai_diskon, 0, ',', '.') }}
+                                                </div>
+                                            </div>
+                                            <button type="button" 
+                                                onclick="document.getElementById('checkout_voucher_input').value='{{ $p->kode_voucher }}'; document.getElementById('voucherFormCheckout').submit();"
+                                                class="text-[10px] font-bold text-primary uppercase hover:underline">Gunakan</button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="flex justify-between items-center mt-8 pt-6 border-t-2 border-dashed border-g100">
+                            <span class="text-base font-bold text-g900">Total Pembayaran</span>
+                            <span class="font-heading text-2xl font-extrabold text-primary" id="totalPayment">Rp {{ number_format(max(0, $subtotal - $discount), 0, ',', '.') }}</span>
+                        </div>
+
+                        <!-- Place Order Button linked to #checkoutForm -->
+                        <button type="submit" form="checkoutForm" id="btnSubmitCheckout" class="w-full mt-8 py-4 px-6 bg-primary text-white rounded-2xl font-bold text-[15px] shadow-xl shadow-primary/20 opacity-60 cursor-not-allowed pointer-events-none transition-all flex items-center justify-center gap-2">
+                            Buat Pesanan <i class="fi fi-rr-arrow-right"></i>
+                        </button>
+
+                        <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold text-g400 uppercase tracking-widest">
+                            <i class="fi fi-rr-lock text-xs"></i> Transaksi aman & terenkripsi
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
-
-    {{-- Hidden form for voucher removal --}}
-    <form id="formRemoveVoucher" method="POST" action="{{ route('cart.voucher.remove') }}" class="hidden">
-        @csrf @method('DELETE')
-    </form>
 
     @push('scripts')
     <script>
@@ -235,10 +263,13 @@
             const selectedEkspedisi = document.querySelector('input[name="id_ekspedisi"]:checked');
             if (selectedEkspedisi) {
                 const ongkir = parseInt(selectedEkspedisi.getAttribute('data-biaya')) || 0;
+                const currentSubtotal = parseInt(document.getElementById('totalPayment').textContent.replace(/[^\d]/g, '')) || baseSubtotal;
+                // We actually need the base subtotal from server to be accurate after discount
                 const total = baseSubtotal + ongkir;
                 
                 document.getElementById('shippingCost').textContent = formatRupiah(ongkir);
-                document.getElementById('totalPayment').textContent = formatRupiah(total);
+                const totalEl = document.getElementById('totalPayment');
+                if (totalEl) totalEl.textContent = formatRupiah(total);
             }
         }
 
@@ -254,7 +285,81 @@
             }
         }
 
-        // Initialize total on load
+        function selectPay(el, type) {
+            document.querySelectorAll('.pay-opt').forEach(opt => {
+                opt.classList.remove('border-primary', 'bg-primary-light', 'shadow-[0_0_0_4px_rgba(26,92,255,0.1)]');
+                opt.classList.add('border-g200');
+            });
+            el.classList.add('border-primary', 'bg-primary-light', 'shadow-[0_0_0_4px_rgba(26,92,255,0.1)]');
+            el.classList.remove('border-g200');
+
+            if (type === 'bank') {
+                document.getElementById('bankDetail').classList.remove('hidden');
+                document.getElementById('ewalletDetail').classList.add('hidden');
+            } else {
+                document.getElementById('bankDetail').classList.add('hidden');
+                document.getElementById('ewalletDetail').classList.remove('hidden');
+            }
+        }
+
+        function handleUpload(input) {
+            if (input.files && input.files[0]) {
+                const msg = document.getElementById('uploadPreviewMsg');
+                msg.textContent = 'File terpilih: ' + input.files[0].name;
+                document.getElementById('uploadPreview').classList.remove('hidden');
+            }
+        }
+
+        // Smooth Voucher AJAX Logic
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+            if (!form.classList.contains('voucher-form-ajax')) return;
+            
+            e.preventDefault();
+            const container = document.getElementById('checkoutPageContainer');
+            container.style.opacity = '0.5';
+            container.style.pointerEvents = 'none';
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const newContent = doc.getElementById('checkoutPageContainer');
+                if (newContent) {
+                    container.innerHTML = newContent.innerHTML;
+                    
+                    // Trigger SweetAlert based on redirected session data in the new HTML
+                    const flash = doc.getElementById('flash-messages');
+                    if (flash) {
+                        const status = flash.getAttribute('data-status');
+                        const error = flash.getAttribute('data-error');
+                        const errors = flash.getAttribute('data-errors');
+                        
+                        if (status) window.showAlert('success', 'Berhasil!', status);
+                        if (error) window.showAlert('error', 'Gagal!', error);
+                        if (errors) window.showAlert('error', 'Ups!', errors.replace(/\\n/g, '<br>'));
+                    }
+
+                    calculateTotal();
+                    validateCheckoutReady();
+                }
+            } catch (err) {
+                console.error(err);
+                location.reload();
+            } finally {
+                container.style.opacity = '1';
+                container.style.pointerEvents = 'auto';
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             calculateTotal();
             validateCheckoutReady();
