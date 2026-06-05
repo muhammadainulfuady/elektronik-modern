@@ -7,6 +7,7 @@ use App\Models\DetailPesanan;
 use App\Models\User;
 use App\Models\Pesanan;
 use App\Models\Produk;
+use App\Traits\OrderStats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
+    use OrderStats;
+
     /**
      * Download report as PDF (Admin → Penjualan, Owner → Pendapatan).
      */
@@ -68,15 +71,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        // 1 query untuk semua jumlah status pesanan
-        $statusCounts = Pesanan::selectRaw('status_pesanan, count(*) as total')
-            ->groupBy('status_pesanan')
-            ->pluck('total', 'status_pesanan');
+        $statusCounts = $this->getOrderStats();
+        $stats = $this->mapStatusCounts($statusCounts);
 
-        $jumlahMenungguKonfirmasi = $statusCounts->get('menunggu', 0);
-        $pesananDiproses = $statusCounts->get('diproses', 0);
-        $pesananDikirim = $statusCounts->get('dikirim', 0);
-        $pesananSelesai = $statusCounts->get('selesai', 0);
+        $jumlahMenungguKonfirmasi = $stats['menunggu'];
+        $pesananDiproses = $stats['diproses'];
+        $pesananDikirim = $stats['dikirim'];
+        $pesananSelesai = $stats['selesai'];
 
         $jumlahUser = User::where('role', 'customer')->count();
         $jumlahProduk = Produk::count();
@@ -174,16 +175,14 @@ class UserController extends Controller
         $jumlahAdmin = User::where('role', 'admin')->count();
         $jumlahProduk = Produk::count();
 
-        // Gabungkan status count dalam 1 query
-        $statusCounts = Pesanan::selectRaw('status_pesanan, count(*) as total')
-            ->groupBy('status_pesanan')
-            ->pluck('total', 'status_pesanan');
+        $statusCounts = $this->getOrderStats();
+        $stats = $this->mapStatusCounts($statusCounts);
 
-        $jumlahMenunggu = $statusCounts->get('menunggu', 0);
-        $jumlahDiproses = $statusCounts->get('diproses', 0);
-        $jumlahDikirim = $statusCounts->get('dikirim', 0);
-        $jumlahSelesai = $statusCounts->get('selesai', 0);
-        $totalPesanan = $statusCounts->sum();
+        $jumlahMenunggu = $stats['menunggu'];
+        $jumlahDiproses = $stats['diproses'];
+        $jumlahDikirim = $stats['dikirim'];
+        $jumlahSelesai = $stats['selesai'];
+        $totalPesanan = $stats['total'];
         $statusPesanan = $statusCounts;
 
         $totalPendapatan = Pesanan::where('status_pesanan', 'selesai')->sum('total_bayar');

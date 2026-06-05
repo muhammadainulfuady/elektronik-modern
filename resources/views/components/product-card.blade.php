@@ -2,23 +2,18 @@
 
 @php
     $inWishlist = auth()->check() && in_array($produk->id_produk, $wishlistIds);
-    $adaPromo = $produk->promo && $produk->promo->status === 'aktif' && now()->between($produk->promo->tanggal_mulai, $produk->promo->tanggal_selesai);
-    $hargaTampil = $adaPromo ? $produk->harga - ($produk->harga * ($produk->promo->diskon / 100)) : $produk->harga;
+    $hargaTampil = $produk->harga;
 @endphp
 
 <div {{ $attributes->merge(['class' => 'bg-white rounded-2xl shadow-card overflow-hidden transition-all duration-250 cursor-pointer relative flex flex-col group hover:shadow-card-md hover:-translate-y-1']) }} 
      onclick="window.location='{{ route('products.show', $produk->getRouteKey()) }}'">
     
-    @if ($adaPromo)
-        <div class="absolute top-3 left-3 z-10 text-[11px] font-extrabold bg-gradient-to-br from-[#FF6B35] to-[#FF3366] text-white py-1 px-2.5 rounded-lg tracking-wide">
-            Diskon {{ $produk->promo->diskon }}%
-        </div>
-    @elseif($produk->stok < 5 && $produk->stok > 0)
-        <div class="absolute top-3 left-3 z-10 text-[11px] font-extrabold bg-warn-light text-warn py-1 px-2.5 rounded-lg tracking-wide">
+    @if($produk->stok < 5 && $produk->stok > 0)
+        <div class="absolute top-3 left-3 z-10 text-[11px] font-extrabold bg-orange-100 text-orange-600 py-1 px-2.5 rounded-lg tracking-wide">
             Sisa {{ $produk->stok }}
         </div>
     @elseif($produk->stok == 0)
-        <div class="absolute top-3 left-3 z-10 text-[11px] font-extrabold bg-danger-light text-danger py-1 px-2.5 rounded-lg tracking-wide">
+        <div class="absolute top-3 left-3 z-10 text-[11px] font-extrabold bg-red-100 text-red-600 py-1 px-2.5 rounded-lg tracking-wide">
             Habis
         </div>
     @endif
@@ -45,9 +40,6 @@
         
         <div class="flex items-baseline gap-2 mb-2">
             <div class="font-heading text-[17px] font-extrabold text-primary">Rp {{ number_format($hargaTampil, 0, ',', '.') }}</div>
-            @if ($adaPromo)
-                <div class="text-xs text-g400 line-through">Rp {{ number_format($produk->harga, 0, ',', '.') }}</div>
-            @endif
         </div>
 
         <div class="flex items-center justify-between mt-auto">

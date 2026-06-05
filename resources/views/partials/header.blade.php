@@ -237,35 +237,3 @@
         </div>
     </div>
 @endif
-
-<script>
-    function toggleMobileMenu() {
-        @if($isAdminOrOwner)
-            // Handled by sidebar specific scripts
-            return;
-        @else
-                                const menu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('mobileMenuOverlay');
-            const icon = document.getElementById('mobileMenuIcon');
-            if (!menu || !overlay) return;
-            const isHidden = menu.classList.contains('-translate-x-full');
-            if (isHidden) {
-                menu.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-                if (icon) { icon.classList.remove('fi-rr-menu-burger'); icon.classList.add('fi-rr-cross-small'); }
-                setTimeout(() => overlay.classList.add('opacity-100'), 10);
-                document.body.style.overflow = 'hidden';
-            } else {
-                menu.classList.add('-translate-x-full');
-                overlay.classList.remove('opacity-100');
-                if (icon) { icon.classList.remove('fi-rr-cross-small'); icon.classList.add('fi-rr-menu-burger'); }
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-                document.body.style.overflow = '';
-            }
-        @endif
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('mobileMenuBtn');
-        if (btn) btn.addEventListener('click', toggleMobileMenu);
-    });
-</script>

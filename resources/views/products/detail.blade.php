@@ -2,8 +2,10 @@
 
 @section('title', $produk->nama_produk . ' – Elektronik Modern')
 
+@section('meta_description', Str::limit(strip_tags($produk->deskripsi), 160))
+@section('meta_image', asset('storage/products/' . $produk->gambar))
+
 @section('head')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('header')

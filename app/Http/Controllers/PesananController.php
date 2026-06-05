@@ -11,12 +11,15 @@ use App\Models\Notifikasi;
 use App\Models\Pembayaran;
 use App\Models\Promo;
 use App\Models\Keranjang;
+use App\Traits\OrderStats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
+    use OrderStats;
+
     /**
      * Status flow yang berurutan.
      */
@@ -32,21 +35,20 @@ class PesananController extends Controller
                 'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi,bukti_bayar',
                 'ekspedisi:id_ekspedisi,nama_ekspedisi,biaya_pengiriman',
                 'detailPesanans.produk:id_produk,nama_produk,gambar,harga',
+                'promo',
             ])
-            ->select('id_pesanan','id_users','id_ekspedisi','no_resi','tanggal_pesan',
+            ->select('id_pesanan','id_users','id_ekspedisi','id_promo','id_alamat','no_resi','tanggal_pesan',
                      'status_pesanan','total_bayar','subtotal','diskon','ongkos_kirim')
             ->latest('tanggal_pesan')
             ->paginate(20);
 
-        // Hitung semua status dalam 1 query groupBy
-        $statusCounts = Pesanan::selectRaw('status_pesanan, count(*) as total')
-            ->groupBy('status_pesanan')
-            ->pluck('total', 'status_pesanan');
+        $statusCounts = $this->getOrderStats();
+        $stats = $this->mapStatusCounts($statusCounts);
 
-        $jumlahMenunggu  = $statusCounts->get('menunggu', 0);
-        $jumlahDiproses  = $statusCounts->get('diproses', 0);
-        $jumlahDikirim   = $statusCounts->get('dikirim', 0);
-        $jumlahSelesai   = $statusCounts->get('selesai', 0);
+        $jumlahMenunggu  = $stats['menunggu'];
+        $jumlahDiproses  = $stats['diproses'];
+        $jumlahDikirim   = $stats['dikirim'];
+        $jumlahSelesai   = $stats['selesai'];
 
         return view('admin.orders', compact('pesanans', 'jumlahDiproses', 'jumlahDikirim', 'jumlahSelesai', 'jumlahMenunggu'));
     }
@@ -138,8 +140,9 @@ class PesananController extends Controller
                 'detailPesanans.produk:id_produk,nama_produk,gambar,harga',
                 'ekspedisi:id_ekspedisi,nama_ekspedisi,biaya_pengiriman',
                 'pembayaran:id_pembayaran,id_pesanan,metode_pembayaran,status_konfirmasi',
+                'promo',
             ])
-            ->select('id_pesanan','id_users','id_ekspedisi','no_resi','tanggal_pesan',
+            ->select('id_pesanan','id_users','id_ekspedisi','id_promo','id_alamat','no_resi','tanggal_pesan',
                      'status_pesanan','total_bayar','subtotal','diskon','ongkos_kirim')
             ->where('id_users', Auth::id())
             ->latest('tanggal_pesan')

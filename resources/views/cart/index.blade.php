@@ -25,16 +25,6 @@
                 <p class="text-g500 text-[15px]">{{ count($items) }} produk di keranjang Anda</p>
             </div>
 
-            @if ($errors->any())
-                <x-alert type="danger" class="mb-6">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </x-alert>
-            @endif
-
             @if (count($items))
                 <div class="flex flex-col lg:flex-row gap-8 items-start">
                     <!-- Cart Items -->

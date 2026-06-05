@@ -58,7 +58,7 @@
                     <table class="w-full min-w-[1000px] text-left border-collapse">
                         <thead>
                             <tr>
-                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">No. Pesanan</th>
+                                <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">No. Resi</th>
                                 <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Pelanggan</th>
                                 <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Total</th>
                                 <th class="bg-g50 py-3.5 px-6 text-xs font-extrabold text-g500 uppercase tracking-widest border-b border-g200">Bukti Bayar</th>
@@ -102,7 +102,7 @@
                                     <td class="py-4 px-6 border-b border-g100 group-last:border-none">
                                         <div class="font-bold text-g800 text-[13px] mb-1">{{ $pesanan->user->nama ?? '-' }}</div>
                                         <div class="font-semibold text-g400 text-[11px] mb-2">
-                                            {{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y') }}
+                                            {{ \Illuminate\Support\Carbon::parse($pesanan->tanggal_pesan)->format('d M Y, H:i') }}
                                         </div>
                                         <div class="text-[11px] font-medium text-g500 space-y-0.5">
                                             @foreach($pesanan->detailPesanans as $detail)
@@ -128,7 +128,7 @@
                                                     </a>
                                                 @endif
                                                 <span class="inline-flex items-center {{ $paymentClass }} border py-1 px-2 rounded text-[10px] font-bold tracking-wider">{{ $paymentLabel }}</span>
-                                                
+
                                                 @if ($paymentStatus === 1)
                                                     <div class="text-[10px] font-bold text-g500 uppercase tracking-widest flex items-center gap-1 mt-1"><i class="fi fi-rr-check"></i> Final</div>
                                                 @else

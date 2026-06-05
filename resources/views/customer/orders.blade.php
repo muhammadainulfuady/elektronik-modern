@@ -93,9 +93,40 @@
                     </div>
 
                     <div class="flex items-center justify-between py-4 px-6 bg-g50 border-t border-g100 flex-wrap gap-4">
-                        <div class="flex flex-col">
-                            <span class="text-xs font-bold text-g500 uppercase tracking-widest mb-1">Pengiriman</span>
-                            <span class="text-[13px] font-semibold text-g800 flex items-center gap-1.5"><i class="fi fi-rr-truck-side text-g400"></i> {{ $pesanan->ekspedisi->nama_ekspedisi ?? '-' }} <span class="text-g400 mx-1">•</span> Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}</span>
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <span class="text-xs font-bold text-g500 uppercase tracking-widest mb-1 block">Pengiriman</span>
+                                <span class="text-[13px] font-semibold text-g800 flex items-center gap-1.5"><i class="fi fi-rr-truck-side text-g400"></i> {{ $pesanan->ekspedisi->nama_ekspedisi ?? '-' }} <span class="text-g400 mx-1">•</span> Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}</span>
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold text-g500 uppercase tracking-widest mb-1 block">Rincian Pembayaran</span>
+                                <div class="flex flex-col gap-0.5 text-[13px]">
+                                    <div class="flex justify-between w-48 text-g600">
+                                        <span>Subtotal</span>
+                                        <span class="font-semibold">Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</span>
+                                    </div>
+                                    @if($pesanan->diskon > 0)
+                                    <div class="flex flex-col gap-0.5 w-48 text-red-500">
+                                        <div class="flex justify-between items-center">
+                                            <span>Diskon 
+                                                @if($pesanan->promo && $pesanan->promo->kode_voucher !== 'NO-VOUCHER')
+                                                    <span class="text-[10px] font-bold bg-red-100 px-1.5 py-0.5 rounded ml-1">{{ $pesanan->promo->kode_voucher }}</span>
+                                                    <span class="text-[11px]">
+                                                        ({{ $pesanan->promo->tipe_diskon === 'persen' ? $pesanan->promo->nilai_diskon . '%' : 'Rp ' . number_format($pesanan->promo->nilai_diskon, 0, ',', '.') }})
+                                                    </span>
+                                                @endif
+                                            </span>
+                                            <span class="font-semibold">- Rp {{ number_format($pesanan->diskon, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-between w-48 text-g600">
+                                        <span>Ongkos Kirim</span>
+                                        <span class="font-semibold">Rp {{ number_format($pesanan->ongkos_kirim, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="text-right">
                             <div class="text-xs font-bold text-g500 uppercase tracking-widest mb-1">Total Bayar</div>

@@ -41,17 +41,6 @@
                 </div>
             </div>
 
-            @if ($errors->any())
-                <div class="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-200">
-                    <div class="font-bold flex items-center gap-2 mb-1 text-[14px]"><i class="fi fi-rr-triangle-warning"></i> Gagal menyimpan data customer.</div>
-                    <ul class="list-disc pl-5 text-[12px] font-semibold space-y-1 mt-2">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="bg-white rounded-2xl shadow-sm border border-g100 mb-8">
                 <div class="p-6 border-b border-g100">
                     <h3 class="font-heading text-[16px] font-extrabold text-g900 flex items-center gap-2">
@@ -132,7 +121,7 @@
                                             <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex py-1.5 px-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg font-bold text-[12px] hover:bg-blue-600 hover:text-white transition-colors items-center gap-1.5">
                                                 <i class="fi fi-rr-edit"></i> Edit
                                             </a>
-                                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Yakin ingin menghapus customer ini? Semua data pesanan miliknya juga akan terhapus.')" class="m-0">
+                                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="event.preventDefault(); window.confirmDelete(this, 'Customer {{ $user->nama }} akan dihapus secara permanen beserta seluruh riwayat pesanannya.');" class="m-0">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="inline-flex py-1.5 px-3 bg-red-50 text-red-600 border border-red-100 rounded-lg font-bold text-[12px] hover:bg-red-600 hover:text-white transition-colors items-center gap-1.5">
                                                     <i class="fi fi-rr-trash"></i> Hapus

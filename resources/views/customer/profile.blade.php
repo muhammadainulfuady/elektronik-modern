@@ -188,9 +188,9 @@
                                                         <x-button type="submit" class="py-2.5 px-5 text-[13px]">Simpan Perubahan</x-button>
                                                     </div>
                                                 </form>
-                                                <form method="POST" action="{{ route('customer.alamat.destroy', $alamat) }}" onsubmit="return confirm('Hapus alamat ini?')">
+                                                <form method="POST" action="{{ route('customer.alamat.destroy', $alamat) }}" onsubmit="event.preventDefault(); window.confirmDelete(this, 'Alamat ini akan dihapus secara permanen.');">
                                                     @csrf @method('DELETE')
-                                                    <x-button type="submit" variant="danger" class="py-2.5 px-5 text-[13px] bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white shadow-none">Hapus Alamat</x-button>
+                                                    <x-button type="submit" variant="danger" class="py-2.5 px-5 text-[13px] bg-red-600 text-white border border-red-500 hover:bg-red-500 hover:text-white shadow-none">Hapus Alamat</x-button>
                                                 </form>
                                             </div>
                                         </details>

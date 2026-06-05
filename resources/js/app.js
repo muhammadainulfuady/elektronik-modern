@@ -1,12 +1,67 @@
 // import './bootstrap';
 
-// Helpers
+// Global Helpers
 window.setBadge = function(el, count) {
     if (!el) return;
     const value = Number(count) || 0;
     el.textContent = value > 99 ? '99+' : value;
     el.style.display = value > 0 ? 'flex' : 'none';
 };
+
+// Intersection Observer for Reveal Animations
+const initRevealAnimations = () => {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal, .reveal-group').forEach(el => observer.observe(el));
+};
+
+// SweetAlert Helpers
+const initSweetAlert = () => {
+    if (typeof Swal === 'undefined') return;
+
+    window.Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    window.showAlert = (icon, title, text) => {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            html: text,
+            confirmButtonColor: '#1A5CFF',
+        });
+    };
+
+    window.showToast = (icon, title) => {
+        window.Toast.fire({
+            icon: icon,
+            title: title
+        });
+    };
+};
+
+// Initialize immediately so global functions are available
+initSweetAlert();
 
 // Wishlist Logic
 window.promptLogin = function() {
@@ -529,7 +584,38 @@ window.confirmCompleteOrder = function(form) {
     });
 };
 
+// Mobile Menu
+window.toggleMobileMenu = function() {
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const icon = document.getElementById('mobileMenuIcon');
+    if (!menu || !overlay) return;
+    
+    const isHidden = menu.classList.contains('-translate-x-full');
+    if (isHidden) {
+        menu.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        if (icon) { icon.classList.remove('fi-rr-menu-burger'); icon.classList.add('fi-rr-cross-small'); }
+        setTimeout(() => overlay.classList.add('opacity-100'), 10);
+        document.body.style.overflow = 'hidden';
+    } else {
+        menu.classList.add('-translate-x-full');
+        overlay.classList.remove('opacity-100');
+        if (icon) { icon.classList.remove('fi-rr-cross-small'); icon.classList.add('fi-rr-menu-burger'); }
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    initRevealAnimations();
+    // initSweetAlert(); // Already initialized above
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', window.toggleMobileMenu);
+    }
+
     // Initial badges
     if (window.AppConfig.auth.check) {
         setBadge(document.getElementById('cartBadgeNav'), window.AppConfig.auth.cartQty);
