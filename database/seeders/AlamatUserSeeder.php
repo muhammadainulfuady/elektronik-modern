@@ -14,7 +14,7 @@ class AlamatUserSeeder extends Seeder
             $rows[] = [
                 'id_alamat' => $i,
                 'id_users' => $i,
-                'id_dusun' => $i,
+                'id_desa' => $i,
                 'label_alamat' => $i % 2 === 0 ? 'Kantor' : 'Rumah',
                 'nomor_telepon' => '0812000000' . str_pad((string) $i, 2, '0', STR_PAD_LEFT),
                 'detail_alamat' => 'Gg. ' . $i . 'No. ' . $i . 'Jalan ' . $i,

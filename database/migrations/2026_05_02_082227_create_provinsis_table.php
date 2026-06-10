@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('provinsis', function (Blueprint $table) {
             $table->id('id_provinsi');
-            $table->string('nama_provinsi', 50);
+            $table->string('nama_provinsi');
         });
     }
 

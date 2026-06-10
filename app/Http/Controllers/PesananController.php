@@ -181,8 +181,8 @@ class PesananController extends Controller
         $appliedPromo = $this->appliedPromo();
         $discount     = $appliedPromo ? $this->calculateDiscount($appliedPromo, $subtotal) : 0;
         $alamats    = AlamatUser::where('id_users', Auth::id())
-            ->select('id_alamat','id_users','id_dusun','label_alamat','nomor_telepon','detail_alamat','is_utama')
-            ->with(['dusun.desa.kecamatan.kota.provinsi'])
+            ->select('id_alamat','id_users','id_desa','label_alamat','nomor_telepon','detail_alamat','is_utama')
+            ->with(['desa.kecamatan.kota.provinsi'])
             ->get();
         $ekspedisis = Ekspedisi::select('id_ekspedisi','nama_ekspedisi','biaya_pengiriman')->get();
         

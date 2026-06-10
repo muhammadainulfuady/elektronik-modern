@@ -110,7 +110,7 @@
                                         </div>
                                         <div class="text-[13px] text-g600 leading-relaxed font-medium">
                                             {{ $alamat->detail_alamat }}<br>
-                                            <span class="text-g500">{{ $alamat->dusun->nama_dusun }}, {{ $alamat->dusun->desa->nama_desa }}, {{ $alamat->dusun->desa->kecamatan->nama_kecamatan }}, {{ $alamat->dusun->desa->kecamatan->kota->nama_kota }}, {{ $alamat->dusun->desa->kecamatan->kota->provinsi->nama_provinsi }}</span>
+                                            <span class="text-g500">{{ $alamat->desa->nama_desa }}, {{ $alamat->desa->kecamatan->nama_kecamatan }}, {{ $alamat->desa->kecamatan->kota->nama_kota }}, {{ $alamat->desa->kecamatan->kota->provinsi->nama_provinsi }}</span>
                                         </div>
                                         <details class="mt-4 group">
                                             <summary class="cursor-pointer text-[13px] font-bold text-primary hover:text-primary-dark transition-colors list-none flex items-center gap-1.5">
@@ -135,7 +135,7 @@
                                                             <x-select name="id_provinsi" class="provinsi-select" required>
                                                                 <option value="">-- Pilih Provinsi --</option>
                                                                 @foreach($provinsis as $p)
-                                                                    <option value="{{ $p->id_provinsi }}" @selected($alamat->dusun->desa->kecamatan->kota->id_provinsi == $p->id_provinsi)>
+                                                                    <option value="{{ $p->id_provinsi }}" @selected($alamat->desa->kecamatan->kota->id_provinsi == $p->id_provinsi)>
                                                                         {{ $p->nama_provinsi }}
                                                                     </option>
                                                                 @endforeach
@@ -144,8 +144,8 @@
                                                         <div>
                                                             <x-label>Kota/Kabupaten</x-label>
                                                             <x-select name="id_kota" class="kota-select" required>
-                                                                <option value="{{ $alamat->dusun->desa->kecamatan->id_kota }}">
-                                                                    {{ $alamat->dusun->desa->kecamatan->kota->nama_kota }}
+                                                                <option value="{{ $alamat->desa->kecamatan->id_kota }}">
+                                                                    {{ $alamat->desa->kecamatan->kota->nama_kota }}
                                                                 </option>
                                                             </x-select>
                                                         </div>
@@ -154,27 +154,19 @@
                                                         <div>
                                                             <x-label>Kecamatan</x-label>
                                                             <x-select name="id_kecamatan" class="kecamatan-select" required>
-                                                                <option value="{{ $alamat->dusun->desa->id_kecamatan }}">
-                                                                    {{ $alamat->dusun->desa->kecamatan->nama_kecamatan }}
+                                                                <option value="{{ $alamat->desa->id_kecamatan }}">
+                                                                    {{ $alamat->desa->kecamatan->nama_kecamatan }}
                                                                 </option>
                                                             </x-select>
                                                         </div>
                                                         <div>
                                                             <x-label>Desa/Kelurahan</x-label>
                                                             <x-select name="id_desa" class="desa-select" required>
-                                                                <option value="{{ $alamat->dusun->id_desa }}">
-                                                                    {{ $alamat->dusun->desa->nama_desa }}
+                                                                <option value="{{ $alamat->id_desa }}">
+                                                                    {{ $alamat->desa->nama_desa }}
                                                                 </option>
                                                             </x-select>
                                                         </div>
-                                                    </div>
-                                                    <div>
-                                                        <x-label>Dusun</x-label>
-                                                        <x-select name="id_dusun" class="dusun-select" required>
-                                                            <option value="{{ $alamat->id_dusun }}">
-                                                                {{ $alamat->dusun->nama_dusun }}
-                                                            </option>
-                                                        </x-select>
                                                     </div>
                                                     <div>
                                                         <x-label>Detail Alamat</x-label>
@@ -248,12 +240,6 @@
                                         </div>
                                     </div>
                                     <div class="mb-4">
-                                        <x-label>Dusun</x-label>
-                                        <x-select name="id_dusun" class="dusun-select" required disabled>
-                                            <option value="">-- Pilih Dusun --</option>
-                                        </x-select>
-                                    </div>
-                                    <div class="mb-4">
                                         <x-label>Detail Alamat (Jalan, RT/RW, Patokan)</x-label>
                                         <x-textarea name="detail_alamat" rows="3" required placeholder="Jl. Mawar No 1..."></x-textarea>
                                     </div>
@@ -285,7 +271,6 @@
                 const kotaSelect = form.querySelector('.kota-select');
                 const kecSelect  = form.querySelector('.kecamatan-select');
                 const desaSelect = form.querySelector('.desa-select');
-                const dusunSelect = form.querySelector('.dusun-select');
 
                 const resetSelect = (select, placeholder) => {
                     select.innerHTML = `<option value="">-- Pilih ${placeholder} --</option>`;
@@ -305,7 +290,6 @@
                     resetSelect(kotaSelect, 'Kota');
                     resetSelect(kecSelect, 'Kecamatan');
                     resetSelect(desaSelect, 'Desa');
-                    resetSelect(dusunSelect, 'Dusun');
 
                     if (id) {
                         fetch(`/locations/kotas/${id}`)
@@ -318,7 +302,6 @@
                     const id = this.value;
                     resetSelect(kecSelect, 'Kecamatan');
                     resetSelect(desaSelect, 'Desa');
-                    resetSelect(dusunSelect, 'Dusun');
 
                     if (id) {
                         fetch(`/locations/kecamatans/${id}`)
@@ -330,23 +313,11 @@
                 kecSelect.addEventListener('change', function() {
                     const id = this.value;
                     resetSelect(desaSelect, 'Desa');
-                    resetSelect(dusunSelect, 'Dusun');
 
                     if (id) {
                         fetch(`/locations/desas/${id}`)
                             .then(res => res.json())
                             .then(data => fillSelect(desaSelect, data, 'id_desa', 'nama_desa', 'Desa'));
-                    }
-                });
-
-                desaSelect.addEventListener('change', function() {
-                    const id = this.value;
-                    resetSelect(dusunSelect, 'Dusun');
-
-                    if (id) {
-                        fetch(`/locations/dusuns/${id}`)
-                            .then(res => res.json())
-                            .then(data => fillSelect(dusunSelect, data, 'id_dusun', 'nama_dusun', 'Dusun'));
                     }
                 });
             });

@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('alamat_users', function (Blueprint $table) {
             $table->id('id_alamat');
             $table->unsignedBigInteger('id_users');
-            $table->unsignedBigInteger('id_dusun');
+            $table->unsignedBigInteger('id_desa');
             $table->string('label_alamat', 50);
             $table->string('nomor_telepon', 20);
             $table->string('detail_alamat', 255);
@@ -23,9 +23,9 @@ return new class extends Migration {
                 ->references('id_users')
                 ->on('users')
                 ->onDelete('cascade');
-            $table->foreign('id_dusun')
-                ->references('id_dusun')
-                ->on('dusuns')
+            $table->foreign('id_desa')
+                ->references('id_desa')
+                ->on('desas')
                 ->onDelete('cascade');
         });
     }

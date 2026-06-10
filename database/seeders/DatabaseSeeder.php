@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             KotaSeeder::class,
             KecamatanSeeder::class,
             DesaSeeder::class,
-            DusunSeeder::class,
             UserSeeder::class,
             KategoriSeeder::class,
             ProdukSeeder::class,

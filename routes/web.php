@@ -106,7 +106,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/locations/kotas/{id_provinsi}', [\App\Http\Controllers\LocationController::class, 'getKotas']);
     Route::get('/locations/kecamatans/{id_kota}', [\App\Http\Controllers\LocationController::class, 'getKecamatans']);
     Route::get('/locations/desas/{id_kecamatan}', [\App\Http\Controllers\LocationController::class, 'getDesas']);
-    Route::get('/locations/dusuns/{id_desa}', [\App\Http\Controllers\LocationController::class, 'getDusuns']);
 
 });
 

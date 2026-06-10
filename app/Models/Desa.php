@@ -21,8 +21,8 @@ class Desa extends Model
         return $this->belongsTo(Kecamatan::class, 'id_kecamatan', 'id_kecamatan');
     }
 
-    public function dusuns(): HasMany
+    public function alamatUsers(): HasMany
     {
-        return $this->hasMany(Dusun::class, 'id_desa', 'id_desa');
+        return $this->hasMany(AlamatUser::class, 'id_desa', 'id_desa');
     }
 }

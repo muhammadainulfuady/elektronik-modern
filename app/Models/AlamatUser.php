@@ -13,7 +13,7 @@ class AlamatUser extends Model
     public $timestamps = false;
     protected $fillable = [
         'id_users',
-        'id_dusun',
+        'id_desa',
         'label_alamat',
         'nomor_telepon',
         'detail_alamat',
@@ -25,9 +25,9 @@ class AlamatUser extends Model
         return $this->belongsTo(User::class, 'id_users', 'id_users');
     }
 
-    public function dusun(): BelongsTo
+    public function desa(): BelongsTo
     {
-        return $this->belongsTo(Dusun::class, 'id_dusun', 'id_dusun');
+        return $this->belongsTo(Desa::class, 'id_desa', 'id_desa');
     }
 
     public function pesanans(): HasMany

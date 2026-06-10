@@ -270,7 +270,7 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        $user->load('alamatUsers.dusun.desa.kecamatan.kota.provinsi');
+        $user->load('alamatUsers.desa.kecamatan.kota.provinsi');
 
         $provinsis = \App\Models\Provinsi::select('id_provinsi', 'nama_provinsi')
             ->orderBy('nama_provinsi')
@@ -288,7 +288,7 @@ class UserController extends Controller
             'label_alamat' => ['required', 'string', 'max:50'],
             'nomor_telepon' => ['required', 'string', 'max:20'],
             'detail_alamat' => ['required', 'string'],
-            'id_dusun' => ['required', 'exists:dusuns,id_dusun'],
+            'id_desa' => ['required', 'exists:desas,id_desa'],
         ]);
 
         $data['id_users'] = Auth::id();
@@ -311,7 +311,7 @@ class UserController extends Controller
             'label_alamat' => ['required', 'string', 'max:50'],
             'nomor_telepon' => ['required', 'string', 'max:20'],
             'detail_alamat' => ['required', 'string'],
-            'id_dusun' => ['required', 'exists:dusuns,id_dusun'],
+            'id_desa' => ['required', 'exists:desas,id_desa'],
         ]);
 
         $data['is_utama'] = $request->has('is_utama') ? 1 : 0;

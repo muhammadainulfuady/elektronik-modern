@@ -1,4 +1,4 @@
-@props(['type' => 'info'])
+@props(['type' => 'info']) 
 
 @php
     $classes = 'py-3 px-4 rounded-xl text-[13px] font-bold border ';

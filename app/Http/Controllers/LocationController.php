@@ -6,7 +6,6 @@ use App\Models\Provinsi;
 use App\Models\Kota;
 use App\Models\Kecamatan;
 use App\Models\Desa;
-use App\Models\Dusun;
 use Illuminate\Http\Request;
 
 class LocationController extends Controller
@@ -36,14 +35,5 @@ class LocationController extends Controller
             ->orderBy('nama_desa')
             ->get();
         return response()->json($desas);
-    }
-
-    public function getDusuns($id_desa)
-    {
-        $dusuns = Dusun::where('id_desa', $id_desa)
-            ->select('id_dusun', 'nama_dusun')
-            ->orderBy('nama_dusun')
-            ->get();
-        return response()->json($dusuns);
     }
 }
