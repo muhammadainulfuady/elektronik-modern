@@ -113,6 +113,11 @@
                 </a>
 
                 <div class="hidden md:flex items-center gap-2">
+                    <a href="{{ route('customer.orders') }}"
+                        class="w-[42px] h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-lg relative hover:bg-g200"
+                        title="Pesanan Saya">
+                        <i class="fi fi-rr-box"></i>
+                    </a>
                     <a href="{{ route('customer.wishlist') }}"
                         class="w-[42px] h-[42px] rounded-full flex items-center justify-center bg-g100 text-g700 text-lg relative hover:bg-g200"
                         title="Wishlist">
