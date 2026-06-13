@@ -3,6 +3,7 @@
 @section('title', 'Reset Password - Elektronik Modern')
 
 @section('header')
+    <!-- no header -->
 @endsection
 
 @section('content')
@@ -40,5 +41,6 @@
 @endsection
 
 @section('footer')
+    <!-- no footer -->
 @endsection
 
