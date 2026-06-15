@@ -1,8 +1,10 @@
 <!-- Mobile Overlay -->
-<div id="sidebarOverlay" class="fixed inset-0 bg-dark/60 backdrop-blur-sm z-[9997] hidden transition-opacity duration-300 opacity-0"></div>
+<div id="sidebarOverlay"
+    class="fixed inset-0 bg-dark/60 backdrop-blur-sm z-[9997] hidden transition-opacity duration-300 opacity-0"></div>
 
 <!-- Sidebar Container -->
-<div id="adminSidebar" class="fixed inset-y-0 left-0 z-[9998] w-[280px] bg-dark shrink-0 flex flex-col md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 ease-in-out md:h-screen md:sticky md:top-0 overflow-y-auto border-r border-white/5 shadow-2xl md:shadow-none">
+<div id="adminSidebar"
+    class="fixed inset-y-0 left-0 z-[9998] w-[280px] bg-dark shrink-0 flex flex-col md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 ease-in-out md:h-screen md:sticky md:top-0 overflow-y-auto border-r border-white/5 shadow-2xl md:shadow-none">
     <div class="p-6 border-b border-white/10 hidden md:block">
         <div class="font-heading text-lg font-extrabold text-white flex items-center gap-2">
             <span class="text-primary text-xl"><i class="fi fi-rr-shield"></i></span>
@@ -10,7 +12,7 @@
         </div>
         <div class="text-[11px] text-g500 mt-1 uppercase tracking-widest font-bold">Panel Admin</div>
     </div>
-    
+
     {{-- Mobile Sidebar Header (Inside) --}}
     <div class="p-6 border-b border-white/10 md:hidden flex items-center justify-between">
         <div class="font-heading text-lg font-extrabold text-white flex items-center gap-2">
@@ -47,17 +49,19 @@
         </a>
     </div>
 
-    <div class="px-5 pt-5 pb-2 text-[10px] font-bold text-g600 tracking-wider uppercase border-t border-white/5">Akun</div>
+    <div class="px-5 pt-5 pb-2 text-[10px] font-bold text-g600 tracking-wider uppercase border-t border-white/5">Akun
+    </div>
     <form method="POST" action="{{ route('logout') }}" class="m-0 mb-6">
         @csrf
-        <button type="submit" class="flex items-center gap-3 py-3 px-5 text-[13px] font-medium transition-all border-l-[3px] border-transparent no-underline w-full text-left text-g500 hover:text-white hover:bg-white/5 bg-transparent border-none outline-none">
+        <button type="submit"
+            class="flex items-center gap-3 py-3 px-5 text-[13px] font-medium transition-all border-l-[3px] border-transparent no-underline w-full text-left text-g500 hover:text-white hover:bg-white/5 bg-transparent border-none outline-none">
             <span class="w-[18px] text-center text-base"><i class="fi fi-rr-sign-out-alt"></i></span> Keluar
         </button>
     </form>
 </div>
 
 <script>
-    (function() {
+    (function () {
         const setupSidebar = () => {
             const toggleBtn = document.getElementById('mobileMenuIcon')?.parentElement;
             const sidebarEl = document.getElementById('adminSidebar');

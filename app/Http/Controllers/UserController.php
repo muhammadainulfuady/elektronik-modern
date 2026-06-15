@@ -96,6 +96,18 @@ class UserController extends Controller
 
         $pesanan_tujuh_hari_terakhir = Pesanan::where('tanggal_pesan', '>=', now()->subDays(7))->count();
 
+        // Data dinamis untuk grafik 7 hari terakhir sesuai dokumentasi
+        $grafikPesanan = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $count = Pesanan::whereDate('tanggal_pesan', $date->toDateString())->count();
+            $grafikPesanan[] = [
+                'hari' => $date->locale('id')->isoFormat('ddd'), // Sen, Sel, dll.
+                'jumlah' => $count
+            ];
+        }
+        $maxGrafikPesanan = max(1, max(array_column($grafikPesanan, 'jumlah')));
+
         return view('admin.index', compact(
             'jumlahUser',
             'jumlahMenungguKonfirmasi',
@@ -105,7 +117,9 @@ class UserController extends Controller
             'statusPesanan',
             'jumlahProduk',
             'pesananTerbaru',
-            'pesanan_tujuh_hari_terakhir'
+            'pesanan_tujuh_hari_terakhir',
+            'grafikPesanan',
+            'maxGrafikPesanan'
         ));
     }
 

@@ -84,15 +84,9 @@
                         </h3>
                         <x-badge variant="primary" class="uppercase tracking-widest text-[11px] py-1 px-2.5 bg-blue-50 border border-blue-100 text-blue-600">{{ $pesanan_tujuh_hari_terakhir }} pesanan</x-badge>
                     </div>
-                    <div class="p-6 flex-1 flex items-end bg-white">
-                        <div class="flex items-end gap-2 h-[160px] w-full px-1">
-                            @php $days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min']; $heights = [55,72,48,83,91,65,38]; @endphp
-                            @foreach($days as $i => $day)
-                                <div class="flex flex-col items-center gap-2 flex-1 group">
-                                    <div class="w-full rounded-t-lg {{ $i >= 5 ? 'bg-g300' : 'bg-primary' }} min-h-[4px] transition-all duration-300 group-hover:opacity-80" style="height:{{ $heights[$i] }}%"></div>
-                                    <div class="text-[10px] font-bold text-g500">{{ $day }}</div>
-                                </div>
-                            @endforeach
+                    <div class="p-6 bg-white">
+                        <div class="w-full h-[220px]">
+                            <canvas id="pesananChart"></canvas>
                         </div>
                     </div>
                 </x-card>
@@ -265,4 +259,68 @@
 @endsection
 
 @section('footer')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('pesananChart').getContext('2d');
+            
+            const labels = {!! json_encode(array_column($grafikPesanan, 'hari')) !!};
+            const data = {!! json_encode(array_column($grafikPesanan, 'jumlah')) !!};
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Pesanan',
+                        data: data,
+                        borderColor: '#2563eb', // blue-600
+                        backgroundColor: 'rgba(37, 99, 235, 0.8)', // solid blue for bar
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            titleFont: { size: 13, family: "'Inter', sans-serif" },
+                            bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' pesanan';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { family: "'Inter', sans-serif", size: 11 },
+                                color: '#64748b'
+                            },
+                            grid: { color: '#f1f5f9', drawBorder: false },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: {
+                                font: { family: "'Inter', sans-serif", size: 11, weight: 'bold' },
+                                color: '#64748b'
+                            },
+                            border: { display: false }
+                        }
+                    },
+                    interaction: { intersect: false, mode: 'index' },
+                }
+            });
+        });
+    </script>
 @endsection
