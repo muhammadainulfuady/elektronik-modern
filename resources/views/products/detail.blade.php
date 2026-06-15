@@ -86,7 +86,7 @@
                                     </form>
 
                                     <x-button variant="{{ in_array($produk->id_produk, $wishlistIds) ? 'danger' : 'outline' }}" 
-                                        class="py-3.5 px-7 {{ in_array($produk->id_produk, $wishlistIds) ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100 shadow-none' : 'bg-white border-g300 text-g700 hover:border-primary hover:text-primary hover:bg-primary-light' }}"
+                                        class="py-3.5 px-7 {{ in_array($produk->id_produk, $wishlistIds) ? '' : 'bg-white border-g300 text-g700 hover:border-primary hover:text-primary hover:bg-primary-light' }}"
                                         onclick="toggleWishlistDetail(this, {{ $produk->id_produk }})">
                                         @if(in_array($produk->id_produk, $wishlistIds))
                                             <i class="fi fi-sr-heart"></i> <span class="wishlist-text">Hapus dari Wishlist</span>
