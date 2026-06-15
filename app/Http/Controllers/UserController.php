@@ -84,7 +84,11 @@ class UserController extends Controller
 
         $statusPesanan = $statusCounts;
 
-        $pesananTerbaru = Pesanan::with('user:id_users,nama,email')
+        $pesananTerbaru = Pesanan::with([
+            'user:id_users,nama,email',
+            'pembayaran:id_pembayaran,id_pesanan,bukti_bayar,status_konfirmasi',
+            'detailPesanans.produk:id_produk,nama_produk'
+        ])
             ->select('id_pesanan', 'id_users', 'no_resi', 'tanggal_pesan', 'status_pesanan', 'total_bayar')
             ->latest('tanggal_pesan')
             ->take(5)
