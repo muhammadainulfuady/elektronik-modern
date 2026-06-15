@@ -91,6 +91,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/my-orders', [PesananController::class, 'customerOrders'])->name('customer.orders');
     Route::post('/my-orders/{pesanan}/complete', [PesananController::class, 'completeOrder'])->name('customer.orders.complete');
     Route::get('/checkout', [PesananController::class, 'checkout'])->name('customer.checkout');
+    Route::post('/buy-now', [PesananController::class, 'buyNow'])->name('customer.buyNow');
     Route::post('/checkout', [PesananController::class, 'placeOrder'])->name('customer.placeOrder');
     Route::get('/notifications', [NotifikasiController::class, 'index'])->name('customer.notifications.index');
     Route::patch('/notifications/{notifikasi}/read', [NotifikasiController::class, 'markRead'])->name('customer.notifications.read');

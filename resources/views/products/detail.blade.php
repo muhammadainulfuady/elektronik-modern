@@ -61,12 +61,12 @@
                             @if (auth()->user()->role === 'customer')
                                 <div class="flex items-center gap-0 border-[1.5px] border-g200 rounded-xl overflow-hidden w-fit mb-6 bg-white shadow-sm">
                                     <button type="button" onclick="changeQty(-1)" class="w-11 h-11 border-none bg-g50 text-g700 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-primary-light hover:text-primary transition-colors">−</button>
-                                    <input type="number" id="qtyInput" value="1" min="1" max="{{ $produk->stok }}" readonly class="w-14 text-center font-bold text-base border-none border-x-[1.5px] border-g200 outline-none bg-white h-11 p-0 m-0 focus:ring-0">
+                                    <input type="number" id="qtyInput" value="1" min="1" max="{{ $produk->stok }}" oninput="syncQty(this.value)" class="w-14 text-center font-bold text-base border-none border-x-[1.5px] border-g200 outline-none bg-white h-11 p-0 m-0 focus:ring-0">
                                     <button type="button" onclick="changeQty(1)" class="w-11 h-11 border-none bg-g50 text-g700 text-xl font-bold flex items-center justify-center cursor-pointer hover:bg-primary-light hover:text-primary transition-colors">+</button>
                                 </div>
 
                                 <div class="flex flex-wrap gap-3">
-                                    <form method="POST" action="{{ route('cart.add') }}" id="addCartForm" class="m-0">
+                                    <form method="POST" action="{{ route('cart.add') }}" id="addCartForm" class="m-0" onsubmit="syncQty(document.getElementById('qtyInput').value)">
                                         @csrf
                                         <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
                                         <input type="hidden" name="qty" id="qtyHidden" value="1">
@@ -75,11 +75,10 @@
                                         </x-button>
                                     </form>
 
-                                    <form method="POST" action="{{ route('cart.add') }}" class="m-0">
+                                    <form method="POST" action="{{ route('customer.buyNow') }}" class="m-0" onsubmit="syncQty(document.getElementById('qtyInput').value)">
                                         @csrf
                                         <input type="hidden" name="id_produk" value="{{ $produk->id_produk }}">
                                         <input type="hidden" name="qty" class="qtyHidden" value="1">
-                                        <input type="hidden" name="buy_now" value="1">
                                         <x-button type="submit" variant="secondary" class="py-3.5 px-7 bg-teal-500 text-white hover:bg-teal-600 border-none shadow-[0_4px_12px_rgba(20,184,166,0.3)]">
                                             <i class="fi fi-rr-shopping-bag"></i> Beli Sekarang
                                         </x-button>
@@ -133,8 +132,18 @@
         const input = document.getElementById('qtyInput');
         if (!input) return;
         
-        let val = parseInt(input.value) + delta;
+        let val = parseInt(input.value) || 0;
+        val += delta;
+        syncQty(val);
+    }
+    
+    function syncQty(val) {
+        const input = document.getElementById('qtyInput');
+        if (!input) return;
+        
+        val = parseInt(val) || 1;
         val = Math.max(1, Math.min(val, parseInt(input.max) || Infinity));
+        
         input.value = val;
         
         // Update all hidden quantity inputs

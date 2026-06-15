@@ -152,29 +152,69 @@ class PesananController extends Controller
     }
 
     /**
+     * Customer: proses beli sekarang bypass keranjang.
+     */
+    public function buyNow(Request $request)
+    {
+        $request->validate([
+            'id_produk' => ['required', 'integer', 'exists:produks,id_produk'],
+            'qty' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $produk = Produk::findOrFail($request->id_produk);
+        if ($produk->stok < $request->qty) {
+            return back()->with('error', 'Stok tidak mencukupi.');
+        }
+
+        session(['buy_now_item' => [
+            'id_produk' => $produk->id_produk,
+            'qty' => $request->qty,
+        ]]);
+
+        return redirect()->route('customer.checkout');
+    }
+
+    /**
      * Customer: checkout dari keranjang.
      */
     public function checkout()
     {
-        $keranjang = Keranjang::where('id_users', Auth::id())
-            ->with('detailKeranjangs.produk')
-            ->first();
-
-        if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
-        }
-
+        $buyNowItem = session('buy_now_item');
         $items    = [];
         $subtotal = 0;
-        foreach ($keranjang->detailKeranjangs as $detail) {
-            if ($detail->produk) {
-                $lineTotal = $detail->produk->harga * $detail->qty;
-                $subtotal += $lineTotal;
-                $items[] = (object) [
-                    'produk'    => $detail->produk,
-                    'qty'       => $detail->qty,
-                    'lineTotal' => $lineTotal,
-                ];
+
+        if ($buyNowItem) {
+            $produk = Produk::find($buyNowItem['id_produk']);
+            if (!$produk) {
+                session()->forget('buy_now_item');
+                return redirect()->route('index')->with('error', 'Produk tidak ditemukan.');
+            }
+            $lineTotal = $produk->harga * $buyNowItem['qty'];
+            $subtotal += $lineTotal;
+            $items[] = (object) [
+                'produk'    => $produk,
+                'qty'       => $buyNowItem['qty'],
+                'lineTotal' => $lineTotal,
+            ];
+        } else {
+            $keranjang = Keranjang::where('id_users', Auth::id())
+                ->with('detailKeranjangs.produk')
+                ->first();
+
+            if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
+            }
+
+            foreach ($keranjang->detailKeranjangs as $detail) {
+                if ($detail->produk) {
+                    $lineTotal = $detail->produk->harga * $detail->qty;
+                    $subtotal += $lineTotal;
+                    $items[] = (object) [
+                        'produk'    => $detail->produk,
+                        'qty'       => $detail->qty,
+                        'lineTotal' => $lineTotal,
+                    ];
+                }
             }
         }
 
@@ -222,34 +262,54 @@ class PesananController extends Controller
             return back()->with('error', 'Alamat pengiriman tidak valid.')->withInput();
         }
 
-        $keranjang = Keranjang::where('id_users', Auth::id())
-            ->with('detailKeranjangs.produk')
-            ->first();
-
-        if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
-        }
-
+        $buyNowItem = session('buy_now_item');
+        $keranjang = null;
         $ekspedisi  = Ekspedisi::findOrFail($request->id_ekspedisi);
         $subtotal   = 0;
         $orderItems = [];
 
-        foreach ($keranjang->detailKeranjangs as $detail) {
-            if ($detail->produk) {
-                $produk = $detail->produk;
-                $qty    = $detail->qty;
-                if ($produk->stok < $qty) {
-                    return back()
-                        ->with('error', 'Stok ' . $produk->nama_produk . ' tidak mencukupi.')
-                        ->withInput();
+        if ($buyNowItem) {
+            $produk = Produk::find($buyNowItem['id_produk']);
+            if (!$produk) {
+                return redirect()->route('index')->with('error', 'Produk tidak ditemukan.');
+            }
+            $qty = $buyNowItem['qty'];
+            if ($produk->stok < $qty) {
+                return back()->with('error', 'Stok ' . $produk->nama_produk . ' tidak mencukupi.')->withInput();
+            }
+            $lineTotal  = $produk->harga * $qty;
+            $subtotal  += $lineTotal;
+            $orderItems[] = [
+                'id_produk'  => $produk->id_produk,
+                'qty'        => $qty,
+                'harga_beli' => $produk->harga,
+            ];
+        } else {
+            $keranjang = Keranjang::where('id_users', Auth::id())
+                ->with('detailKeranjangs.produk')
+                ->first();
+
+            if (!$keranjang || $keranjang->detailKeranjangs->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
+            }
+
+            foreach ($keranjang->detailKeranjangs as $detail) {
+                if ($detail->produk) {
+                    $produk = $detail->produk;
+                    $qty    = $detail->qty;
+                    if ($produk->stok < $qty) {
+                        return back()
+                            ->with('error', 'Stok ' . $produk->nama_produk . ' tidak mencukupi.')
+                            ->withInput();
+                    }
+                    $lineTotal  = $produk->harga * $qty;
+                    $subtotal  += $lineTotal;
+                    $orderItems[] = [
+                        'id_produk'  => $produk->id_produk,
+                        'qty'        => $qty,
+                        'harga_beli' => $produk->harga,
+                    ];
                 }
-                $lineTotal  = $produk->harga * $qty;
-                $subtotal  += $lineTotal;
-                $orderItems[] = [
-                    'id_produk'  => $produk->id_produk,
-                    'qty'        => $qty,
-                    'harga_beli' => $produk->harga,
-                ];
             }
         }
 
@@ -316,8 +376,12 @@ class PesananController extends Controller
             'Pesanan ' . $createdPesanan->no_resi . ' sudah diterima dan menunggu verifikasi pembayaran admin.'
         );
 
-        // Kosongkan keranjang di database
-        $keranjang->detailKeranjangs()->delete();
+        // Kosongkan keranjang di database (jika bukan buy now)
+        if ($buyNowItem) {
+            session()->forget('buy_now_item');
+        } elseif ($keranjang) {
+            $keranjang->detailKeranjangs()->delete();
+        }
         session()->forget('applied_promo_id');
 
         return redirect()->route('customer.orders')->with('status', 'Pesanan berhasil dibuat! Pembayaran Anda akan segera diverifikasi oleh admin.');

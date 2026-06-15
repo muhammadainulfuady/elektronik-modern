@@ -15,6 +15,9 @@ class CartController extends Controller
      */
     public function index()
     {
+        // Bersihkan session beli langsung jika user kembali ke keranjang
+        session()->forget('buy_now_item');
+
         $keranjang = $this->getUserKeranjang();
         $details = $keranjang ? $keranjang->detailKeranjangs()->with('produk.kategori')->get() : collect();
 
@@ -123,10 +126,6 @@ class CartController extends Controller
                 'message' => 'Produk ditambahkan ke keranjang!',
                 'cartCount' => $cartCount,
             ]);
-        }
-
-        if ($request->has('buy_now')) {
-            return redirect()->route('customer.checkout');
         }
 
         return back()->with('status', 'Produk ditambahkan ke keranjang!');
